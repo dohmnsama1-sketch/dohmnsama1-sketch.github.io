@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ميزان — اعرف صافي ربح متجرك الحقيقي | Meezan — True net profit for Salla & Zid stores</title>
+<meta name="description" content="ارفع ملف طلباتك من سلة أو زد واعرف صافي الربح بعد رسوم الدفع والشحن وتكلفة المنتج والإعلانات. الملف لا يغادر جهازك. | Upload your Salla/Zid orders export and see true net profit. Your file never leaves your device.">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#14213d;--mut:#66708a;--line:#e3e7f0;--pri:#0b7a5b;--pri2:#e8f6f1;--bad:#c0392b;--bad2:#fdecea;--warn:#8a6100;--warn2:#fff6dd;--r:14px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 system-ui,"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif}
+header{background:var(--ink);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}header .sp{flex:1}
+.badge{padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}.b-free{background:#ffd966;color:#533}.b-pro{background:#7dffc4;color:#033}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;color:var(--ink)}
+button.pri,.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}button:disabled{opacity:.5;cursor:not-allowed}
+header button{background:transparent;color:#fff;border-color:#ffffff55}
+main{max-width:1060px;margin:0 auto;padding:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:17px}.mut{color:var(--mut)}.small{font-size:13px}
+#drop{border:2px dashed #b9c3da;border-radius:var(--r);padding:34px;text-align:center;background:#fbfcff}
+#drop.over{background:var(--pri2);border-color:var(--pri)}
+.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+label.f{display:block;font-size:13px;color:var(--mut)}input[type=number],input[type=text],select{width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}th{color:var(--mut);font-weight:600;font-size:12px}
+.wrap{overflow-x:auto}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}.kpi .v{font-size:22px;font-weight:800}.kpi .l{font-size:12px;color:var(--mut)}
+.kpi.big{background:var(--pri2);border-color:#bfe6d8}.kpi.neg{background:var(--bad2);border-color:#f3c5bf}.neg .v{color:var(--bad)}
+.ins{padding:10px 12px;border-radius:10px;margin:6px 0;background:#f1f5ff;border:1px solid #d6e0ff}.ins.warn{background:var(--warn2);border-color:#f1dfa3}
+.chip{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;background:var(--warn2);color:var(--warn);margin-inline-start:6px}
+.bar{height:20px;border-radius:5px;background:var(--pri)}.bar.neg{background:var(--bad)}.bar.cost{background:#e08a3c}
+.locked{position:relative;filter:none}.locked .lockbox{background:#fff;border:1px dashed #c8a43a;border-radius:12px;padding:18px;text-align:center;background:var(--warn2)}
+.hidden{display:none!important}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pos{color:var(--pri)}.neg-t{color:var(--bad)}
+details summary{cursor:pointer;font-weight:700}
+.demo{background:#fff6dd;border:1px solid #f1dfa3;border-radius:10px;padding:8px 12px;margin-bottom:10px}
+footer{max-width:1060px;margin:0 auto;padding:10px 18px 40px;color:var(--mut);font-size:12.5px}
+@media print{header,#stepUpload,#stepSettings,.noprint,footer{display:none!important}body{background:#fff}.card{border:0;padding:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚖️ <span data-i="brand"></span></h1>
+  <span id="modeBadge" class="badge"></span>
+  <span class="sp"></span>
+  <button id="langBtn">EN</button>
+</header>
+<main>
+  <section class="card" id="stepUpload">
+    <h2 data-i="s1"></h2>
+    <div id="drop"><div style="font-size:34px">📄</div><div data-i="drop"></div>
+      <div class="row" style="justify-content:center;margin-top:12px"><button class="pri" id="pickBtn" data-i="pick"></button><button id="demoBtn" data-i="demo"></button></div>
+      <input type="file" id="file" accept=".xlsx,.csv,.txt" class="hidden"></div>
+    <p class="small mut">🔒 <span data-i="privacy"></span></p>
+    <details><summary data-i="howExport"></summary><div class="small mut" data-i="howExportBody" style="margin-top:8px"></div></details>
+    <div id="fileMsg" class="small" style="margin-top:8px"></div>
+    <details id="mapBox" class="hidden" style="margin-top:10px"><summary data-i="mapTitle"></summary><div id="mapGrid" class="grid g4" style="margin-top:10px"></div></details>
+  </section>
+
+  <section class="card hidden" id="stepSettings">
+    <h2 data-i="s2"></h2>
+    <p class="small mut" data-i="s2hint"></p>
+    <div class="grid g4">
+      <div><label class="f" data-i="vatMode"></label><select id="vatMode"><option value="inclusive" data-i="vatInc"></option><option value="none" data-i="vatNone"></option></select></div>
+      <div><label class="f" data-i="codCost"></label><input type="number" id="codFeeCost" min="0" step="0.5"></div>
+      <div><label class="f" data-i="pack"></label><input type="number" id="packagingPerOrder" min="0" step="0.5"></div>
+      <div><label class="f" data-i="defShip"></label><input type="number" id="defaultShippingCost" min="0" step="0.5"></div>
+      <div><label class="f" data-i="ads"></label><input type="number" id="adSpend" min="0" step="10"></div>
+      <div><label class="f" data-i="fixed"></label><input type="number" id="fixedMonthly" min="0" step="10"></div>
+      <div><label class="f" data-i="defCost"></label><input type="number" id="defaultCostPct" min="0" max="100" step="1"></div>
+      <div><label class="f" data-i="retFactor"></label><input type="number" id="returnShipFactor" min="0" max="3" step="0.5"></div>
+    </div>
+    <h3 style="margin-bottom:4px" data-i="feeTitle"></h3>
+    <div class="wrap"><table id="feeTable"></table></div>
+    <div id="carrierBox" class="hidden"><h3 style="margin-bottom:4px" data-i="carrierTitle"></h3><div class="grid g4" id="carrierGrid"></div></div>
+    <div id="costBox" class="hidden"><h3 style="margin-bottom:4px" data-i="costTitle"></h3>
+      <p class="small mut" data-i="costHint"></p>
+      <div class="row"><textarea id="costPaste" rows="2" style="flex:1;min-width:220px;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px" data-iph="costPaste"></textarea><button id="costImport" data-i="costImport"></button></div>
+      <div class="grid g4" id="costGrid" style="margin-top:10px"></div></div>
+    <div class="row" style="margin-top:14px"><button class="pri" id="runBtn" data-i="run"></button><button id="resetBtn" data-i="reset"></button></div>
+  </section>
+
+  <section id="report" class="hidden">
+    <div id="demoBanner" class="demo hidden small" data-i="demoBanner"></div>
+    <div class="card"><div class="row"><h2 style="margin:0" data-i="rTitle"></h2><span class="sp" style="flex:1"></span>
+      <button id="csvBtn" class="noprint" data-i="csv"></button><button id="printBtn" class="noprint" data-i="print"></button><button id="againBtn" class="noprint" data-i="again"></button></div>
+      <div id="warnBox"></div>
+      <div class="grid g4" id="kpis" style="margin-top:12px"></div></div>
+    <div class="card"><h2 data-i="whereGoes"></h2><div id="waterfall"></div></div>
+    <div class="card"><h2 data-i="leaks"></h2><div id="insights"></div><div id="assumps"></div></div>
+    <div class="card"><h2 data-i="byMethod"></h2><div class="wrap"><table id="tMethod"></table></div></div>
+    <div class="card" id="carrierCard"><h2 data-i="byCarrier"></h2><div class="wrap"><table id="tCarrier"></table></div></div>
+    <div class="card gated" id="gProducts"><h2 data-i="byProduct"></h2><div class="gate-content"><p class="small mut" data-i="prodHint"></p><div class="wrap"><table id="tProduct"></table></div></div></div>
+    <div class="card gated" id="gDaily"><h2 data-i="byDay"></h2><div class="gate-content"><div id="dailyChart" class="wrap"></div></div></div>
+    <div class="card hidden" id="upsell"><div class="lockbox"><h2 data-i="upTitle"></h2><p data-i="upBody"></p><a class="btn pri" id="buyBtn" target="_blank" rel="noopener" data-i="upBtn"></a><p class="small mut" data-i="upNote"></p></div></div>
+  </section>
+</main>
+<footer><span data-i="disc"></span></footer>
+
+<script>/* Meezan engine — dependency-free. Runs in browsers and Node 20+.
+   Parses Salla/Zid/Shopify-style order exports (CSV/XLSX), maps columns, computes true net profit. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.MeezanEngine = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  // ---------- text helpers ----------
+  const AR_DIGITS = '٠١٢٣٤٥٦٧٨٩', FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+  function latinDigits(s) {
+    return String(s).replace(/[٠-٩]/g, d => AR_DIGITS.indexOf(d)).replace(/[۰-۹]/g, d => FA_DIGITS.indexOf(d));
+  }
+  function norm(s) {
+    if (s === null || s === undefined) return '';
+    return latinDigits(String(s)).toLowerCase()
+      .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+      .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه')
+      .replace(/[^a-z0-9\u0621-\u064A]+/g, ' ').trim().replace(/\s+/g, ' ');
+  }
+  function parseMoney(v) {
+    if (v === null || v === undefined || v === '') return null;
+    if (typeof v === 'number') return isFinite(v) ? v : null;
+    let s = latinDigits(String(v)).replace(/[\u200e\u200f\u00a0]/g, ' ').trim();
+    if (!s) return null;
+    s = s.replace(/٫/g, '.').replace(/٬/g, ',');
+    const neg = /^\(.*\)$/.test(s) || /^-/.test(s);
+    s = s.replace(/[^0-9.,]/g, '');
+    if (!s) return null;
+    const lastComma = s.lastIndexOf(','), lastDot = s.lastIndexOf('.');
+    if (lastComma > -1 && lastDot > -1) {
+      if (lastComma > lastDot) s = s.replace(/\./g, '').replace(',', '.'); else s = s.replace(/,/g, '');
+    } else if (lastComma > -1) {
+      // "1,234" -> thousands ; "12,5" -> decimal
+      s = /,\d{3}(,|$)/.test(s) && (s.match(/,/g).length > 1 || s.length - lastComma - 1 === 3) ? s.replace(/,/g, '') : s.replace(',', '.');
+    }
+    const n = parseFloat(s);
+    if (!isFinite(n)) return null;
+    return neg ? -Math.abs(n) : n;
+  }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function parseDate(v) {
+    if (v === null || v === undefined || v === '') return null;
+    if (typeof v === 'number') {
+      if (v > 20000 && v < 80000) { const d = new Date(Math.round((v - 25569) * 86400000)); return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); }
+      return null;
+    }
+    const s = latinDigits(String(v)).trim();
+    let m = s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+    if (m) return m[1] + '-' + pad(+m[2]) + '-' + pad(+m[3]);
+    m = s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/);
+    if (m) return m[3] + '-' + pad(+m[2]) + '-' + pad(+m[1]); // dd/mm/yyyy (Saudi convention)
+    return null;
+  }
+
+  // ---------- CSV ----------
+  function parseCSV(text) {
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    const firstLine = text.split(/\r?\n/, 1)[0] || '';
+    const cands = [',', ';', '\t'];
+    let delim = ',', best = -1;
+    for (const d of cands) { const c = firstLine.split(d).length; if (c > best) { best = c; delim = d; } }
+    const rows = []; let row = [], cur = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === delim) { row.push(cur); cur = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && text[i + 1] === '\n') i++;
+        row.push(cur); cur = ''; if (row.some(c => c !== '')) rows.push(row); row = [];
+      } else cur += ch;
+    }
+    row.push(cur); if (row.some(c => c !== '')) rows.push(row);
+    return rows;
+  }
+
+  // ---------- XLSX (zip + xml, no dependencies) ----------
+  async function inflateRaw(u8) {
+    if (typeof DecompressionStream === 'undefined') throw new Error('DecompressionStream unsupported — use a current Chrome/Edge/Safari/Firefox');
+    const ds = new DecompressionStream('deflate-raw');
+    const stream = new Blob([u8]).stream().pipeThrough(ds);
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }
+  async function unzip(buf) {
+    const u8 = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+    const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+    let eocd = -1;
+    for (let i = u8.length - 22; i >= Math.max(0, u8.length - 66000); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    if (eocd < 0) throw new Error('Not a valid .xlsx file');
+    const count = dv.getUint16(eocd + 10, true); let p = dv.getUint32(eocd + 16, true);
+    const files = {}; const dec = new TextDecoder('utf-8');
+    for (let n = 0; n < count; n++) {
+      if (dv.getUint32(p, true) !== 0x02014b50) break;
+      const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+      const nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+      const off = dv.getUint32(p + 42, true); const name = dec.decode(u8.subarray(p + 46, p + 46 + nlen));
+      files[name] = { method, csize, off }; p += 46 + nlen + elen + clen;
+    }
+    return {
+      names: Object.keys(files),
+      async read(name) {
+        const f = files[name]; if (!f) return null;
+        const lnl = dv.getUint16(f.off + 26, true), lel = dv.getUint16(f.off + 28, true);
+        const start = f.off + 30 + lnl + lel; const data = u8.subarray(start, start + f.csize);
+        const out = f.method === 0 ? data : await inflateRaw(data);
+        return new TextDecoder('utf-8').decode(out);
+      }
+    };
+  }
+  function xmlUnescape(s) {
+    return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(+d)).replace(/&amp;/g, '&');
+  }
+  function colIndex(ref) { const m = ref.match(/^([A-Z]+)/); let n = 0; for (const c of m[1]) n = n * 26 + (c.charCodeAt(0) - 64); return n - 1; }
+  async function parseXLSX(buf) {
+    const z = await unzip(buf);
+    const wb = await z.read('xl/workbook.xml'); const rels = await z.read('xl/_rels/workbook.xml.rels');
+    let sheetPath = null;
+    if (wb && rels) {
+      const sm = wb.match(/<sheet\b[^>]*r:id="([^"]+)"/);
+      if (sm) { const rm = new RegExp('<Relationship\\b[^>]*Id="' + sm[1] + '"[^>]*>').exec(rels) || null;
+        if (rm) { const t = rm[0].match(/Target="([^"]+)"/); if (t) sheetPath = t[1].replace(/^\//, '').replace(/^(?!xl\/)/, 'xl/'); } }
+    }
+    if (!sheetPath || !z.names.includes(sheetPath)) sheetPath = z.names.filter(n => /^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort()[0];
+    if (!sheetPath) throw new Error('No worksheet found');
+    const ssXml = await z.read('xl/sharedStrings.xml'); const strings = [];
+    if (ssXml) { const re = /<si\b[^>]*>([\s\S]*?)<\/si>/g; let m;
+      while ((m = re.exec(ssXml))) { let t = ''; const tr = /<t\b[^>]*>([\s\S]*?)<\/t>/g; let x; while ((x = tr.exec(m[1]))) t += x[1]; strings.push(xmlUnescape(t)); } }
+    const sheet = await z.read(sheetPath); const rows = [];
+    const rowRe = /<row\b[^>]*>([\s\S]*?)<\/row>/g; let rm;
+    while ((rm = rowRe.exec(sheet))) {
+      const row = []; const cellRe = /<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g; let cm;
+      while ((cm = cellRe.exec(rm[1]))) {
+        const attrs = cm[1], inner = cm[2] || ''; const ref = (attrs.match(/\br="([A-Z]+\d+)"/) || [])[1]; if (!ref) continue;
+        const t = (attrs.match(/\bt="([^"]+)"/) || [])[1]; let val = null;
+        const v = inner.match(/<v>([\s\S]*?)<\/v>/);
+        if (t === 's' && v) val = strings[+v[1]];
+        else if (t === 'inlineStr') { let s = ''; const tr = /<t\b[^>]*>([\s\S]*?)<\/t>/g; let x; while ((x = tr.exec(inner))) s += x[1]; val = xmlUnescape(s); }
+        else if (t === 'str' && v) val = xmlUnescape(v[1]);
+        else if (t === 'b' && v) val = v[1] === '1';
+        else if (v) { const n = parseFloat(v[1]); val = isFinite(n) ? n : xmlUnescape(v[1]); }
+        row[colIndex(ref)] = val === undefined ? null : val;
+      }
+      for (let i = 0; i < row.length; i++) if (row[i] === undefined) row[i] = null;
+      if (row.some(c => c !== null && c !== '')) rows.push(row);
+    }
+    return rows;
+  }
+
+  // ---------- table + mapping ----------
+  function toTable(rawRows) {
+    // header row = first row with >=3 non-empty text cells
+    let h = 0;
+    for (let i = 0; i < Math.min(rawRows.length, 10); i++) { if (rawRows[i].filter(c => typeof c === 'string' && c.trim() !== '' && parseMoney(c) === null).length >= 3) { h = i; break; } }
+    const headers = (rawRows[h] || []).map(x => (x === null || x === undefined) ? '' : String(x).trim());
+    const rows = rawRows.slice(h + 1).map(r => { const o = []; for (let i = 0; i < headers.length; i++) o.push(r[i] === undefined ? null : r[i]); return o; });
+    return { headers, rows };
+  }
+  const SYN = {
+    order_id: ['رقم الطلب', 'رقم الطلبيه', 'order id', 'order number', 'order no', 'order', 'name', 'رقم المرجع', 'reference', 'id', 'رقم'],
+    date: ['تاريخ الطلب', 'تاريخ الانشاء', 'تاريخ', 'order date', 'created at', 'date created', 'date', 'created'],
+    status: ['حاله الطلب', 'الحاله', 'status', 'order status', 'financial status', 'fulfillment status'],
+    payment: ['طريقه الدفع', 'وسيله الدفع', 'بوابه الدفع', 'payment method', 'payment gateway', 'gateway', 'payment', 'الدفع'],
+    carrier: ['شركه الشحن', 'شركه التوصيل', 'carrier', 'shipping company', 'courier', 'shipping provider', 'طريقه الشحن', 'shipping method', 'shipping line title'],
+    shipping_fee: ['تكلفه الشحن', 'رسوم الشحن', 'سعر الشحن', 'shipping cost', 'shipping fee', 'shipping fees', 'shipping price', 'shipping', 'الشحن', 'شحن'],
+    cod_fee: ['رسوم الدفع عند الاستلام', 'تكلفه الدفع عند الاستلام', 'cod fee', 'cod fees', 'cod charge'],
+    discount: ['قيمه الخصم', 'اجمالي الخصم', 'الخصم', 'خصم', 'كوبون', 'discount amount', 'total discount', 'discount', 'coupon'],
+    subtotal: ['المجموع الفرعي', 'اجمالي المنتجات', 'subtotal', 'sub total', 'items total'],
+    total: ['اجمالي الطلب', 'المبلغ الاجمالي', 'المجموع الكلي', 'الاجمالي', 'اجمالي المبلغ', 'المجموع', 'order total', 'grand total', 'total amount', 'total', 'amount'],
+    product: ['اسم المنتج', 'المنتج', 'product name', 'lineitem name', 'item name', 'product', 'item', 'title'],
+    sku: ['رمز المنتج', 'sku', 'lineitem sku', 'رمز sku', 'باركود', 'barcode'],
+    qty: ['الكميه', 'كميه', 'quantity', 'lineitem quantity', 'qty'],
+    unit_price: ['سعر الوحده', 'سعر المنتج', 'السعر', 'unit price', 'lineitem price', 'price'],
+    line_total: ['اجمالي المنتج', 'مجموع المنتج', 'line total', 'item total']
+  };
+  const FIELD_ORDER = Object.keys(SYN);
+  function autoMap(headers) {
+    const nh = headers.map(norm); const cand = [];
+    for (const f of FIELD_ORDER) SYN[f].forEach((s, i) => {
+      const ns = norm(s);
+      nh.forEach((h, c) => {
+        if (!h) return; let sc = 0;
+        if (h === ns) sc = 200 - i; else if ((' ' + h + ' ').includes(' ' + ns + ' ') && ns.length >= 3) sc = 100 - i - Math.abs(h.length - ns.length) * 0.5;
+        else if (ns.includes(h) && h.length >= 4) sc = 20 - i * 0.1;
+        if (sc > 0) cand.push({ f, c, sc });
+      });
+    });
+    cand.sort((a, b) => b.sc - a.sc);
+    const mapping = {}; const usedC = new Set();
+    for (const k of cand) { if (mapping[k.f] !== undefined || usedC.has(k.c)) continue; mapping[k.f] = k.c; usedC.add(k.c); }
+    for (const f of FIELD_ORDER) if (mapping[f] === undefined) mapping[f] = -1;
+    return mapping;
+  }
+
+  // ---------- defaults ----------
+  const METHODS = ['mada', 'card', 'applepay', 'tabby', 'tamara', 'cod', 'bank', 'wallet', 'other'];
+  function defaultSettings() {
+    return {
+      vatMode: 'inclusive', vatRate: 0.15,
+      feeRules: {
+        mada: { pct: 1.75, fixed: 1, assumed: false }, card: { pct: 2.5, fixed: 1, assumed: false },
+        applepay: { pct: 2.5, fixed: 1, assumed: true }, tabby: { pct: 6, fixed: 0, assumed: true },
+        tamara: { pct: 5, fixed: 0, assumed: true }, cod: { pct: 0, fixed: 0, assumed: false },
+        bank: { pct: 0, fixed: 0, assumed: false }, wallet: { pct: 0, fixed: 0, assumed: true }, other: { pct: 0, fixed: 0, assumed: true }
+      },
+      carrierCosts: {}, defaultShippingCost: 0, codFeeCost: 0, packagingPerOrder: 0,
+      defaultCostPct: 0, adSpend: 0, fixedMonthly: 0, returnShipFactor: 2, maxOrders: null
+    };
+  }
+  function classifyMethod(s) {
+    const n = norm(s); if (!n) return 'other';
+    if (/tabby|تابي/.test(n)) return 'tabby';
+    if (/tamara|تمارا/.test(n)) return 'tamara';
+    if (/apple|ابل|ايبل/.test(n)) return 'applepay';
+    if (/\bmada\b|مدي/.test(n)) return 'mada';
+    if (/cod|cash on delivery|استلام|نقدا|نقدي|كاش/.test(n)) return 'cod';
+    if (/bank|تحويل|حواله|ايبان/.test(n)) return 'bank';
+    if (/stc|محفظ|wallet|urpay/.test(n)) return 'wallet';
+    if (/visa|master|card|بطاق|ائتمان|فيزا|ماستر|credit/.test(n)) return 'card';
+    return 'other';
+  }
+  function classifyStatus(s) {
+    const n = norm(s); if (!n) return 'ok';
+    if (/مسترجع|مرتجع|استرجاع|مسترد|refund|return/.test(n)) return 'returned';
+    if (/ملغ|الغاء|cancel|مرفوض|فشل|failed|declined|expired|void/.test(n)) return 'cancelled';
+    if (/بانتظار الدفع|ينتظر الدفع|awaiting payment|pending payment|unpaid|payment pending/.test(n)) return 'pending';
+    return 'ok';
+  }
+
+  // ---------- analysis ----------
+  const r2 = x => Math.round((x + Number.EPSILON) * 100) / 100;
+  function analyze(table, mapping, settingsIn, costs, extra) {
+    const S = Object.assign(defaultSettings(), settingsIn || {});
+    S.feeRules = Object.assign({}, defaultSettings().feeRules, (settingsIn || {}).feeRules || {});
+    costs = costs || {}; const normCosts = {}; Object.keys(costs).forEach(k => { const v = parseMoney(costs[k]); if (v !== null) normCosts[norm(k)] = v; });
+    const M = mapping, warnings = [];
+    const get = (row, f) => (M[f] >= 0 ? row[M[f]] : null);
+    if (M.total < 0 && M.line_total < 0 && !(M.unit_price >= 0)) warnings.push({ key: 'no_total' });
+    // group rows into orders
+    const groups = new Map(); let auto = 0;
+    for (const row of table.rows) {
+      let id = M.order_id >= 0 ? get(row, 'order_id') : null; id = (id === null || id === '') ? '__row' + (auto++) : String(id);
+      if (!groups.has(id)) groups.set(id, []); groups.get(id).push(row);
+    }
+    let orders = [];
+    for (const [id, rows] of groups) {
+      const first = f => { for (const r of rows) { const v = get(r, f); if (v !== null && v !== '') return v; } return null; };
+      const lines = rows.map(r => ({
+        name: M.product >= 0 ? String(get(r, 'product') ?? '').trim() : '', sku: M.sku >= 0 ? String(get(r, 'sku') ?? '').trim() : '',
+        qty: parseMoney(get(r, 'qty')) ?? 1, price: parseMoney(get(r, 'unit_price')), lineTotal: parseMoney(get(r, 'line_total'))
+      })).filter(l => l.name || l.sku || l.price !== null || l.lineTotal !== null);
+      let total = parseMoney(first('total'));
+      if (total === null) {
+        const lt = lines.reduce((a, l) => a + (l.lineTotal !== null ? l.lineTotal : (l.price !== null ? l.price * l.qty : 0)), 0);
+        total = lt || null;
+        if (total !== null) {
+          total = total + (parseMoney(first('shipping_fee')) || 0) - (parseMoney(first('discount')) || 0);
+        }
+      }
+      orders.push({
+        id, date: parseDate(first('date')), status: classifyStatus(first('status')), statusRaw: String(first('status') ?? ''),
+        method: classifyMethod(first('payment')), methodRaw: String(first('payment') ?? ''),
+        carrier: String(first('carrier') ?? '').trim(), total: total === null ? 0 : total, totalMissing: total === null,
+        shippingCharged: parseMoney(first('shipping_fee')) || 0, discount: Math.abs(parseMoney(first('discount')) || 0),
+        codFeeCharged: parseMoney(first('cod_fee')) || 0, lines
+      });
+    }
+    const missingTotals = orders.filter(o => o.totalMissing).length; if (missingTotals) warnings.push({ key: 'missing_totals', n: missingTotals });
+    const noDate = orders.filter(o => !o.date).length; if (noDate) warnings.push({ key: 'missing_dates', n: noDate });
+    const excluded = { cancelled: 0, pending: 0 };
+    orders = orders.filter(o => { if (o.status === 'cancelled') { excluded.cancelled++; return false; } if (o.status === 'pending') { excluded.pending++; return false; } return true; });
+    orders.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    let truncated = false, totalOrdersInFile = orders.length;
+    if (S.maxOrders && orders.length > S.maxOrders) { orders = orders.slice(0, S.maxOrders); truncated = true; }
+
+    const vatDiv = S.vatMode === 'inclusive' ? 1 + S.vatRate : 1;
+    const K = { orders: 0, returned: 0, gross: 0, vat: 0, revenue: 0, cogs: 0, fees: 0, codCosts: 0, shipping: 0, packaging: 0, discounts: 0, freeShipOrders: 0, freeShipCost: 0, contribution: 0, cogsEstimated: 0, cogsMissingLines: 0 };
+    const byMethod = {}, byProduct = {}, byDay = {}, byCarrier = {};
+    let unknownShip = 0, unknownFeeMethods = new Set();
+    for (const o of orders) {
+      const returned = o.status === 'returned';
+      const fr = S.feeRules[o.method] || S.feeRules.other;
+      const fee = (o.total * fr.pct / 100) + (o.total > 0 ? fr.fixed : 0);
+      const carrierKey = norm(o.carrier);
+      let shipCost = S.carrierCosts && carrierKey && S.carrierCosts[carrierKey] !== undefined ? S.carrierCosts[carrierKey] : S.defaultShippingCost;
+      if (!shipCost && o.carrier) unknownShip++;
+      const codCost = o.method === 'cod' ? S.codFeeCost : 0;
+      const packaging = S.packagingPerOrder;
+      const revEx = returned ? 0 : o.total / vatDiv; const vat = returned ? 0 : o.total - revEx;
+      // COGS
+      let cogs = 0, cogsEst = false;
+      if (!returned) {
+        if (o.lines.length) {
+          for (const l of o.lines) {
+            const key = norm(l.sku) in normCosts ? norm(l.sku) : (norm(l.name) in normCosts ? norm(l.name) : null);
+            const lineRev = (l.lineTotal !== null ? l.lineTotal : (l.price !== null ? l.price * l.qty : 0)) / vatDiv;
+            if (key !== null) { l.cost = normCosts[key] * l.qty; l.costKnown = true; }
+            else { l.cost = (lineRev || (revEx / o.lines.length)) * S.defaultCostPct; l.costKnown = false; cogsEst = true; if (!S.defaultCostPct) K.cogsMissingLines++; }
+            cogs += l.cost;
+          }
+        } else { cogs = revEx * S.defaultCostPct; cogsEst = true; if (!S.defaultCostPct) K.cogsMissingLines++; }
+      }
+      const shipTotal = returned ? shipCost * S.returnShipFactor : shipCost;
+      const contribution = revEx - cogs - fee - codCost - shipTotal - packaging;
+      o.calc = { revEx, vat, cogs, fee, codCost, shipCost: shipTotal, packaging, contribution, cogsEstimated: cogsEst };
+      K.orders += returned ? 0 : 1; K.returned += returned ? 1 : 0; K.gross += returned ? 0 : o.total; K.vat += vat; K.revenue += revEx; K.cogs += cogs;
+      K.fees += fee; K.codCosts += codCost; K.shipping += shipTotal; K.packaging += packaging; K.discounts += returned ? 0 : o.discount; K.contribution += contribution;
+      if (cogsEst) K.cogsEstimated++;
+      if (!returned && o.shippingCharged === 0 && shipCost > 0) { K.freeShipOrders++; K.freeShipCost += shipCost; }
+      const mm = byMethod[o.method] || (byMethod[o.method] = { method: o.method, orders: 0, returned: 0, gross: 0, fees: 0, contribution: 0 });
+      mm.orders += returned ? 0 : 1; mm.returned += returned ? 1 : 0; mm.gross += returned ? 0 : o.total; mm.fees += fee; mm.contribution += contribution;
+      if (o.carrier) { const cc = byCarrier[o.carrier] || (byCarrier[o.carrier] = { carrier: o.carrier, orders: 0, returned: 0, shipping: 0 }); cc.orders += returned ? 0 : 1; cc.returned += returned ? 1 : 0; cc.shipping += shipTotal; }
+      if (o.date) { const d = byDay[o.date] || (byDay[o.date] = { date: o.date, orders: 0, revenue: 0, contribution: 0 }); d.orders += returned ? 0 : 1; d.revenue += revEx; d.contribution += contribution; }
+      // allocate to products by revenue share
+      if (o.lines.length && !returned) {
+        const lrev = o.lines.map(l => (l.lineTotal !== null ? l.lineTotal : (l.price !== null ? l.price * l.qty : 0)) / vatDiv);
+        const sumL = lrev.reduce((a, b) => a + b, 0) || 1;
+        o.lines.forEach((l, i) => {
+          const share = lrev[i] / sumL; const key = l.name || l.sku || '—';
+          const p = byProduct[key] || (byProduct[key] = { product: key, qty: 0, revenue: 0, cogs: 0, costKnown: true, other: 0, profit: 0 });
+          const rev = (sumL === 1 && !lrev[i]) ? revEx / o.lines.length : revEx * share;
+          const other = (fee + codCost + shipTotal + packaging) * share;
+          p.qty += l.qty; p.revenue += rev; p.cogs += l.cost; p.other += other; p.profit += rev - l.cost - other; if (!l.costKnown) p.costKnown = false;
+        });
+      }
+    }
+    // dates / fixed costs / ads
+    const dates = orders.map(o => o.date).filter(Boolean).sort();
+    let days = 1;
+    if (dates.length) days = Math.max(1, Math.round((Date.parse(dates[dates.length - 1]) - Date.parse(dates[0])) / 86400000) + 1);
+    const fixed = (S.fixedMonthly || 0) * days / 30, ads = S.adSpend || 0;
+    K.fixed = fixed; K.ads = ads; K.days = days;
+    K.netProfit = K.contribution - ads - fixed;
+    K.margin = K.revenue > 0 ? K.netProfit / K.revenue : 0;
+    K.marginBeforeAds = K.revenue > 0 ? K.contribution / K.revenue : 0;
+    K.breakEvenRoas = K.contribution > 0 ? K.revenue / K.contribution : null;
+    K.actualRoas = ads > 0 ? K.revenue / ads : null;
+    K.feePct = K.revenue > 0 ? K.fees / K.revenue : 0;
+    K.aov = K.orders ? K.gross / K.orders : 0;
+    K.profitPerOrder = K.orders ? K.netProfit / K.orders : 0;
+    const dayList = Object.values(byDay).sort((a, b) => a.date.localeCompare(b.date));
+    const perDayCost = (ads + fixed) / (dayList.length || 1);
+    dayList.forEach(d => { d.net = d.contribution - perDayCost; });
+    const methodList = Object.values(byMethod).map(m => Object.assign(m, { effFeePct: m.gross ? m.fees / m.gross : 0, returnRate: (m.orders + m.returned) ? m.returned / (m.orders + m.returned) : 0 })).sort((a, b) => b.fees - a.fees);
+    const productList = Object.values(byProduct).sort((a, b) => a.profit - b.profit);
+    const carrierList = Object.values(byCarrier).sort((a, b) => b.orders - a.orders);
+    // assumptions & insights
+    const assumptions = [];
+    methodList.forEach(m => { if (S.feeRules[m.method] && S.feeRules[m.method].assumed && m.orders) assumptions.push({ key: 'fee_assumed', method: m.method }); });
+    if (!S.defaultShippingCost && !Object.keys(S.carrierCosts || {}).length && K.orders) assumptions.push({ key: 'ship_missing' });
+    if (K.cogsMissingLines) assumptions.push({ key: 'cogs_missing', n: K.cogsMissingLines });
+    else if (K.cogsEstimated) assumptions.push({ key: 'cogs_estimated', n: K.cogsEstimated });
+    if (S.codFeeCost === 0 && methodList.some(m => m.method === 'cod' && m.orders)) assumptions.push({ key: 'cod_missing' });
+    const insights = [];
+    if (methodList.length && K.fees > 0) { const w = methodList.filter(m => m.orders && m.gross).sort((a, b) => b.effFeePct - a.effFeePct)[0]; if (w && w.effFeePct > 0) insights.push({ key: 'worst_fee', method: w.method, per100: r2(w.effFeePct * 100), total: r2(w.fees) }); }
+    if (K.freeShipOrders > 0) insights.push({ key: 'free_ship', n: K.freeShipOrders, cost: r2(K.freeShipCost) });
+    if (K.discounts > 0 && K.gross > 0) insights.push({ key: 'discounts', amount: r2(K.discounts), pct: r2(K.discounts / (K.gross + K.discounts) * 100) });
+    const losers = productList.filter(p => p.profit < 0); if (losers.length) insights.push({ key: 'losers', n: losers.length, amount: r2(losers.reduce((a, p) => a + p.profit, 0)), worst: losers[0].product });
+    if (K.breakEvenRoas) insights.push({ key: 'roas', be: r2(K.breakEvenRoas), actual: K.actualRoas ? r2(K.actualRoas) : null });
+    const codM = byMethod.cod; if (codM && codM.orders + codM.returned >= 5) { const rr = codM.returned / (codM.orders + codM.returned); const others = Object.values(byMethod).filter(m => m.method !== 'cod'); const oo = others.reduce((a, m) => a + m.orders + m.returned, 0), orr = others.reduce((a, m) => a + m.returned, 0); if (rr > 0) insights.push({ key: 'cod_returns', cod: r2(rr * 100), other: oo ? r2(orr / oo * 100) : 0 }); }
+    if (K.revenue > 0 && K.margin < 0.1) insights.push({ key: 'low_margin', pct: r2(K.margin * 100) });
+    if (truncated) warnings.push({ key: 'truncated', shown: orders.length, total: totalOrdersInFile });
+    const out = {
+      kpis: Object.fromEntries(Object.entries(K).map(([k, v]) => [k, typeof v === 'number' ? (Math.abs(v) < 5 && /pct|margin|Roas|Pct/.test(k) ? Math.round(v * 10000) / 10000 : r2(v)) : v])),
+      byMethod: methodList.map(m => ({ method: m.method, orders: m.orders, returned: m.returned, gross: r2(m.gross), fees: r2(m.fees), effFeePct: Math.round(m.effFeePct * 10000) / 10000, returnRate: Math.round(m.returnRate * 10000) / 10000, contribution: r2(m.contribution) })),
+      byProduct: productList.map(p => ({ product: p.product, qty: p.qty, revenue: r2(p.revenue), cogs: r2(p.cogs), other: r2(p.other), profit: r2(p.profit), costKnown: p.costKnown })),
+      byDay: dayList.map(d => ({ date: d.date, orders: d.orders, revenue: r2(d.revenue), contribution: r2(d.contribution), net: r2(d.net) })),
+      byCarrier: carrierList.map(c => ({ carrier: c.carrier, orders: c.orders, returned: c.returned, shipping: r2(c.shipping) })),
+      orders: orders.map(o => ({ id: o.id, date: o.date, status: o.status, method: o.method, carrier: o.carrier, total: r2(o.total), revenueExVat: r2(o.calc.revEx), cogs: r2(o.calc.cogs), fee: r2(o.calc.fee), shipping: r2(o.calc.shipCost), contribution: r2(o.calc.contribution) })),
+      insights, assumptions, warnings, excluded, truncated, totalOrdersInFile,
+      products: Array.from(new Set(table.rows.flatMap(r => M.product >= 0 ? [String(get(r, 'product') ?? '').trim()] : []).filter(Boolean))),
+      carriers: carrierList.map(c => c.carrier)
+    };
+    return out;
+  }
+
+  function toCSV(rows) {
+    const esc = v => { const s = v === null || v === undefined ? '' : String(v); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    return '\uFEFF' + rows.map(r => r.map(esc).join(',')).join('\r\n');
+  }
+
+  return { norm, parseMoney, parseDate, parseCSV, parseXLSX, toTable, autoMap, defaultSettings, classifyMethod, classifyStatus, analyze, toCSV, FIELD_ORDER, METHODS };
+});
+</script>
+<script>
+(function(){
+'use strict';
+const PRO=false, BUY_URL="https://dodiabak.gumroad.com/l/meezan-pro", FREE_CAP=100;
+const E=MeezanEngine;
+const T={
+ ar:{brand:'ميزان — صافي ربح متجرك الحقيقي',s1:'١) ارفع ملف الطلبات',drop:'اسحب ملف الطلبات (Excel أو CSV) من سلة أو زد وأفلته هنا',pick:'اختر ملفًا',demo:'جرّب ببيانات تجريبية',
+  privacy:'الملف يُقرأ داخل متصفحك فقط ولا يُرفع إلى أي خادم. يمكنك فصل الإنترنت بعد فتح الصفحة.',
+  howExport:'كيف أصدّر الطلبات؟',howExportBody:'سلة: الطلبات ← خدمات ← تصدير الطلبات (يصلك الملف على بريدك). زد: الطلبات ← تصدير. شوبيفاي: Orders ← Export. إن كان تصديرك سطرًا لكل منتج فلا مشكلة، فالأداة تجمع الأسطر لكل طلب. الأعمدة المفيدة: رقم الطلب، التاريخ، الحالة، طريقة الدفع، شركة الشحن، المنتج، الكمية، السعر، الخصم، الإجمالي. لم نختبر الأداة على كل قوالب التصدير الممكنة؛ إن اختلفت الأعمدة عدّلها من «ربط الأعمدة».',
+  mapTitle:'ربط الأعمدة (تم اكتشافه تلقائيًا — عدّل إن لزم)',s2:'٢) أدخل تكاليفك الحقيقية',s2hint:'كل رقم يبدأ بصفر أو مقدّر يظهر لك وسم «تقدير». كلما أدخلت تكاليف أدق صار الربح أدق. تُحفظ إعداداتك على جهازك.',
+  vatMode:'ضريبة القيمة المضافة',vatInc:'إجماليات طلباتي تشمل 15%',vatNone:'غير مسجّل بالضريبة (لا ضريبة في الإجمالي)',
+  codCost:'رسوم الدفع عند الاستلام لكل طلب (ر.س)',pack:'تغليف لكل طلب (ر.س)',defShip:'تكلفة الشحن الافتراضية لكل طلب (ر.س)',ads:'إنفاق الإعلانات في الفترة (ر.س)',fixed:'مصاريف ثابتة شهريًا (إيجار، رواتب، اشتراكات)',defCost:'تكلفة البضاعة % من السعر للمنتجات بلا تكلفة',retFactor:'مضاعف شحن المرتجع (ذهاب+عودة = 2)',
+  feeTitle:'رسوم بوابات الدفع (نسبة % + مبلغ ثابت لكل عملية)',carrierTitle:'تكلفة الشحن الفعلية لكل شركة (ر.س للشحنة)',costTitle:'تكلفة كل منتج (ر.س للوحدة، بدون ضريبة)',costHint:'اكتب التكلفة أو الصق CSV بصيغة: اسم المنتج أو SKU، التكلفة (سطر لكل منتج).',costPaste:'مثال: OUD-50,52',costImport:'استيراد',
+  run:'احسب صافي ربحي',reset:'مسح إعداداتي',
+  rTitle:'تقرير صافي الربح',csv:'تنزيل CSV',print:'طباعة / PDF',again:'ملف آخر',demoBanner:'⚠️ هذه بيانات تجريبية لتجربة الأداة وليست بياناتك.',
+  whereGoes:'أين يذهب كل ريال من مبيعاتك؟',leaks:'تسرّبات الربح',byMethod:'حسب طريقة الدفع',byCarrier:'حسب شركة الشحن',byProduct:'ربحية المنتجات (الأسوأ أولًا)',byDay:'صافي الربح اليومي (قبل توزيع الإعلانات والثابت متساويًا)',prodHint:'الأرباح هنا قبل الإعلانات والمصاريف الثابتة. المنتجات بلا تكلفة مُدخلة تُحسب بالنسبة الافتراضية.',
+  upTitle:'🔓 افتح التقرير الكامل (ميزان برو)',upBody:'النسخة المجانية تحلل أحدث 100 طلب وتخفي ربحية المنتجات والرسم اليومي والتصدير. ميزان برو: عدد طلبات غير محدود، ربحية كل منتج، رسم يومي، تنزيل CSV وPDF، يعمل دون إنترنت — دفعة واحدة بلا اشتراك.',upBtn:'احصل على ميزان برو',upNote:'تُدفع مرة واحدة عبر Gumroad. تصلك نسخة برو كملف تفتحه على جهازك.',
+  disc:'أداة حسابية تقديرية للمتاجر؛ ليست استشارة محاسبية أو ضريبية ولا تقدم إقرارات لهيئة الزكاة والضريبة والجمارك. غير تابعة لسلة أو زد أو أي بوابة دفع. نسب الرسوم الافتراضية تقديرية — اضبطها وفق عقدك.',
+  kNet:'صافي الربح',kRev:'المبيعات بعد الضريبة',kMargin:'هامش الصافي',kOrders:'طلبات مكتملة',kFees:'رسوم الدفع',kShip:'تكلفة الشحن',kCogs:'تكلفة البضاعة',kPer:'ربح الطلب الواحد',kRoas:'ROAS التعادل',kRet:'مرتجعات',
+  w_rev:'المبيعات بعد الضريبة',w_cogs:'تكلفة البضاعة',w_fees:'رسوم بوابات الدفع',w_cod:'رسوم الدفع عند الاستلام',w_ship:'الشحن',w_pack:'التغليف',w_ads:'الإعلانات',w_fixed:'مصاريف ثابتة',w_net:'صافي الربح',
+  vatNote:'ضريبة محصّلة (ليست ربحًا)',
+  th_method:'الطريقة',th_orders:'طلبات',th_gross:'المبيعات',th_fees:'الرسوم',th_eff:'% الرسوم',th_ret:'% مرتجع',th_carrier:'شركة الشحن',th_ship:'تكلفة الشحن',th_prod:'المنتج',th_qty:'الكمية',th_rev:'إيراد',th_cogs:'تكلفة',th_other:'رسوم وشحن',th_profit:'ربح',th_net:'صافي اليوم',
+  m_mada:'مدى',m_card:'بطاقة ائتمانية',m_applepay:'Apple Pay',m_tabby:'تابي',m_tamara:'تمارا',m_cod:'الدفع عند الاستلام',m_bank:'تحويل بنكي',m_wallet:'محفظة',m_other:'أخرى',
+  est:'تقدير',
+  i_worst_fee:(p,M)=>`أغلى طريقة دفع عندك: ${M(p.method)} — تدفع ${p.per100} ر.س رسومًا عن كل 100 ر.س مبيعات (إجمالي ${fmt(p.total,0)} ر.س).`,
+  i_free_ship:p=>`الشحن المجاني كلّفك ${fmt(p.cost,0)} ر.س على ${p.n} طلب لم يدفع فيها العميل شحنًا.`,
+  i_discounts:p=>`الخصومات والكوبونات: ${fmt(p.amount,0)} ر.س (${p.pct}% من المبيعات قبل الخصم).`,
+  i_losers:p=>`${p.n} منتج يخسّرك ${fmt(Math.abs(p.amount),0)} ر.س؛ أسوأها: «${esc(p.worst)}».`,
+  i_roas:p=>`ROAS التعادل لإعلاناتك ${p.be}${p.actual?` ، وROAS الحالي ${p.actual} — ${p.actual<p.be?'أنت تخسر على الإعلانات':'أنت فوق نقطة التعادل'}`:' — أدخل إنفاق الإعلانات لمقارنته'}.`,
+  i_cod_returns:p=>`نسبة المرتجع في الدفع عند الاستلام ${p.cod}% مقابل ${p.other}% للدفع الإلكتروني.`,
+  i_low_margin:p=>`هامش صافي الربح ${p.pct}% فقط — أي ارتفاع صغير في الرسوم أو الشحن قد يحوّلك للخسارة.`,
+  a_fee_assumed:(p,M)=>`رسوم ${M(p.method)} تقدير افتراضي — ضعها حسب عقدك.`,a_ship_missing:()=>'لم تُدخل تكلفة الشحن الفعلية، لذلك الربح مبالغ فيه على الأرجح.',a_cogs_missing:p=>`${p.n} سطر بلا تكلفة منتج وبلا نسبة افتراضية — الربح مبالغ فيه حتى تُدخل التكاليف.`,a_cogs_estimated:p=>`${p.n} طلب استُخدمت فيه نسبة تكلفة افتراضية.`,a_cod_missing:()=>'لم تُدخل رسوم الدفع عند الاستلام التي تأخذها شركة الشحن.',
+  w_no_total:()=>'لم نجد عمود إجمالي الطلب — اربطه يدويًا.',w_missing_totals:p=>`${p.n} طلب بلا إجمالي (حُسب صفرًا).`,w_missing_dates:p=>`${p.n} طلب بلا تاريخ مفهوم.`,w_truncated:p=>`النسخة المجانية حلّلت أحدث ${p.shown} طلب من ${p.total}.`,
+  excluded:(p)=>`استُبعد: ${p.cancelled} ملغي، ${p.pending} بانتظار الدفع.`,
+  err_file:'تعذّرت قراءة الملف. تأكد أنه Excel (.xlsx) أو CSV صادر من متجرك.',loaded:(n,c)=>`تم تحميل ${n} صف و${c} عمودًا.`,mapOf:{order_id:'رقم الطلب',date:'التاريخ',status:'الحالة',payment:'طريقة الدفع',carrier:'شركة الشحن',shipping_fee:'شحن مدفوع من العميل',cod_fee:'رسوم COD',discount:'الخصم',subtotal:'المجموع الفرعي',total:'إجمالي الطلب',product:'المنتج',sku:'SKU',qty:'الكمية',unit_price:'سعر الوحدة',line_total:'إجمالي السطر'},none:'— غير موجود —'},
+ en:{brand:'Meezan — your store’s true net profit',s1:'1) Upload your orders file',drop:'Drag your Salla / Zid / Shopify orders export (Excel or CSV) here',pick:'Choose file',demo:'Try with sample data',
+  privacy:'Your file is read inside your browser only and is never uploaded. You can go offline after the page opens.',
+  howExport:'How do I export orders?',howExportBody:'Salla: Orders → Services → Export orders (the file is emailed). Zid: Orders → Export. Shopify: Orders → Export. One-row-per-product exports are fine; lines are grouped per order. Useful columns: order id, date, status, payment method, shipping company, product, quantity, price, discount, total. We have not tested every possible export template; if columns differ, fix them under “Column mapping”.',
+  mapTitle:'Column mapping (auto-detected — adjust if needed)',s2:'2) Enter your real costs',s2hint:'Anything starting at zero or estimated is flagged “estimate”. The more accurate your costs, the more accurate the profit. Settings are saved on your device.',
+  vatMode:'VAT',vatInc:'My order totals include 15% VAT',vatNone:'Not VAT-registered (no VAT in totals)',
+  codCost:'COD fee per COD order (SAR)',pack:'Packaging per order (SAR)',defShip:'Default shipping cost per order (SAR)',ads:'Ad spend in this period (SAR)',fixed:'Fixed costs per month (rent, salaries, subscriptions)',defCost:'Cost of goods % of price for products without a cost',retFactor:'Return shipping multiplier (out+back = 2)',
+  feeTitle:'Payment gateway fees (% + fixed per transaction)',carrierTitle:'Real shipping cost per carrier (SAR per shipment)',costTitle:'Cost per product (SAR per unit, ex-VAT)',costHint:'Type costs or paste CSV as: product name or SKU, cost (one per line).',costPaste:'e.g. OUD-50,52',costImport:'Import',
+  run:'Calculate my net profit',reset:'Clear my settings',
+  rTitle:'Net profit report',csv:'Download CSV',print:'Print / PDF',again:'Another file',demoBanner:'⚠️ Sample data to try the tool — not your data.',
+  whereGoes:'Where does every riyal of sales go?',leaks:'Profit leaks',byMethod:'By payment method',byCarrier:'By shipping carrier',byProduct:'Product profitability (worst first)',byDay:'Daily net profit (ads & fixed costs spread evenly)',prodHint:'Profits here are before ads and fixed costs. Products without an entered cost use your default %.',
+  upTitle:'🔓 Unlock the full report (Meezan Pro)',upBody:'The free version analyses your latest 100 orders and hides product profitability, the daily chart and exports. Meezan Pro: unlimited orders, per-product profit, daily chart, CSV and PDF export, works offline — one payment, no subscription.',upBtn:'Get Meezan Pro',upNote:'One-time payment via Gumroad. You receive the Pro file to open on your device.',
+  disc:'Estimation tool for store owners; not accounting or tax advice and not a ZATCA filing. Not affiliated with Salla, Zid or any payment gateway. Default fee rates are estimates — set them from your own contracts.',
+  kNet:'Net profit',kRev:'Revenue ex-VAT',kMargin:'Net margin',kOrders:'Completed orders',kFees:'Payment fees',kShip:'Shipping cost',kCogs:'Cost of goods',kPer:'Profit per order',kRoas:'Break-even ROAS',kRet:'Returns',
+  w_rev:'Revenue ex-VAT',w_cogs:'Cost of goods',w_fees:'Payment gateway fees',w_cod:'COD fees',w_ship:'Shipping',w_pack:'Packaging',w_ads:'Ads',w_fixed:'Fixed costs',w_net:'Net profit',vatNote:'VAT collected (not profit)',
+  th_method:'Method',th_orders:'Orders',th_gross:'Sales',th_fees:'Fees',th_eff:'Fee %',th_ret:'Return %',th_carrier:'Carrier',th_ship:'Shipping cost',th_prod:'Product',th_qty:'Qty',th_rev:'Revenue',th_cogs:'COGS',th_other:'Fees+ship',th_profit:'Profit',th_net:'Day net',
+  m_mada:'Mada',m_card:'Credit card',m_applepay:'Apple Pay',m_tabby:'Tabby',m_tamara:'Tamara',m_cod:'Cash on delivery',m_bank:'Bank transfer',m_wallet:'Wallet',m_other:'Other',est:'estimate',
+  i_worst_fee:(p,M)=>`Most expensive payment method: ${M(p.method)} — you pay SAR ${p.per100} in fees per SAR 100 of sales (SAR ${fmt(p.total,0)} total).`,
+  i_free_ship:p=>`Free shipping cost you SAR ${fmt(p.cost,0)} across ${p.n} orders where the customer paid no shipping.`,
+  i_discounts:p=>`Discounts and coupons: SAR ${fmt(Math.abs(p.amount),0)} (${p.pct}% of pre-discount sales).`,
+  i_losers:p=>`${p.n} products lose SAR ${fmt(Math.abs(p.amount),0)}; worst: “${esc(p.worst)}”.`,
+  i_roas:p=>`Break-even ROAS for your ads is ${p.be}${p.actual?`; your current ROAS is ${p.actual} — ${p.actual<p.be?'you are losing money on ads':'above break-even'}`:' — enter ad spend to compare'}.`,
+  i_cod_returns:p=>`Return rate on COD is ${p.cod}% vs ${p.other}% on prepaid.`,
+  i_low_margin:p=>`Net margin is only ${p.pct}% — a small rise in fees or shipping could push you into a loss.`,
+  a_fee_assumed:(p,M)=>`${M(p.method)} fee is a default estimate — set it from your contract.`,a_ship_missing:()=>'No real shipping cost entered, so profit is probably overstated.',a_cogs_missing:p=>`${p.n} lines have no product cost and no default % — profit is overstated until you enter costs.`,a_cogs_estimated:p=>`${p.n} orders used the default cost %.`,a_cod_missing:()=>'You have not entered the COD fee your carrier charges.',
+  w_no_total:()=>'No order-total column found — map it manually.',w_missing_totals:p=>`${p.n} orders have no total (counted as zero).`,w_missing_dates:p=>`${p.n} orders have an unreadable date.`,w_truncated:p=>`The free version analysed the latest ${p.shown} of ${p.total} orders.`,
+  excluded:p=>`Excluded: ${p.cancelled} cancelled, ${p.pending} awaiting payment.`,
+  err_file:'Could not read the file. Make sure it is an Excel (.xlsx) or CSV export from your store.',loaded:(n,c)=>`Loaded ${n} rows and ${c} columns.`,mapOf:{order_id:'Order ID',date:'Date',status:'Status',payment:'Payment method',carrier:'Carrier',shipping_fee:'Shipping paid by customer',cod_fee:'COD fee',discount:'Discount',subtotal:'Subtotal',total:'Order total',product:'Product',sku:'SKU',qty:'Quantity',unit_price:'Unit price',line_total:'Line total'},none:'— none —'}
+};
+let lang=(localStorage.getItem('mz_lang')||((navigator.language||'ar').startsWith('en')?'en':'ar'));
+const $=id=>document.getElementById(id);
+const t=k=>T[lang][k];
+const M=m=>T[lang]['m_'+m]||m;
+const fmt=(n,d=2)=>Number(n).toLocaleString(lang==='ar'?'en-US':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const cur=n=>'<bdi dir="ltr">'+(n<0?'\u2212':'')+fmt(Math.abs(n),0)+' '+(lang==='ar'?'ر.س':'SAR')+'</bdi>';
+let state={table:null,mapping:null,settings:E.defaultSettings(),costs:{},demo:false,result:null};
+function save(){try{localStorage.setItem('mz_settings',JSON.stringify({s:state.settings,c:state.costs}))}catch(e){}}
+function load(){try{const j=JSON.parse(localStorage.getItem('mz_settings')||'null');if(j){Object.assign(state.settings,j.s);state.costs=j.c||{}}}catch(e){}}
+function applyLang(){
+  document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';$('langBtn').textContent=lang==='ar'?'EN':'عربي';
+  document.querySelectorAll('[data-i]').forEach(el=>{const v=t(el.dataset.i);if(typeof v==='string')el.textContent=v});
+  document.querySelectorAll('[data-iph]').forEach(el=>el.placeholder=t(el.dataset.iph));
+  $('modeBadge').textContent=PRO?'PRO':(lang==='ar'?'مجاني':'FREE');$('modeBadge').className='badge '+(PRO?'b-pro':'b-free');
+  $('buyBtn').href=BUY_URL; if(state.table)buildSettings(); if(state.result)render();
+}
+// ---- file handling
+async function handleFile(f){
+  $('fileMsg').textContent='';
+  try{
+    let raw; if(/\.xlsx$/i.test(f.name)) raw=await E.parseXLSX(new Uint8Array(await f.arrayBuffer())); else raw=E.parseCSV(await f.text());
+    useRaw(raw,false);
+  }catch(e){$('fileMsg').innerHTML='<span class="neg-t">'+t('err_file')+'</span>';console.error(e)}
+}
+function useRaw(raw,demo){
+  const table=E.toTable(raw); if(!table.headers.length||!table.rows.length)throw new Error('empty');
+  state.table=table;state.mapping=E.autoMap(table.headers);state.demo=demo;
+  $('fileMsg').textContent=t('loaded')(table.rows.length,table.headers.length);
+  buildMap();buildSettings();$('stepSettings').classList.remove('hidden');$('report').classList.add('hidden');
+  if(demo){applyDemoSettings()}
+  $('stepSettings').scrollIntoView({behavior:'smooth'});
+}
+function buildMap(){
+  const g=$('mapGrid');g.innerHTML='';
+  E.FIELD_ORDER.forEach(f=>{const d=document.createElement('div');d.innerHTML='<label class="f">'+t('mapOf')[f]+'</label>';
+    const s=document.createElement('select');s.innerHTML='<option value="-1">'+t('none')+'</option>'+state.table.headers.map((h,i)=>`<option value="${i}">${esc(h||('#'+(i+1)))}</option>`).join('');
+    s.value=state.mapping[f];s.onchange=()=>{state.mapping[f]=+s.value;buildSettings()};d.appendChild(s);g.appendChild(d)});
+  $('mapBox').classList.remove('hidden');
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function preScan(){ // detect carriers/products with default settings (no cap)
+  const s=Object.assign(E.defaultSettings(),{maxOrders:null});return E.analyze(state.table,state.mapping,s,{});
+}
+function buildSettings(){
+  const S=state.settings;
+  ['codFeeCost','packagingPerOrder','defaultShippingCost','adSpend','fixedMonthly','returnShipFactor'].forEach(k=>{$(k).value=S[k]||0;$(k).onchange=()=>{S[k]=+$(k).value||0;save()}});
+  $('defaultCostPct').value=Math.round((S.defaultCostPct||0)*100);$('defaultCostPct').onchange=()=>{S.defaultCostPct=(+$('defaultCostPct').value||0)/100;save()};
+  $('vatMode').value=S.vatMode;$('vatMode').onchange=()=>{S.vatMode=$('vatMode').value;save()};
+  const ft=$('feeTable');ft.innerHTML='<tr><th>'+t('th_method')+'</th><th>%</th><th>SAR</th><th></th></tr>';
+  E.METHODS.forEach(m=>{const r=S.feeRules[m];const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${M(m)}</td><td><input type="number" step="0.05" min="0" value="${r.pct}" data-m="${m}" data-k="pct"></td><td><input type="number" step="0.25" min="0" value="${r.fixed}" data-m="${m}" data-k="fixed"></td><td>${r.assumed?'<span class="chip">'+t('est')+'</span>':''}</td>`;ft.appendChild(tr)});
+  ft.querySelectorAll('input').forEach(i=>i.onchange=()=>{S.feeRules[i.dataset.m][i.dataset.k]=+i.value||0;S.feeRules[i.dataset.m].assumed=false;save()});
+  const scan=state.table?preScan():{carriers:[],products:[]};
+  const cg=$('carrierGrid');cg.innerHTML='';
+  scan.carriers.forEach(c=>{const k=E.norm(c);const d=document.createElement('div');d.innerHTML=`<label class="f">${esc(c)}</label><input type="number" min="0" step="0.5" value="${S.carrierCosts[k]||0}">`;
+    d.querySelector('input').onchange=e=>{S.carrierCosts[k]=+e.target.value||0;save()};cg.appendChild(d)});
+  $('carrierBox').classList.toggle('hidden',!scan.carriers.length);
+  const pg=$('costGrid');pg.innerHTML='';const prods=scan.products.slice(0,60);
+  prods.forEach(p=>{const d=document.createElement('div');const key=p;d.innerHTML=`<label class="f" title="${esc(p)}">${esc(p.length>34?p.slice(0,34)+'…':p)}</label><input type="number" min="0" step="0.5" value="${state.costs[key]||''}" placeholder="0">`;
+    d.querySelector('input').onchange=e=>{if(e.target.value==='')delete state.costs[key];else state.costs[key]=+e.target.value;save()};pg.appendChild(d)});
+  if(scan.products.length>60){const n=document.createElement('div');n.className='small mut';n.textContent='+'+(scan.products.length-60)+' … (CSV)';pg.appendChild(n)}
+  $('costBox').classList.toggle('hidden',!scan.products.length&&!Object.keys(state.costs).length);
+}
+$('costImport').onclick=()=>{
+  E.parseCSV($('costPaste').value).forEach(r=>{if(r.length>=2){const v=E.parseMoney(r[1]);if(v!==null)state.costs[r[0].trim()]=v}});save();buildSettings();$('costPaste').value='';
+};
+// ---- run + render
+function run(){
+  const S=JSON.parse(JSON.stringify(state.settings));
+  const ck={};Object.keys(S.carrierCosts||{}).forEach(k=>ck[k]=S.carrierCosts[k]);S.carrierCosts=ck;
+  S.maxOrders=(PRO||state.demo)?null:FREE_CAP;
+  state.result=E.analyze(state.table,state.mapping,S,state.costs);render();
+  $('report').classList.remove('hidden');$('report').scrollIntoView({behavior:'smooth'});
+}
+function kpi(l,v,cls){return `<div class="kpi ${cls||''}"><div class="v">${v}</div><div class="l">${l}</div></div>`}
+function render(){
+  const R=state.result,K=R.kpis,unlocked=PRO||state.demo;
+  $('demoBanner').classList.toggle('hidden',!state.demo);
+  $('kpis').innerHTML=kpi(t('kNet'),cur(K.netProfit),K.netProfit<0?'neg':'big')+kpi(t('kMargin'),fmt(K.margin*100,1)+'%',K.margin<0?'neg':'')+kpi(t('kRev'),cur(K.revenue))+kpi(t('kOrders'),fmt(K.orders,0))
+   +kpi(t('kPer'),cur(K.profitPerOrder),K.profitPerOrder<0?'neg':'')+kpi(t('kFees'),cur(K.fees)+' <small>('+fmt(K.feePct*100,1)+'%)</small>')+kpi(t('kShip'),cur(K.shipping))+kpi(t('kCogs'),cur(K.cogs))
+   +kpi(t('kRet'),fmt(K.returned,0))+(K.breakEvenRoas?kpi(t('kRoas'),fmt(K.breakEvenRoas,2)):'');
+  let w='';(R.warnings||[]).forEach(x=>{w+='<div class="ins warn">'+t('w_'+x.key)(x)+'</div>'});
+  if(R.excluded.cancelled||R.excluded.pending)w+='<div class="small mut">'+t('excluded')(R.excluded)+'</div>';$('warnBox').innerHTML=w;
+  const rows=[['w_rev',K.revenue,'pos'],['w_cogs',-K.cogs,'cost'],['w_fees',-K.fees,'cost'],['w_cod',-K.codCosts,'cost'],['w_ship',-K.shipping,'cost'],['w_pack',-K.packaging,'cost'],['w_ads',-K.ads,'cost'],['w_fixed',-K.fixed,'cost'],['w_net',K.netProfit,K.netProfit<0?'neg':'pos']];
+  const mx=Math.max(1,K.revenue);
+  $('waterfall').innerHTML=rows.filter(r=>r[1]!==0||r[0]==='w_net').map(r=>`<div class="row" style="margin:5px 0"><div style="width:170px;font-size:13px">${t(r[0])}</div><div style="flex:1;min-width:120px"><div class="bar ${r[2]==='cost'?'cost':r[2]==='neg'?'neg':''}" style="width:${Math.max(1,Math.abs(r[1])/mx*100)}%"></div></div><div style="width:130px;text-align:end;font-weight:700">${cur(r[1])}</div></div>`).join('')+`<div class="small mut" style="margin-top:6px">${t('vatNote')}: ${cur(K.vat)}</div>`;
+  $('insights').innerHTML=R.insights.map(i=>'<div class="ins">'+t('i_'+i.key)(i,M)+'</div>').join('')||'<div class="mut small">—</div>';
+  $('assumps').innerHTML=R.assumptions.map(a=>'<div class="ins warn">'+t('a_'+a.key)(a,M)+'</div>').join('');
+  $('tMethod').innerHTML='<tr><th>'+t('th_method')+'</th><th>'+t('th_orders')+'</th><th>'+t('th_gross')+'</th><th>'+t('th_fees')+'</th><th>'+t('th_eff')+'</th><th>'+t('th_ret')+'</th></tr>'+R.byMethod.map(m=>`<tr><td>${M(m.method)}</td><td>${m.orders}</td><td>${fmt(m.gross,0)}</td><td>${fmt(m.fees,0)}</td><td>${fmt(m.effFeePct*100,2)}%</td><td>${fmt(m.returnRate*100,1)}%</td></tr>`).join('');
+  $('carrierCard').classList.toggle('hidden',!R.byCarrier.length);
+  $('tCarrier').innerHTML='<tr><th>'+t('th_carrier')+'</th><th>'+t('th_orders')+'</th><th>'+t('th_ret')+'</th><th>'+t('th_ship')+'</th></tr>'+R.byCarrier.map(c=>`<tr><td>${esc(c.carrier)}</td><td>${c.orders}</td><td>${c.returned}</td><td>${fmt(c.shipping,0)}</td></tr>`).join('');
+  $('tProduct').innerHTML='<tr><th>'+t('th_prod')+'</th><th>'+t('th_qty')+'</th><th>'+t('th_rev')+'</th><th>'+t('th_cogs')+'</th><th>'+t('th_other')+'</th><th>'+t('th_profit')+'</th></tr>'+R.byProduct.slice(0,60).map(p=>`<tr><td>${esc(p.product)}${p.costKnown?'':'<span class="chip">'+t('est')+'</span>'}</td><td>${p.qty}</td><td>${fmt(p.revenue,0)}</td><td>${fmt(p.cogs,0)}</td><td>${fmt(p.other,0)}</td><td class="${p.profit<0?'neg-t':'pos'}"><b>${fmt(p.profit,0)}</b></td></tr>`).join('');
+  const d=R.byDay,mxd=Math.max(1,...d.map(x=>Math.abs(x.net)));
+  $('dailyChart').innerHTML='<svg width="'+Math.max(600,d.length*14)+'" height="180" style="display:block">'+d.map((x,i)=>{const h=Math.abs(x.net)/mxd*70;const y=x.net>=0?90-h:90;return `<rect x="${i*14+4}" y="${y}" width="10" height="${Math.max(1,h)}" fill="${x.net>=0?'#0b7a5b':'#c0392b'}"><title>${x.date}: ${fmt(x.net,0)}</title></rect>`}).join('')+`<line x1="0" x2="${d.length*14+8}" y1="90" y2="90" stroke="#999"/><text x="4" y="176" font-size="11" fill="#666">${d.length?d[0].date:''}</text><text x="${d.length*14-70}" y="176" font-size="11" fill="#666">${d.length?d[d.length-1].date:''}</text></svg>`;
+  ['gProducts','gDaily'].forEach(id=>$(id).classList.toggle('hidden',!unlocked));
+  $('csvBtn').classList.toggle('hidden',!unlocked);$('printBtn').classList.toggle('hidden',!unlocked);
+  $('upsell').classList.toggle('hidden',unlocked);
+}
+$('csvBtn').onclick=()=>{const R=state.result;const rows=[['order_id','date','status','payment','carrier','total','revenue_ex_vat','cogs','payment_fee','shipping','contribution']].concat(R.orders.map(o=>[o.id,o.date,o.status,o.method,o.carrier,o.total,o.revenueExVat,o.cogs,o.fee,o.shipping,o.contribution]));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([E.toCSV(rows)],{type:'text/csv;charset=utf-8'}));a.download='meezan-orders-profit.csv';a.click()};
+$('printBtn').onclick=()=>window.print();
+$('againBtn').onclick=()=>{state.table=null;$('stepSettings').classList.add('hidden');$('report').classList.add('hidden');$('mapBox').classList.add('hidden');$('fileMsg').textContent='';window.scrollTo({top:0,behavior:'smooth'})};
+$('runBtn').onclick=run;
+$('resetBtn').onclick=()=>{try{localStorage.removeItem('mz_settings')}catch(e){}state.settings=E.defaultSettings();state.costs={};if(state.table)buildSettings()};
+$('langBtn').onclick=()=>{lang=lang==='ar'?'en':'ar';try{localStorage.setItem('mz_lang',lang)}catch(e){}applyLang()};
+$('pickBtn').onclick=()=>$('file').click();$('file').onchange=e=>{if(e.target.files[0])handleFile(e.target.files[0])};
+const dr=$('drop');['dragenter','dragover'].forEach(ev=>dr.addEventListener(ev,e=>{e.preventDefault();dr.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>dr.addEventListener(ev,e=>{e.preventDefault();dr.classList.remove('over')}));
+dr.addEventListener('drop',e=>{if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
+// ---- demo data (deterministic)
+function demoRaw(){
+  let seed=28;const rnd=()=>(seed=(seed*1664525+1013904223)%4294967296)/4294967296;
+  const P=[['عطر عود ملكي 50مل','OUD-50',140],['عطر مسك أبيض 30مل','MSK-30',90],['بخور فاخر علبة','BKH-01',75],['مبخرة كهربائية','MBK-02',160],['طقم هدايا رمضان','GFT-RM',260],['دهن عود كلاسيك 3مل','DHN-03',310]];
+  const MT=[['مدى',.38],['فيزا / ماستركارد',.16],['Apple Pay',.12],['تابي',.08],['تمارا',.07],['الدفع عند الاستلام',.17],['تحويل بنكي',.02]],ST=[['تم التنفيذ',.82],['قيد التنفيذ',.05],['ملغي',.05],['مسترجع',.07],['بانتظار الدفع',.01]],CR=['أرامكس','سمسا','ريدبوكس'];
+  const pick=l=>{let r=rnd(),a=0;for(const [v,w] of l){a+=w;if(r<=a)return v}return l[l.length-1][0]};
+  const rows=[['رقم الطلب','تاريخ الطلب','حالة الطلب','طريقة الدفع','شركة الشحن','المنتج','SKU','الكمية','سعر الوحدة','الخصم','شحن العميل','إجمالي الطلب']];
+  for(let i=1;i<=320;i++){const day=1+Math.floor(rnd()*56),d=new Date(Date.UTC(2026,8,day)),ds=d.toISOString().slice(0,10);const n=1+Math.floor(rnd()*3),ls=[];for(let k=0;k<n;k++){const p=P[Math.floor(rnd()*P.length)];ls.push([p[0],p[1],1+(rnd()<.3?1:0),p[2]])}
+    const sub=ls.reduce((a,l)=>a+l[2]*l[3],0),ship=sub<400&&rnd()<.5?25:0,disc=rnd()<.25?Math.round(sub*.1*100)/100:0,total=sub+ship-disc,m=pick(MT),s=pick(ST),c=CR[Math.floor(rnd()*3)];
+    ls.forEach(l=>rows.push([String(100000+i),ds,s,m,c,l[0],l[1],l[2],l[3],disc,ship,total]))}
+  return rows;
+}
+function applyDemoSettings(){
+  const S=state.settings;S.codFeeCost=12;S.packagingPerOrder=3;S.adSpend=6000;S.fixedMonthly=4500;S.defaultShippingCost=0;
+  state.costs={'OUD-50':52,'MSK-30':28,'BKH-01':41,'MBK-02':118,'GFT-RM':170,'DHN-03':95};
+  S.carrierCosts={};[['أرامكس',22],['سمسا',19],['ريدبوكس',17]].forEach(c=>S.carrierCosts[E.norm(c[0])]=c[1]);
+  Object.keys(S.feeRules).forEach(k=>S.feeRules[k].assumed=false);buildSettings();
+}
+$('demoBtn').onclick=()=>{useRaw(demoRaw(),true);run()};
+load();applyLang();
+window.__meezan={state,run,useRaw,demoRaw};
+})();
+</script>
+</body>
+</html>
