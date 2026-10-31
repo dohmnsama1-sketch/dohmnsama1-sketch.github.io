@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,follow">
+<title>Meezan calculator</title>
+<style>*{box-sizing:border-box}html,body{margin:0;background:transparent}body{font:15px/1.5 system-ui,"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:#14213d}.w{border:1px solid #d6dbe6;border-radius:14px;background:#fff;padding:14px;max-width:560px;margin:0 auto}.tb{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.tb button{flex:1 1 auto;font:inherit;font-size:14px;padding:7px 10px;border:1px solid #d6dbe6;border-radius:9px;background:#f6f7fb;color:#14213d;cursor:pointer}.tb button[aria-pressed=true]{background:#0b7a5b;border-color:#0b7a5b;color:#fff;font-weight:700}h2{font-size:17px;margin:0 0 8px}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px 10px}label{display:block;font-size:13px;color:#4a5570}input[type=text],select{width:100%;font:inherit;font-size:16px;padding:7px 9px;border:1px solid #c3cad8;border-radius:8px;background:#fff;color:#14213d;margin-top:2px}.ck{display:flex;align-items:center;gap:8px;font-size:14px;color:#14213d;margin-top:8px}.ck input{width:18px;height:18px}:focus-visible{outline:3px solid #f2a900;outline-offset:2px}.o{margin-top:12px;border-top:1px solid #e3e7f0;padding-top:8px}.r{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:14px}.r b{white-space:nowrap;direction:ltr;unicode-bidi:isolate}.r.k{background:#e8f6f1;border-radius:8px;padding:7px 9px;font-size:16px}.r.k b{color:#0b7a5b}.r.k.n b{color:#b42318}.e{color:#b42318;font-size:13px;min-height:1em;margin:6px 0 0}.f{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:#5d6882}.f a{color:#0b7a5b;font-weight:700}[hidden]{display:none!important}</style></head><body>
+<div class="w" id="w"><div class="tb" id="tb" hidden></div><div id="c"></div>
+<div class="f"><span id="nt"></span><a id="pw" href="https://dohmnsama1-sketch.github.io/" target="_blank" rel="noopener"></a></div></div>
+<script>/*CORE*/var MZ=(function(){
+var V=0.15;
+function r2(x){var v=Math.round(x*1e8)/1e6,s=v<0?-1:1;return s*Math.round(Math.abs(v))/100}
+function n2(x){return r2(x).toFixed(2)}
+function money(x){var s=n2(Math.abs(x)).split('.');return(x<0&&r2(x)!==0?'-':'')+s[0].replace(/\B(?=(\d{3})+(?!\d))/g,',')+'.'+s[1]}
+function pct(x){return n2(x*100).replace(/\.?0+$/,'')+'%'}
+function roas(m,t,aov){var mm=m/100,o={be:1/mm,bev:1/mm*(1+V)};
+o.tg=t<m?1/(mm-t/100):null;o.tgv=o.tg===null?null:o.tg*(1+V);
+o.cpa=aov*mm;o.cpa10=m>10?aov*(mm-0.10):null;return o}
+function markup(k,c){var kk=k/100,mul=1+kk;return{mg:kk/mul,mul:mul,price:c*mul,profit:c*kk,pricev:c*mul*(1+V)}}
+function margin(m,c){var mm=m/100;return{mk:mm/(1-mm),mul:1/(1-mm),price:c/(1-mm),profit:c/(1-mm)-c,pricev:c/(1-mm)*(1+V)}}
+function profit(p,c,sh,fp,ad,vat){var ex=vat?p/(1+V):p,fee=p*fp/100,cb=ex-c-sh-fee,net=cb-ad;
+return{ex:ex,vat:p-ex,fee:fee,cb:cb,net:net,nm:ex>0?net/ex:null,cm:ex>0?cb/ex:null,be:ex>0&&cb>0?ex/cb:null}}
+return{r2:r2,n2:n2,money:money,pct:pct,roas:roas,markup:markup,margin:margin,profit:profit}})();/*/CORE*/
+(function(){
+var T={en:{roas:'Break-even ROAS',markup:'Markup ↔ margin',profit:'Net profit per order',
+m:'Contribution margin before ads (%)',t:'Target profit (% of sales)',aov:'Order value',be:'Break-even ROAS',bev:'Dashboard ROAS if revenue includes 15% VAT',tg:'ROAS for target profit',tgv:'…with 15% VAT in revenue',cpa:'Max ad cost per order (break-even)',cpa10:'Max ad cost per order (10% profit)',
+mode:'I know the',mk1:'Markup on cost',mg1:'Margin on price',pc:'Percent (%)',cost:'Cost',mg:'Profit margin',mkn:'Markup needed',mul:'Price = cost ×',price:'Selling price ex-VAT',gp:'Gross profit',pv:'Price incl. 15% VAT',
+pr:'Selling price',sh:'Shipping cost',fp:'Payment fee (%)',ad:'Ad cost per order',vat:'Price includes 15% Saudi VAT',ex:'Revenue ex-VAT',vt:'VAT (not yours)',fee:'Payment fee',cb:'Profit before ads',net:'Net profit per order',nm:'Net margin',ber:'Break-even ROAS',
+err:'Enter valid positive numbers.',em:'Margin must be between 0 and 100%.',nt:'Estimates only. Not financial or tax advice.',pw:'Powered by Meezan'},
+ar:{roas:'ROAS التعادل',markup:'نسبة الزيادة ↔ الهامش',profit:'صافي الربح لكل طلب',
+m:'هامش المساهمة قبل الإعلان (%)',t:'الربح المستهدف (% من المبيعات)',aov:'قيمة الطلب',be:'ROAS التعادل',bev:'ROAS اللوحة إذا شملت المبيعات ضريبة 15%',tg:'ROAS للربح المستهدف',tgv:'…مع ضريبة 15% في المبيعات',cpa:'أقصى تكلفة إعلان للطلب (تعادل)',cpa10:'أقصى تكلفة إعلان للطلب (ربح 10%)',
+mode:'أعرف',mk1:'نسبة الزيادة على التكلفة',mg1:'الهامش من سعر البيع',pc:'النسبة (%)',cost:'التكلفة',mg:'هامش الربح',mkn:'نسبة الزيادة المطلوبة',mul:'السعر = التكلفة ×',price:'سعر البيع بدون ضريبة',gp:'الربح الإجمالي',pv:'السعر شامل ضريبة 15%',
+pr:'سعر البيع',sh:'تكلفة الشحن',fp:'رسوم الدفع (%)',ad:'تكلفة الإعلان للطلب',vat:'السعر شامل ضريبة القيمة المضافة 15%',ex:'الإيراد بدون ضريبة',vt:'الضريبة (ليست لك)',fee:'رسوم الدفع',cb:'الربح قبل الإعلان',net:'صافي الربح لكل طلب',nm:'الهامش الصافي',ber:'ROAS التعادل',
+err:'أدخل أرقامًا موجبة صحيحة.',em:'الهامش يجب أن يكون بين 0 و100%.',nt:'تقديرات فقط، وليست استشارة مالية أو ضريبية.',pw:'بواسطة ميزان'}};
+var q=new URLSearchParams(location.search),L=q.get('lang')==='en'?'en':'ar',t=T[L],C=q.get('calc'),all=['roas','markup','profit'];
+if(all.indexOf(C)<0)C=null;
+var de=document.documentElement;de.lang=L;de.dir=L==='ar'?'rtl':'ltr';document.title=(L==='ar'?'حاسبة ميزان':'Meezan calculator');
+var $=function(i){return document.getElementById(i)};$('nt').textContent=t.nt;$('pw').textContent=t.pw+' ↗';
+function num(s){s=String(s).replace(/[٠-٩]/g,function(d){return d.charCodeAt(0)-1632}).replace(/[۰-۹]/g,function(d){return d.charCodeAt(0)-1776}).replace(/[٫,]/g,'.').replace(/[\s%٪]/g,'');return s===''||isNaN(s)?NaN:+s}
+function inp(id,v){return '<div><label for="'+id+'">'+t[id]+'</label><input type="text" inputmode="decimal" id="'+id+'" value="'+v+'" autocomplete="off"></div>'}
+function row(k,id,cls){return '<div class="r'+(cls?' '+cls:'')+'"><span>'+t[k]+'</span><b id="o_'+id+'">—</b></div>'}
+var F={
+roas:{h:inp('m',30)+inp('t',10)+inp('aov',200),o:row('be','be','k')+row('bev','bev')+row('tg','tg')+row('tgv','tgv')+row('cpa','cpa')+row('cpa10','cpa10'),
+run:function(){var m=num($('m').value),tt=num($('t').value),a=num($('aov').value);if(!(m>0&&m<=100))return t.em;if(!(tt>=0&&a>=0))return t.err;var r=MZ.roas(m,tt,a);
+return{be:MZ.n2(r.be),bev:MZ.n2(r.bev),tg:r.tg===null?'—':MZ.n2(r.tg),tgv:r.tgv===null?'—':MZ.n2(r.tgv),cpa:MZ.money(r.cpa),cpa10:r.cpa10===null?'—':MZ.money(r.cpa10)}}},
+markup:{h:'<div><label for="md">'+t.mode+'</label><select id="md"><option value="k">'+t.mk1+'</option><option value="g">'+t.mg1+'</option></select></div>'+inp('pc',50)+inp('cost',80),
+o:row('mg','mg','k')+row('mul','mul')+row('price','price')+row('gp','gp')+row('pv','pv'),
+run:function(){var g=$('md').value==='g',p=num($('pc').value),c=num($('cost').value);$('o_mg').previousSibling.textContent=g?t.mkn:t.mg;
+if(!(c>=0)||!(p>=0))return t.err;if(g&&p>=100)return t.em;var r=g?MZ.margin(p,c):MZ.markup(p,c);
+return{mg:MZ.pct(g?r.mk:r.mg),mul:MZ.n2(r.mul),price:MZ.money(r.price),gp:MZ.money(r.profit),pv:MZ.money(r.pricev)}}},
+profit:{h:inp('pr',199)+inp('cost',80)+inp('sh',25)+inp('fp',2.5)+inp('ad',30)+'<label class="ck"><input type="checkbox" id="vat" checked>'+t.vat+'</label>',
+o:row('ex','ex')+row('vt','vt')+row('fee','fee')+row('cb','cb')+row('net','net','k')+row('nm','nm')+row('ber','ber'),
+run:function(){var v=['pr','cost','sh','fp','ad'].map(function(i){return num($(i).value)});if(v.some(function(x){return!(x>=0)}))return t.err;
+var r=MZ.profit(v[0],v[1],v[2],v[3],v[4],$('vat').checked);$('o_net').parentNode.className='r k'+(r.net<0?' n':'');
+return{ex:MZ.money(r.ex),vt:MZ.money(r.vat),fee:MZ.money(r.fee),cb:MZ.money(r.cb),net:MZ.money(r.net),nm:r.nm===null?'—':MZ.pct(r.nm),ber:r.be===null?'—':MZ.n2(r.be)}}}};
+var cur;
+function show(k){cur=k;var f=F[k];$('c').innerHTML='<h2>'+t[k]+'</h2><div class="g">'+f.h+'</div><p class="e" id="er" role="alert"></p><div class="o" aria-live="polite">'+f.o+'</div>';
+[].forEach.call($('tb').children,function(b){b.setAttribute('aria-pressed',b.value===k)});calc();}
+function calc(){var r=F[cur].run(),e=typeof r==='string';$('er').textContent=e?r:'';[].forEach.call(document.querySelectorAll('[id^=o_]'),function(b){b.textContent=e?'—':r[b.id.slice(2)]});size()}
+function size(){try{parent.postMessage({mz:1,h:Math.ceil($('w').getBoundingClientRect().bottom)+2,id:q.get('id')||''},'*')}catch(x){}}
+$('c').addEventListener('input',calc);$('c').addEventListener('change',calc);
+if(!C){var tb=$('tb');tb.hidden=false;all.forEach(function(k){var b=document.createElement('button');b.type='button';b.value=k;b.textContent=t[k];b.onclick=function(){show(k)};tb.appendChild(b)})}
+show(C||'roas');addEventListener('resize',size);
+})();</script></body></html>
