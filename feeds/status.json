@@ -1,0 +1,123 @@
+{
+  "today_riyadh": "2026-11-12",
+  "feed_limit": 25,
+  "schedule": {
+    "start": "2026-11-12",
+    "end": "2028-12-31",
+    "rows": 1939
+  },
+  "feeds": {
+    "freelance-client-tracker-crm": {
+      "board": "Freelance Client Tracker & CRM",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/freelance-client-tracker-crm.xml"
+    },
+    "freelance-business-systems-templates": {
+      "board": "Freelance Business Systems & Templates",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/freelance-business-systems-templates.xml"
+    },
+    "freelancer-budget-irregular-income": {
+      "board": "Freelancer Budget & Irregular Income",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/freelancer-budget-irregular-income.xml"
+    },
+    "free-templates-spreadsheets": {
+      "board": "Free Templates & Spreadsheets",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 1,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/free-templates-spreadsheets.xml"
+    },
+    "ai-productivity-tools": {
+      "board": "AI Productivity Tools",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/ai-productivity-tools.xml"
+    },
+    "content-creator-systems": {
+      "board": "Content Creator Systems",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/content-creator-systems.xml"
+    },
+    "airbnb-host-tips-cleaning-checklists": {
+      "board": "Airbnb Host Tips & Cleaning Checklists",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/airbnb-host-tips-cleaning-checklists.xml"
+    },
+    "chatgpt-prompts-freelancers-sellers": {
+      "board": "ChatGPT Prompts for Freelancers & Sellers",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/chatgpt-prompts-freelancers-sellers.xml"
+    },
+    "etsy-shopify-marketing-calendar": {
+      "board": "Etsy & Shopify Marketing Calendar",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/etsy-shopify-marketing-calendar.xml"
+    },
+    "job-search-tips-application-tracker": {
+      "board": "Job Search Tips & Application Tracker",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/job-search-tips-application-tracker.xml"
+    },
+    "habit-tracker-ideas": {
+      "board": "Habit Tracker Ideas",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/habit-tracker-ideas.xml"
+    },
+    "freelancer-profit-scope-management": {
+      "board": "Freelancer Profit & Scope Management",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/freelancer-profit-scope-management.xml"
+    },
+    "pricing-handmade-items-etsy-tips": {
+      "board": "Pricing Handmade Items & Etsy Tips",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/pricing-handmade-items-etsy-tips.xml"
+    },
+    "home-organization-inventory": {
+      "board": "Home Organization & Inventory",
+      "exists": true,
+      "create_first": false,
+      "items_in_feed": 0,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/home-organization-inventory.xml"
+    },
+    "saudi-freelancer-vat-tools": {
+      "board": "Saudi Freelancer & VAT Tools",
+      "exists": false,
+      "create_first": true,
+      "items_in_feed": 1,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/saudi-freelancer-vat-tools.xml"
+    },
+    "large-print-puzzle-books": {
+      "board": "Large Print Puzzle Books",
+      "exists": false,
+      "create_first": true,
+      "items_in_feed": 1,
+      "url": "https://dohmnsama1-sketch.github.io/feeds/large-print-puzzle-books.xml"
+    }
+  }
+}

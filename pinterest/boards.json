@@ -1,0 +1,111 @@
+{
+  "account": "abak1694",
+  "claimed_domain": "https://dohmnsama1-sketch.github.io",
+  "site": "https://dohmnsama1-sketch.github.io",
+  "notes": "Board names below are exact strings to select in Pinterest Settings > Create Pins in bulk > Auto-publish via RSS. Existence is based on posted-log.csv (pins actually published to those boards, Oct–Nov 2026) and the 12 Nov 2026 video-upload session, which confirmed 'Freelance Pricing & Profit Tips' does not exist. 'Saudi Freelancer & VAT Tools' and 'Large Print Puzzle Books' were listed as not yet created on 12 Nov 2026; feeds for them are ready and should be connected only after those two boards are created with these exact names.",
+  "remap": {
+    "Freelance Pricing & Profit Tips": "Freelancer Profit & Scope Management",
+    "Meal Planning & Pantry Organization": "Home Organization & Inventory"
+  },
+  "boards": [
+    {
+      "name": "Freelance Client Tracker & CRM",
+      "slug": "freelance-client-tracker-crm",
+      "exists": true,
+      "evidence": "posted-log, 7 pins"
+    },
+    {
+      "name": "Freelance Business Systems & Templates",
+      "slug": "freelance-business-systems-templates",
+      "exists": true,
+      "evidence": "posted-log, 16 pins; used 12 Nov 2026 when Pricing board was missing"
+    },
+    {
+      "name": "Freelancer Budget & Irregular Income",
+      "slug": "freelancer-budget-irregular-income",
+      "exists": true,
+      "evidence": "posted-log, 15 pins"
+    },
+    {
+      "name": "Free Templates & Spreadsheets",
+      "slug": "free-templates-spreadsheets",
+      "exists": true,
+      "evidence": "posted-log, 15 pins"
+    },
+    {
+      "name": "AI Productivity Tools",
+      "slug": "ai-productivity-tools",
+      "exists": true,
+      "evidence": "posted-log, 9 pins"
+    },
+    {
+      "name": "Content Creator Systems",
+      "slug": "content-creator-systems",
+      "exists": true,
+      "evidence": "posted-log, 8 pins; used 30 Oct for the repurposing video"
+    },
+    {
+      "name": "Airbnb Host Tips & Cleaning Checklists",
+      "slug": "airbnb-host-tips-cleaning-checklists",
+      "exists": true,
+      "evidence": "posted-log, 6 pins"
+    },
+    {
+      "name": "ChatGPT Prompts for Freelancers & Sellers",
+      "slug": "chatgpt-prompts-freelancers-sellers",
+      "exists": true,
+      "evidence": "posted-log, 6 pins"
+    },
+    {
+      "name": "Etsy & Shopify Marketing Calendar",
+      "slug": "etsy-shopify-marketing-calendar",
+      "exists": true,
+      "evidence": "posted-log, 5 pins"
+    },
+    {
+      "name": "Job Search Tips & Application Tracker",
+      "slug": "job-search-tips-application-tracker",
+      "exists": true,
+      "evidence": "posted-log, 5 pins"
+    },
+    {
+      "name": "Habit Tracker Ideas",
+      "slug": "habit-tracker-ideas",
+      "exists": true,
+      "evidence": "posted-log, 5 pins"
+    },
+    {
+      "name": "Freelancer Profit & Scope Management",
+      "slug": "freelancer-profit-scope-management",
+      "exists": true,
+      "evidence": "posted-log, 5 pins. This is the live name. The planned rename 'Freelance Pricing & Profit Tips' was never created.",
+      "do_not_use": "Freelance Pricing & Profit Tips"
+    },
+    {
+      "name": "Pricing Handmade Items & Etsy Tips",
+      "slug": "pricing-handmade-items-etsy-tips",
+      "exists": true,
+      "evidence": "posted-log, 4 pins"
+    },
+    {
+      "name": "Home Organization & Inventory",
+      "slug": "home-organization-inventory",
+      "exists": true,
+      "evidence": "posted-log, 1 pin; board created public on 25 Oct 2026"
+    },
+    {
+      "name": "Saudi Freelancer & VAT Tools",
+      "slug": "saudi-freelancer-vat-tools",
+      "exists": false,
+      "evidence": "Documented 12 Nov 2026 as not yet on the account. Create this board with this exact name, then connect the feed.",
+      "create_first": true
+    },
+    {
+      "name": "Large Print Puzzle Books",
+      "slug": "large-print-puzzle-books",
+      "exists": false,
+      "evidence": "Documented 12 Nov 2026 as not yet on the account. Create this board with this exact name, then connect the feed.",
+      "create_first": true
+    }
+  ]
+}

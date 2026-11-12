@@ -1,0 +1,72 @@
+# Daily Pinterest RSS refresh.
+#
+# Publishes per-board RSS 2.0 feeds at /feeds/<board-slug>.xml so Pinterest
+# auto-publish (Settings > Create Pins in bulk > Auto-publish via RSS) can
+# create Pins from new items. No secrets, no paid services.
+#
+# Schedule: 08:00 UTC = 11:00 Asia/Riyadh, every day. Also runnable by hand.
+# A push that changes the generator or the schedule also refreshes the feeds.
+#
+# The job commits only when a feed (or feeds/status.json) actually changes.
+# Through 31 Dec 2028 at least one new item appears every day, so a commit
+# on `main` is expected daily. After that, the generator cycles earlier
+# items with new guids, so commits continue. Commits on the default branch
+# are repository activity and reset GitHub's 60-day scheduled-workflow
+# inactivity timer (a schedule trigger alone does not). See
+# https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-a-workflow
+# and pinterest/README.md.
+name: Pinterest RSS daily
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "pinterest/schedule.csv"
+      - "pinterest/boards.json"
+      - ".github/scripts/generate_pinterest_feeds.py"
+      - ".github/workflows/pinterest-rss-daily.yml"
+
+# Do not cancel a run that may be mid-commit.
+concurrency:
+  group: pinterest-rss
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate feeds
+        run: python .github/scripts/generate_pinterest_feeds.py
+
+      - name: Commit if feeds changed
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add feeds/
+          if git diff --staged --quiet; then
+            echo "No feed changes — nothing to commit."
+            exit 0
+          fi
+          TODAY=$(TZ=Asia/Riyadh date +%F)
+          git commit -m "chore(pinterest): refresh RSS feeds for ${TODAY}"
+          # Rebase onto any pages-build or other push, then push.
+          # The GITHUB_TOKEN push will not retrigger this workflow (GitHub
+          # does not chain workflows from GITHUB_TOKEN commits).
+          git pull --rebase --autostash origin main
+          git push origin HEAD:main

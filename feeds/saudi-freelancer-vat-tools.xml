@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>Saudi Freelancer &amp; VAT Tools — Dodiabak Studio</title>
+    <link>https://dohmnsama1-sketch.github.io/feeds/</link>
+    <description>New pins for the Saudi Freelancer &amp; VAT Tools board. Tools and books by Dodiabak Studio.</description>
+    <language>en-us</language>
+    <ttl>1440</ttl>
+    <lastBuildDate>Thu, 12 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <generator>dohmnsama1-pinterest-rss</generator>
+    <atom:link href="https://dohmnsama1-sketch.github.io/feeds/saudi-freelancer-vat-tools.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Saudi VAT Return Spreadsheet: Sales and Purchases Ledgers (Excel)</title>
+      <description>Saudi VAT return spreadsheet with sales and purchases ledgers that roll into ZATCA return-style sections, plus pre-filing checks. Arabic + English, Excel and Google Sheets. You still file on zatca.gov.sa. Not tax advice. Start with the free threshold monitor in the same shop if you only need registration distance. I'm the author.</description>
+      <link>https://dohmnsama1-sketch.github.io/guides/saudi-vat-return-deadlines/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=saudi-vat-books-return-prep&amp;utm_content=vat-books-cover</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/vat-books-cover</guid>
+      <pubDate>Thu, 12 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/vat-books-cover.jpg" type="image/jpeg" length="196353"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/vat-books-cover.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Saudi VAT Return Spreadsheet: Sales and Purchases Ledgers (Excel)</media:title>
+    </item>
+  </channel>
+</rss>

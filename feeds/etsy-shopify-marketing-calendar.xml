@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>Etsy &amp; Shopify Marketing Calendar — Dodiabak Studio</title>
+    <link>https://dohmnsama1-sketch.github.io/feeds/</link>
+    <description>New pins for the Etsy &amp; Shopify Marketing Calendar board. Tools and books by Dodiabak Studio.</description>
+    <language>en-us</language>
+    <ttl>1440</ttl>
+    <lastBuildDate>Thu, 12 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <generator>dohmnsama1-pinterest-rss</generator>
+    <atom:link href="https://dohmnsama1-sketch.github.io/feeds/etsy-shopify-marketing-calendar.xml" rel="self" type="application/rss+xml"/>
+  </channel>
+</rss>
