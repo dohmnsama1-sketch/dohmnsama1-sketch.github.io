@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to budget for irregular freelance income (free spreadsheet) | كيف تعمل ميزانية لدخل مستقل غير منتظم (جدول مجاني)</title>
+<meta name="description" content="A simple way to log lumpy freelance payments and expenses, see what was left over, and start a year-end check. Free Excel and Google Sheets, English + Arabic.">
+<link rel="canonical" href="https://dohmnsama1-sketch.github.io/guides/freelance-budget-irregular-income/">
+<link rel="alternate" hreflang="en" href="https://dohmnsama1-sketch.github.io/guides/freelance-budget-irregular-income/">
+<link rel="alternate" hreflang="ar" href="https://dohmnsama1-sketch.github.io/guides/freelance-budget-irregular-income/?lang=ar">
+<link rel="alternate" hreflang="x-default" href="https://dohmnsama1-sketch.github.io/guides/freelance-budget-irregular-income/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to budget for irregular freelance income (free spreadsheet)">
+<meta property="og:description" content="A simple way to log lumpy freelance payments and expenses, see what was left over, and start a year-end check. Free Excel and Google Sheets, English + Arabic.">
+<meta property="og:url" content="https://dohmnsama1-sketch.github.io/guides/freelance-budget-irregular-income/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ar_SA">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "headline": "How to budget for irregular freelance income (free spreadsheet)", "description": "A simple way to log lumpy freelance payments and expenses, see what was left over, and start a year-end check. Free Excel and Google Sheets, English + Arabic.", "inLanguage": ["en", "ar"], "author": {"@type": "Organization", "name": "Solo & Co"}, "dateModified": "2026-11-12", "mainEntity": [{"@type": "Question", "name": "Is the lite version really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The live Gumroad price on 12 November 2026 was $0, pay-what-you-want. The full tracker is paid and is separate."}}, {"@type": "Question", "name": "Does it work in Google Sheets?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Built for Excel and imports into Google Sheets, in English and Arabic."}}]}</script>
+<style>
+:root{--ink:#14213d;--pri:#0b7a5b;--mut:#5d6882;--line:#e3e7f0;--bg:#f6f7fb;--pri2:#e8f6f1}
+*{box-sizing:border-box}body{margin:0;font:17px/1.9 system-ui,"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;color:var(--ink);background:#fff}
+a{color:var(--pri)}.wrap{max-width:780px;margin:0 auto;padding:0 20px}
+nav{background:var(--ink);color:#fff;padding:12px 0}nav .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}nav a{color:#fff;text-decoration:none}nav .sp{flex:1}
+nav .cta{background:var(--pri);padding:6px 14px;border-radius:9px;font-weight:700}
+h1{font-size:30px;line-height:1.45;margin:28px 0 8px}h2{font-size:23px;line-height:1.5;margin:34px 0 8px}p,li{margin:.6em 0}
+.meta{color:var(--mut);font-size:14px;margin-bottom:18px}.crumb{font-size:14px;color:var(--mut);margin-top:18px}
+blockquote{margin:22px 0;padding:14px 18px;background:var(--pri2);border-inline-start:5px solid var(--pri);border-radius:10px}blockquote p{margin:.4em 0}
+.tw{overflow-x:auto;margin:18px 0}table{border-collapse:collapse;min-width:100%;font-size:15px}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:start}th{background:var(--bg);font-weight:700}
+.cta-box{margin:28px 0;padding:22px 24px;background:var(--pri2);border-radius:14px}
+.cta-box a.btn{display:inline-block;background:var(--pri);color:#fff;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:700;margin:6px 8px 6px 0}
+.cta-box a.sec{background:#fff;color:var(--pri);border:1px solid var(--pri)}
+.note{color:var(--mut);font-size:14px}
+footer{background:var(--bg);padding:26px 0;font-size:13px;color:var(--mut);margin-top:48px}
+.cards{display:grid;grid-template-columns:1fr;gap:14px;margin:22px 0}
+@media(min-width:640px){.cards{grid-template-columns:1fr 1fr}}
+.card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff}
+.card h3{margin:0 0 8px;font-size:18px}[data-l]{display:none}html[lang=en] [data-l=en],html[lang=ar] [data-l=ar]{display:block}
+html[lang=ar] [data-l=ar].inline,html[lang=en] [data-l=en].inline{display:inline}
+nav button{background:transparent;color:#fff;border:1px solid #ffffff66;border-radius:9px;padding:6px 14px;font:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><b><a href="/free/" style="color:#fff;text-decoration:none">Solo &amp; Co</a></b>
+<a href="/free/" data-l="en" class="inline" style="color:#fff;text-decoration:none;font-size:14px">Free</a>
+<a href="/free/" data-l="ar" class="inline" style="color:#fff;text-decoration:none;font-size:14px">مجاني</a>
+<a href="/tools/" data-l="en" class="inline" style="color:#fff;text-decoration:none;font-size:14px">Tools</a>
+<a href="/tools/" data-l="ar" class="inline" style="color:#fff;text-decoration:none;font-size:14px">أدوات</a>
+<a href="/books/" data-l="en" class="inline" style="color:#fff;text-decoration:none;font-size:14px">Books</a>
+<a href="/books/" data-l="ar" class="inline" style="color:#fff;text-decoration:none;font-size:14px">كتب</a>
+<a href="/guides/" data-l="en" class="inline" style="color:#fff;text-decoration:none;font-size:14px">Guides</a>
+<a href="/guides/" data-l="ar" class="inline" style="color:#fff;text-decoration:none;font-size:14px">أدلة</a>
+<span class="sp"></span>
+<a href="/services/" data-l="en" class="inline" style="color:#fff;text-decoration:none;font-size:14px">Services</a>
+<a href="/services/" data-l="ar" class="inline" style="color:#fff;text-decoration:none;font-size:14px">خدمات</a>
+<button id="lb">عربي</button></div></nav>
+<article class="wrap">
+<p class="crumb"><a href="/guides/" data-l="en">Guides</a><a href="/guides/" data-l="ar">الأدلة</a></p>
+
+<div data-l="en">
+<h1>How to budget for irregular freelance income</h1>
+<p class="meta">Updated 12 Nov 2026. A method you can run in a spreadsheet. It is not financial advice, and it is not a bank.</p>
+<p>A paycheck budget assumes the same amount arrives on the same day. Freelance income often does not. A useful first step is not a complicated annual plan — it is a honest log of what actually arrived, what is still pending, and what went out, so you can see what was left over in each month.</p>
+<h2>A five-step monthly check-in</h2>
+<ol>
+<li><strong>Log every payment</strong>, and mark it paid or pending. A promised invoice is not cash yet.</li>
+<li><strong>Log every expense</strong> with a short category (software, tax set-aside, rent, tools).</li>
+<li><strong>Look at what was left over</strong> that month — income received minus spending. That is the only number a future plan can stand on.</li>
+<li><strong>Look at the savings rate</strong> across several months, not one good week.</li>
+<li><strong>Compare income vs spending</strong> on a simple chart so a quiet month is visible before it surprises you.</li>
+</ol>
+<p>Once that habit exists, a fuller system can add a set-aside for tax, a salary you pay yourself, and a buffer for quiet months. Those belong in a paid tracker if you want them; they are not required to start.</p>
+<div class="cta-box">
+<p><strong>Free Budget Tracker Lite</strong> — Excel and Google Sheets, English + Arabic. Log income (paid or pending), log expenses, and see what was left over. Pay what you want; $0 is fine. Gumroad will ask for an email to deliver the file.</p>
+<a class="btn" href="/free/#budget">Download the free tracker</a>
+<a class="btn sec" href="/tools/">Full irregular-income tracker</a>
+</div>
+<h2>New Year and Ramadan</h2>
+<p>A new calendar year is a natural moment to start the log, not to invent a perfect annual budget on 1 January. Ramadan 1448 is expected around 8 February 2027 (subject to official moon sighting); income and spending often shift that month. The same log still works — you just keep filling it in.</p>
+<h2>Frequently asked questions</h2>
+<h3>Is the lite version really free?</h3>
+<p>Yes. The live Gumroad price on 12 November 2026 was $0, pay-what-you-want. The full irregular-income tracker (salary, tax set-aside, buffer) is a paid product; the free file does not include those sheets.</p>
+<h3>Does it work in Google Sheets?</h3>
+<p>Yes. The same file is built for Excel and imports into Google Sheets. It is bilingual: English and Arabic.</p>
+</div>
+<div data-l="ar">
+<h1>كيف تعمل ميزانية لدخل مستقل غير منتظم</h1>
+<p class="meta">حدّثت في 12 نوفمبر 2026. طريقة تستطيع تشغيلها في جدول. ليست استشارة مالية، وليست بنكًا.</p>
+<p>ميزانية الراتب تفترض أن المبلغ نفسه يصل في اليوم نفسه. دخل المستقل غالبًا لا يفعل ذلك. الخطوة الأولى المفيدة ليست خطة سنوية معقّدة — بل سجل صادق بما وصل فعلًا، وما يزال معلّقًا، وما خرج، حتى ترى ما تبقّى في كل شهر.</p>
+<h2>مراجعة شهرية من خمس خطوات</h2>
+<ol>
+<li><strong>سجّل كل دفعة</strong>، وعلّمها واصلة أو معلّقة. فاتورة موعودة ليست نقدًا بعد.</li>
+<li><strong>سجّل كل مصروف</strong> بتصنيف قصير (برامج، تخصيص ضريبة، إيجار، أدوات).</li>
+<li><strong>انظر إلى ما تبقّى</strong> ذلك الشهر — الدخل الواصل ناقص الإنفاق. هذا الرقم الوحيد الذي يمكن أن تستند إليه خطة لاحقة.</li>
+<li><strong>انظر إلى معدل الادخار</strong> عبر عدة أشهر، لا أسبوع جيد واحد.</li>
+<li><strong> قارن الدخل بالإنفاق</strong> على رسم بسيط حتى يظهر الشهر الهادئ قبل أن يفاجئك.</li>
+</ol>
+<p>عندما تثبت هذه العادة، يمكن لنظام أوسع أن يضيف تخصيصًا للضريبة، وراتبًا تدفعه لنفسك، وهامشًا للأشهر الهادئة. هذه في المتتبّع المدفوع إن أردتها؛ وليست شرطًا للبداية.</p>
+<div class="cta-box">
+<p><strong>متتبّع الميزانية المجاني (الإصدار الخفيف)</strong> — إكسل وGoogle Sheets، عربي + إنجليزي. سجّل الدخل (واصل أو معلّق) والمصروفات، وانظر ما تبقّى. ادفع ما تشاء؛ صفر دولار مقبول. ستطلب Gumroad بريدًا لإيصال الملف.</p>
+<a class="btn" href="/free/#budget">حمّل المتتبّع المجاني</a>
+<a class="btn sec" href="/tools/">المتتبّع الكامل للدخل غير المنتظم</a>
+</div>
+<h2>السنة الجديدة ورمضان</h2>
+<p>بداية السنة الميلادية لحظة طبيعية لبدء السجل، لا لاختراع ميزانية سنوية مثالية في 1 يناير. يُتوقع رمضان 1448 نحو 8 فبراير 2027 (بحسب الرؤية الرسمية)؛ الدخل والإنفاق غالبًا يتغيّران ذلك الشهر. السجل نفسه يعمل — فقط واصل التعبئة.</p>
+<h2>أسئلة متكررة</h2>
+<h3>هل الإصدار الخفيف مجاني حقًا؟</h3>
+<p>نعم. سعر Gumroad الحي في 12 نوفمبر 2026 كان 0$، ادفع ما تشاء. متتبّع الدخل غير المنتظم الكامل (راتب، تخصيص ضريبة، هامش) منتج مدفوع؛ الملف المجاني لا يتضمّن تلك الأوراق.</p>
+<h3>هل يعمل في Google Sheets؟</h3>
+<p>نعم. الملف نفسه مبني لإكسل ويستورد إلى Google Sheets. وهو ثنائي اللغة: عربي وإنجليزي.</p>
+</div>
+
+</article>
+<footer><div class="wrap">
+<a href="/">Meezan</a> · <a href="/free/">Free</a> · <a href="/tools/">Tools</a> · <a href="/books/">Books</a> · <a href="/guides/">Guides</a> · <a href="/services/">Services</a> · <a href="/blog/">Blog</a> · <a href="/answers/">Answers</a>
+<span data-l="en"> · Templates and puzzles by Solo &amp; Co. Spreadsheets are not tax or legal advice.</span>
+<span data-l="ar"> · قوالب وكتب ألغاز من Solo &amp; Co. الجداول ليست استشارة ضريبية أو قانونية.</span>
+</div></footer>
+<script>const h=document.documentElement,b=document.getElementById('lb');function s(l){h.lang=l;h.dir=l=='ar'?'rtl':'ltr';b.textContent=l=='ar'?'EN':'عربي';try{localStorage.setItem('mz_lang',l)}catch(e){}}b.onclick=()=>s(h.lang=='ar'?'en':'ar');try{const q=new URLSearchParams(location.search).get('lang')||localStorage.getItem('mz_lang')||((navigator.language||'').startsWith('ar')?'ar':'en');s(q)}catch(e){s('en')}</script>
+</body></html>
