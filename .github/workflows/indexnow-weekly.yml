@@ -1,0 +1,25 @@
+# Submits the public sitemap to IndexNow every Monday, and when the sitemap changes.
+# This keeps running after any Grok subscription ends (GitHub Actions is free on this public repo).
+# The IndexNow key is already published at the site root; no repository secrets are used.
+name: IndexNow weekly
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Monday 06:00 UTC = 09:00 Asia/Riyadh
+  workflow_dispatch:
+  push:
+    paths:
+      - "sitemap.xml"
+      - ".github/scripts/indexnow.py"
+      - ".github/workflows/indexnow-weekly.yml"
+permissions:
+  contents: read
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Submit sitemap to IndexNow
+        run: python .github/scripts/indexnow.py
