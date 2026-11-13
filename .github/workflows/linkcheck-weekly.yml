@@ -1,0 +1,24 @@
+# Checks every buy link (Gumroad, Payhip, Amazon) and every internal link once a week.
+# A broken Gumroad/Payhip/site link fails the run, and GitHub emails the repo owner.
+# Runs for free on this public repo and keeps working if the Grok subscription ends.
+name: Buy-link check weekly
+on:
+  schedule:
+    - cron: "0 7 * * 1"   # Monday 07:00 UTC = 10:00 Asia/Riyadh
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/scripts/linkcheck.py"
+      - ".github/workflows/linkcheck-weekly.yml"
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check links
+        run: python .github/scripts/linkcheck.py
