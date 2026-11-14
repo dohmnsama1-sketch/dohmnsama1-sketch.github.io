@@ -1,5 +1,5 @@
 {
-  "today_riyadh": "2026-11-13",
+  "today_riyadh": "2026-11-14",
   "feed_limit": 25,
   "schedule": {
     "start": "2026-11-12",
@@ -18,7 +18,7 @@
       "board": "Freelance Business Systems & Templates",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 0,
+      "items_in_feed": 2,
       "url": "https://dohmnsama1-sketch.github.io/feeds/freelance-business-systems-templates.xml"
     },
     "freelancer-budget-irregular-income": {
@@ -74,14 +74,14 @@
       "board": "Job Search Tips & Application Tracker",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 0,
+      "items_in_feed": 1,
       "url": "https://dohmnsama1-sketch.github.io/feeds/job-search-tips-application-tracker.xml"
     },
     "habit-tracker-ideas": {
       "board": "Habit Tracker Ideas",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 0,
+      "items_in_feed": 1,
       "url": "https://dohmnsama1-sketch.github.io/feeds/habit-tracker-ideas.xml"
     },
     "freelancer-profit-scope-management": {
@@ -95,7 +95,7 @@
       "board": "Pricing Handmade Items & Etsy Tips",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 2,
+      "items_in_feed": 3,
       "url": "https://dohmnsama1-sketch.github.io/feeds/pricing-handmade-items-etsy-tips.xml"
     },
     "home-organization-inventory": {
