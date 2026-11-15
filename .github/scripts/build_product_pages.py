@@ -69,7 +69,9 @@ def gum(p: dict, key: str, code: str | None, checkout: bool, medium: str = "land
 
 
 def build(data: dict) -> list[str]:
-    code, pct = data["discount_code"], data["discount_pct"]
+    code, pct = data.get("discount_code") or None, data.get("discount_pct") or 0
+    if not code:
+        pct = 0
     prods = data["products"]
     out = []
     for key, p in prods.items():
@@ -90,10 +92,11 @@ def build(data: dict) -> list[str]:
             sticky_btn = f'<a class="btn free" data-g href="{e(buy)}" rel="noopener">{"حمّل مجانًا" if ar else "Get it free"}</a>'
         else:
             kick = ("تحميل فوري · " if ar else "Instant download · ") + money(p["price"])
-            price_html = f'<span class="price"><s>{money(p["price"])}</s>{money(disc)}</span>'
+            price_html = (f'<span class="price"><s>{money(p["price"])}</s>{money(disc)}</span>' if code
+                          else f'<span class="price">{money(p["price"])}</span>')
             label = f"اشترِ الآن" if ar else "Buy now"
             btn = f'<a class="btn" data-g href="{e(buy)}" rel="noopener">{label} – {money(disc)}</a>'
-            fine = (f"الرمز {code} (خصم {pct}%) يُطبَّق تلقائيًا عبر هذا الزر. الدفع عبر Gumroad." if ar else
+            fine = ("الدفع عبر Gumroad." if ar else "Secure checkout on Gumroad.") if not code else (f"الرمز {code} (خصم {pct}%) يُطبَّق تلقائيًا عبر هذا الزر. الدفع عبر Gumroad." if ar else
                     f"Code {code} ({pct}% off) is applied by this button. Secure checkout on Gumroad.")
             sticky_btn = f'<a class="btn" data-g href="{e(buy)}" rel="noopener">{label} – {money(disc)}</a>'
         bullets = "".join(f"<li>{e(b)}</li>" for b in p["bullets"])
@@ -102,7 +105,7 @@ def build(data: dict) -> list[str]:
             r = prods.get(rk)
             if not r:
                 continue
-            rp = "Free" if r["price"] == 0 else f"{money(r['price'])} ({money(round(r['price']*(100-pct)/100,2))} with {code})"
+            rp = "Free" if r["price"] == 0 else (f"{money(r['price'])} ({money(round(r['price']*(100-pct)/100,2))} with {code})" if code else money(r["price"]))
             rel += (f'<a class="card" href="/p/{rk}/"><img src="/img/p/{r["img"]}" alt="" width="110" height="62" loading="lazy">'
                     f'<div><b>{e(r["name"])}</b><span>{e(rp)}</span></div></a>')
         more_h = ("خطوتك التالية" if ar else ("Next step after the free file" if free else "Also useful"))
@@ -159,11 +162,11 @@ GRID_ORDER = ["demo", "budget-lite", "rate", "maker", "vat-free", "habit", "job"
 
 def tools_grid(data: dict) -> None:
     """Insert/refresh a picture grid of every product at the top of /tools/."""
-    prods, pct, code = data["products"], data["discount_pct"], data["discount_code"]
+    prods, pct, code = data["products"], data.get("discount_pct") or 0, data.get("discount_code") or None
     cards = []
     for k in GRID_ORDER:
         p = prods[k]
-        pr = "Free" if p["price"] == 0 else f"{money(p['price'])} · {money(round(p['price']*(100-pct)/100,2))} with {code}"
+        pr = "Free" if p["price"] == 0 else (f"{money(p['price'])} · {money(round(p['price']*(100-pct)/100,2))} with {code}" if code else money(p["price"]))
         cards.append(f'<a href="/p/{k}/" style="display:block;text-decoration:none;color:inherit;border:1px solid #e3e7f0;border-radius:12px;overflow:hidden;background:#fff">'
                      f'<img src="/img/p/{p["img"]}" alt="" width="1005" height="565" loading="lazy" style="width:100%;height:auto;display:block">'
                      f'<span style="display:block;padding:8px 10px;font-size:14px;line-height:1.35"><b>{e(p["name"])}</b><br>'
