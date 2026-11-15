@@ -1,6 +1,6 @@
 {
   "_comment": "Product landing pages /p/<key>/ (built by .github/scripts/build_product_pages.py). Prices and copy are taken from the live Gumroad listings checked 2026-11-15. Do not add claims that are not on the listing. No 'lifetime' or 'free updates' wording. Discount code INSIDER20 = 20% off any product, no expiry (verified live 2026-11-15).",
-  "discount_code": "INSIDER20",
+  "discount_code": "",
   "discount_pct": 20,
   "products": {
     "habit": {
