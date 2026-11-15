@@ -8,7 +8,7 @@
     <description>New pins for the Free Templates &amp; Spreadsheets board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Thu, 12 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 15 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/free-templates-spreadsheets.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -20,6 +20,26 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/09-budgetlite-2a-checklist.jpg" type="image/jpeg" length="128596"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/09-budgetlite-2a-checklist.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Free Budget Tracker Spreadsheet for Freelancers (Excel &amp; Google Sheets)</media:title>
+    </item>
+    <item>
+      <title>Habit Tracker Spreadsheet: Broken Streak vs a Fresh Restart</title>
+      <description>Most habit tracking fails the same way: miss one day, lose the streak, feel like a failure, quit. Never Miss Twice flips it: miss one day, do the 2-minute version, count it and move on, and the habit stays alive. A kinder 12-month habit tracker spreadsheet with a PDF guide and recovery card. Save this and tap to try it.</description>
+      <link>https://dohmnsama1-sketch.github.io/tools/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=xgzula&amp;utm_content=04-habit-3a-before-after</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/04-habit-3a-before-after</guid>
+      <pubDate>Sun, 15 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/04-habit-3a-before-after.jpg" type="image/jpeg" length="137111"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/04-habit-3a-before-after.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Habit Tracker Spreadsheet: Broken Streak vs a Fresh Restart</media:title>
+    </item>
+    <item>
+      <title>Free Etsy Pricing Calculator: Revenue Is Vanity, Margin Is What You Keep</title>
+      <description>Sales feel good, but profit margin is what you keep. Before chasing more orders, check what each product really earns after materials, labor, packaging, shipping, overhead and fees. Maker Margin Lab shows profit and margin per product with a clear status, so you know what to reprice. Free download. Save this and tap to get it.</description>
+      <link>https://dohmnsama1-sketch.github.io/guides/etsy-pricing-handmade/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=maker-margin-lab&amp;utm_content=03-maker-4b-quote</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/03-maker-4b-quote</guid>
+      <pubDate>Sun, 15 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/03-maker-4b-quote.jpg" type="image/jpeg" length="103117"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/03-maker-4b-quote.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Free Etsy Pricing Calculator: Revenue Is Vanity, Margin Is What You Keep</media:title>
     </item>
   </channel>
 </rss>

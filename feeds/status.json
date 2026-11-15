@@ -1,5 +1,5 @@
 {
-  "today_riyadh": "2026-11-14",
+  "today_riyadh": "2026-11-15",
   "feed_limit": 25,
   "schedule": {
     "start": "2026-11-12",
@@ -18,7 +18,7 @@
       "board": "Freelance Business Systems & Templates",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 2,
+      "items_in_feed": 3,
       "url": "https://dohmnsama1-sketch.github.io/feeds/freelance-business-systems-templates.xml"
     },
     "freelancer-budget-irregular-income": {
@@ -32,14 +32,14 @@
       "board": "Free Templates & Spreadsheets",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 1,
+      "items_in_feed": 3,
       "url": "https://dohmnsama1-sketch.github.io/feeds/free-templates-spreadsheets.xml"
     },
     "ai-productivity-tools": {
       "board": "AI Productivity Tools",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 1,
+      "items_in_feed": 2,
       "url": "https://dohmnsama1-sketch.github.io/feeds/ai-productivity-tools.xml"
     },
     "content-creator-systems": {

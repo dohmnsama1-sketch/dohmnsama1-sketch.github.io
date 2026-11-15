@@ -8,7 +8,7 @@
     <description>New pins for the AI Productivity Tools board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Fri, 13 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 15 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/ai-productivity-tools.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -20,6 +20,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/05-toolkit-5b-list.jpg" type="image/jpeg" length="131879"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/05-toolkit-5b-list.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Productivity System for Freelancers: Job Tracker, CRM and Content Planner</media:title>
+    </item>
+    <item>
+      <title>Productivity System for Freelancers: Scattered Tools vs One Toolkit</title>
+      <description>Before: five subscriptions, three spreadsheets and nothing up to date. After: three focused apps, data that stays on your device and no monthly fees. The Freelancer &amp; Career Toolkit replaces scattered tools with one simple system for freelance clients, your job search and content. Save this and tap to see the bundle.</description>
+      <link>https://dohmnsama1-sketch.github.io/tools/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=tquvf&amp;utm_content=05-toolkit-3a-before-after</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/05-toolkit-3a-before-after</guid>
+      <pubDate>Sun, 15 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/05-toolkit-3a-before-after.jpg" type="image/jpeg" length="122500"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/05-toolkit-3a-before-after.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Productivity System for Freelancers: Scattered Tools vs One Toolkit</media:title>
     </item>
   </channel>
 </rss>

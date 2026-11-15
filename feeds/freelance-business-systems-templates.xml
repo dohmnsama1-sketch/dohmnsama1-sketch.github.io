@@ -8,7 +8,7 @@
     <description>New pins for the Freelance Business Systems &amp; Templates board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Sat, 14 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 15 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/freelance-business-systems-templates.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -30,6 +30,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/09-budgetlite-3b-before-after.jpg" type="image/jpeg" length="149058"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/09-budgetlite-3b-before-after.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Free Budget Tracker for Freelancers: Guessing vs Knowing Your Numbers</media:title>
+    </item>
+    <item>
+      <title>Free Freelance App: Client Tracker, Time Tracking &amp; Invoices in One Dashboard</title>
+      <description>A free app to run your freelance business: client tracker, drag-and-drop pipeline, projects with a live timer, invoices and income vs. expense charts in one dashboard. The Freelance Command Center demo opens with sample data, needs no signup and works offline in your browser. Tap to try it free.</description>
+      <link>https://dohmnsama1-sketch.github.io/free/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=iqptry&amp;utm_content=14-demo-01-free-app#demo</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/14-demo-01-free-app</guid>
+      <pubDate>Sun, 15 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/14-demo-01-free-app.jpg" type="image/jpeg" length="205505"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/14-demo-01-free-app.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Free Freelance App: Client Tracker, Time Tracking &amp; Invoices in One Dashboard</media:title>
     </item>
   </channel>
 </rss>
