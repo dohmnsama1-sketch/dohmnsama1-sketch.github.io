@@ -25,6 +25,8 @@ on:
     paths:
       - "pinterest/schedule.csv"
       - "pinterest/boards.json"
+      - "pinterest/products.json"
+      - ".github/scripts/build_product_pages.py"
       - ".github/scripts/generate_pinterest_feeds.py"
       - ".github/workflows/pinterest-rss-daily.yml"
 
@@ -50,6 +52,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Build product landing pages (/p/<key>/)
+        run: python .github/scripts/build_product_pages.py
+
       - name: Generate feeds
         run: python .github/scripts/generate_pinterest_feeds.py
 
@@ -58,7 +63,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add feeds/
+          git add feeds/ p/ tools/index.html
           if git diff --staged --quiet; then
             echo "No feed changes — nothing to commit."
             exit 0

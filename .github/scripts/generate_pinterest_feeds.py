@@ -101,6 +101,14 @@ def load_schedule(root: Path) -> list[dict]:
     path = root / "pinterest" / "schedule.csv"
     with path.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+    # Pins point at product landing pages /p/<key>/ (built from
+    # pinterest/products.json by build_product_pages.py). If a page is
+    # missing, fall back to the /tools/ hub so a pin never lands on a 404.
+    for r in rows:
+        m = re.match(re.escape(SITE) + r"/p/([a-z0-9-]+)/(\?.*)?$", r.get("link") or "")
+        if m and not (root / "p" / m.group(1) / "index.html").is_file():
+            print(f"warning: missing landing page /p/{m.group(1)}/ — using /tools/", file=sys.stderr)
+            r["link"] = f"{SITE}/tools/" + (m.group(2) or "")
     return rows
 
 

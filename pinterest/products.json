@@ -1,0 +1,386 @@
+{
+  "_comment": "Product landing pages /p/<key>/ (built by .github/scripts/build_product_pages.py). Prices and copy are taken from the live Gumroad listings checked 2026-11-15. Do not add claims that are not on the listing. No 'lifetime' or 'free updates' wording. Discount code INSIDER20 = 20% off any product, no expiry (verified live 2026-11-15).",
+  "discount_code": "INSIDER20",
+  "discount_pct": 20,
+  "products": {
+    "habit": {
+      "slug": "xgzula",
+      "price": 9,
+      "img": "xgzula.jpg",
+      "name": "Never Miss Twice Habit Tracker",
+      "h1": "A habit tracker that doesn't punish you for missing one day",
+      "sub": "12-month Excel habit tracker, a recovery card for off days and a printable PDF guide.",
+      "bullets": [
+        "Track habits day by day for the whole year and see progress at a glance",
+        "A recovery card so one missed day never turns into two",
+        "A 2-minute version of each habit for low-energy days",
+        "PDF guide and recovery card are print-friendly"
+      ],
+      "note": "Excel file (Google Sheets: import the .xlsx). A self-help tool, not medical advice.",
+      "related": [
+        "toolkit"
+      ]
+    },
+    "job": {
+      "slug": "ai-job-search-os",
+      "price": 15,
+      "img": "ai-job-search-os.jpg",
+      "name": "AI Job Search Tracker",
+      "h1": "Job application tracker that tells you who to follow up with today",
+      "sub": "A private browser app: application pipeline, follow-up reminders and 10 AI prompts filled in from the job and your resume.",
+      "bullets": [
+        "Pipeline: Saved, Applied, Interviewing, Offer, Closed",
+        "Moving a job to Applied sets the next follow-up date",
+        "10 prompts: resume tailoring, ATS check, cover letter, mock interview and more",
+        "Works offline; your resume stays in your browser"
+      ],
+      "note": "Prompts work with free ChatGPT, Claude or Gemini. Always review AI output. Not career advice.",
+      "related": [
+        "toolkit"
+      ]
+    },
+    "toolkit": {
+      "slug": "tquvf",
+      "price": 29,
+      "img": "tquvf.jpg",
+      "name": "Freelancer & Career Toolkit",
+      "h1": "Client CRM, job tracker and content planner: three apps, one price",
+      "sub": "Three offline browser apps for freelancers and career-changers. No account, no monthly fee.",
+      "bullets": [
+        "Client & revenue app: pipeline, invoices with overdue tracking, tax set-aside",
+        "Job search app: pipeline, follow-up reminders, 10 AI prompts",
+        "Content app: turn one video or article into posts for 7 channels",
+        "Quick-start PDF and sample data for each app"
+      ],
+      "note": "Each app is a single HTML file for Chrome, Edge, Safari or Firefox. No sync between devices; use backup/restore.",
+      "related": [
+        "demo"
+      ]
+    },
+    "prompts": {
+      "slug": "ai-prompts-freelancers",
+      "price": 12,
+      "img": "ai-prompts-freelancers.jpg",
+      "name": "100 AI Prompts for Freelancers & Sellers",
+      "h1": "100 fill-in-the-blank AI prompts for proposals, client replies and listings",
+      "sub": "Paste, add your details, get writing that sounds like you. Works with ChatGPT, Claude, Gemini and Grok.",
+      "bullets": [
+        "Cold emails, proposals, scope-creep replies, late-payment reminders",
+        "Etsy titles, 13-tag sets, Shopify SEO, product descriptions",
+        "Content plans, hooks, carousels and video scripts",
+        "PDF (17 pages) + Word + plain text"
+      ],
+      "note": "8 categories, 100 prompts. Add \"Reply in Arabic\" to any prompt.",
+      "related": [
+        "mega"
+      ]
+    },
+    "calendar": {
+      "slug": "etsy-shopify-content-calendar",
+      "price": 15,
+      "img": "etsy-shopify-content-calendar.jpg",
+      "name": "2027 Content Calendar for Etsy & Shopify Sellers",
+      "h1": "Every 2027 shopping date on one calendar, with post ideas for each",
+      "sub": "Excel + Google Sheets planner and a 23-page PDF planner for product sellers.",
+      "bullets": [
+        "26 key 2027 sales dates, each with a promo idea and a start-prepping date",
+        "48 post ideas across 6 content pillars",
+        "Auto calendar view, hashtag and Etsy tag bank, launch planner",
+        "Arabic version of the spreadsheet and planner included"
+      ],
+      "note": "Not affiliated with Etsy or Shopify. Islamic holiday dates are approximate.",
+      "related": [
+        "maker",
+        "mega"
+      ]
+    },
+    "budget-full": {
+      "slug": "irregular-income-budget",
+      "price": 15,
+      "img": "irregular-income-budget.jpg",
+      "name": "Budget Tracker for Irregular Income",
+      "h1": "Pay yourself a steady salary from an uneven freelance income",
+      "sub": "Sets aside tax, covers costs and pays you a fixed monthly salary; good months top up a buffer for lean ones.",
+      "bullets": [
+        "Dashboard: lowest month, income swing, buffer runway, tax set aside",
+        "Monthly plan: tax, costs, salary, buffer for 12 months",
+        "Income and expense logs with dropdowns",
+        "Google Sheets, Excel and a Notion import kit; Arabic version included"
+      ],
+      "note": "A spreadsheet you fill in, not a bank or financial advice.",
+      "related": [
+        "budget-lite",
+        "mega"
+      ]
+    },
+    "crm": {
+      "slug": "freelancer-crm",
+      "price": 24,
+      "img": "freelancer-crm.jpg",
+      "name": "Freelancer CRM + Client Onboarding System",
+      "h1": "Freelance client tracker with proposal, contract, invoice and welcome templates",
+      "sub": "One place for leads, clients, projects and invoices, plus the five documents every new client needs.",
+      "bullets": [
+        "Lead pipeline with automatic win probability; overdue follow-ups turn red",
+        "Invoice tracker calculates due dates, tax and days overdue",
+        "Welcome guide, questionnaire, proposal, invoice and an 11-clause agreement outline",
+        "Excel, Google Sheets, Notion kit; full Arabic versions"
+      ],
+      "note": "You fill the yellow cells; it does not email clients for you. The agreement is an outline, not legal advice.",
+      "related": [
+        "rate",
+        "mega"
+      ]
+    },
+    "crm-ar": {
+      "slug": "arabic-freelancer-crm",
+      "price": 24,
+      "img": "arabic-freelancer-crm.jpg",
+      "lang": "ar",
+      "name": "نظام إدارة العملاء للمستقل",
+      "h1": "نظام إدارة العملاء للمستقل: متابعة العملاء والفواتير مع عرض سعر وعقد وفاتورة جاهزة",
+      "sub": "جدول Excel وGoogle Sheets بواجهة عربية، ومعه خمسة مستندات جاهزة لأي عميل جديد.",
+      "bullets": [
+        "متابعة العملاء المحتملين: نسبة الإغلاق والقيمة المتوقعة تظهر تلقائيًا",
+        "متابعة الفواتير: الاستحقاق والضريبة وأيام التأخير تُحسب تلقائيًا",
+        "دليل ترحيب، استبيان، عرض مشروع، فاتورة، ومخطط عقد خدمة",
+        "مناسب لمن يعمل عبر منصات العمل الحر"
+      ],
+      "note": "ملفات جداول ومستندات تعبّئها بنفسك، لا ترسل رسائل نيابةً عنك. مخطط العقد ليس استشارة قانونية.",
+      "related": [
+        "rate"
+      ]
+    },
+    "vat-books": {
+      "slug": "saudi-vat-books-return-prep",
+      "price": 19,
+      "img": "saudi-vat-books-return-prep.jpg",
+      "name": "Saudi VAT Books & Return Prep",
+      "h1": "Saudi VAT return spreadsheet: sales and purchases ledgers laid out like the return",
+      "sub": "Review your figures before you type them into the ZATCA portal. Excel + Google Sheets, Arabic + English.",
+      "bullets": [
+        "Sales and purchases ledgers (about 500 rows each)",
+        "Return Prep sheet in the order of the return's sections",
+        "Pre-filing checks: duplicates, missing VAT numbers, out-of-period rows",
+        "Blank file plus a full worked example"
+      ],
+      "note": "Prepares numbers only; does not file, issue e-invoices or connect to ZATCA. Not tax advice.",
+      "related": [
+        "vat-free"
+      ]
+    },
+    "homevault": {
+      "slug": "homevault",
+      "price": 29,
+      "img": "homevault.jpg",
+      "name": "HomeVault Home Inventory App",
+      "h1": "Home inventory for insurance: photos, receipts and warranties in one private app",
+      "sub": "One file that opens in your browser. No account, no subscription; photos stay on your device.",
+      "bullets": [
+        "Photo, receipt, serial number and price for every item",
+        "Claim-ready score shows where your proof has gaps",
+        "Warranty and return-window countdowns with calendar reminders",
+        "One-click printable insurance report by room"
+      ],
+      "note": "Keeps records; it is not insurance and does not file claims.",
+      "related": []
+    },
+    "pantry": {
+      "slug": "pantrypilot",
+      "price": 24,
+      "img": "pantrypilot.jpg",
+      "name": "PantryPilot Meal Planner",
+      "h1": "Weekly meal planner with a grocery list that knows what's in your fridge",
+      "sub": "Meal plan, recipe box, pantry tracker and grocery list in one private browser app. No subscription.",
+      "bullets": [
+        "Plan breakfast to dinner for each day; copy last week in one tap",
+        "Grocery list merges amounts across recipes and skips what you have",
+        "Use-by dates and 'use soon' alerts for pantry, fridge and freezer",
+        "'What can I cook?' ranks recipes by what you already have"
+      ],
+      "note": "One HTML file; your recipes stay on your device.",
+      "related": []
+    },
+    "stayready": {
+      "slug": "aiphm",
+      "price": 19,
+      "img": "aiphm.jpg",
+      "name": "StayReady Airbnb Turnover Checklist",
+      "h1": "Airbnb turnover tracker and cleaning checklist that flags same-day cleans",
+      "sub": "Excel + Google Sheets workbook for hosts with 1 to 20 short-term rentals.",
+      "bullets": [
+        "Flags TIGHT and SAME-DAY turnovers as you enter bookings",
+        "43 common supplies pre-filled with par levels and an auto shopping list",
+        "42-task room-by-room cleaning checklist (also as PDF)",
+        "Cleaner pay and maintenance log"
+      ],
+      "note": "Not affiliated with Airbnb or VRBO.",
+      "related": []
+    },
+    "fcc": {
+      "slug": "unsebi",
+      "price": 39,
+      "img": "unsebi.jpg",
+      "nopin": true,
+      "name": "Freelance Command Center",
+      "h1": "Your freelance CRM, time tracker and invoices on one offline dashboard",
+      "sub": "One-time purchase, no account; your data stays on your device.",
+      "bullets": [
+        "Income this month, open pipeline, unpaid and overdue invoices at a glance",
+        "Drag-and-drop sales pipeline; won deals become projects",
+        "Live project timer and printable invoices (Save as PDF)",
+        "Scope-change log prices every extra request"
+      ],
+      "note": "Try the free demo first if you are not sure.",
+      "related": [
+        "demo"
+      ]
+    },
+    "mega": {
+      "slug": "freelancer-mega-bundle",
+      "price": 45,
+      "img": "freelancer-mega-bundle.jpg",
+      "nopin": true,
+      "name": "Freelancer Mega Bundle",
+      "h1": "CRM, budget tracker, content calendar, AI prompts and rate calculator in one download",
+      "sub": "5 products for $45 (bought separately: $66). English + Arabic.",
+      "bullets": [
+        "Freelancer CRM + Client Onboarding System",
+        "Budget Tracker for Irregular Income",
+        "2027 Content Calendar for Etsy & Shopify Sellers",
+        "100 AI Prompts + Freelance Rate Calculator"
+      ],
+      "note": "Excel, Google Sheets, Notion, PDF and Word files.",
+      "related": []
+    },
+    "budget-lite": {
+      "slug": "free-budget-tracker",
+      "price": 0,
+      "img": "free-budget-tracker.jpg",
+      "name": "Free Budget Tracker for Freelancers",
+      "h1": "Free budget tracker for freelancers: see where last month's money went",
+      "sub": "Income log (paid or pending), expense log and a 12-month summary with a chart. Google Sheets + Excel, English + Arabic.",
+      "bullets": [
+        "Income log (paid or pending) and expense log with categories",
+        "Monthly summary: left over and savings rate",
+        "Auto chart: income vs spending",
+        "Blank and sample-data copies, English and Arabic"
+      ],
+      "note": "",
+      "related": [
+        "budget-full"
+      ]
+    },
+    "rate": {
+      "slug": "freelance-rate-calculator",
+      "price": 0,
+      "img": "freelance-rate-calculator.jpg",
+      "name": "Free Freelance Rate Calculator",
+      "h1": "Free freelance rate calculator: hourly, day and project rates from your take-home goal",
+      "sub": "Google Sheets + Excel. Start from what you need to keep, then add tax, costs and real billable hours.",
+      "bullets": [
+        "Start from your take-home goal",
+        "Count tax and business costs",
+        "Use your real billable hours",
+        "See hourly, day and project rates"
+      ],
+      "note": "A costing method, not a market price or tax advice.",
+      "related": [
+        "crm"
+      ]
+    },
+    "maker": {
+      "slug": "maker-margin-lab",
+      "price": 0,
+      "img": "maker-margin-lab.jpg",
+      "name": "Free Etsy Pricing Calculator (Maker Margin Lab)",
+      "h1": "Free Etsy pricing calculator: know your real profit per handmade item",
+      "sub": "Price from materials, your time and platform fees. Google Sheets + Excel.",
+      "bullets": [
+        "True cost: materials, labour, packaging, shipping, overhead and fees",
+        "Target price that reaches your margin goal after every fee",
+        "Real hourly pay, so you see when you underpay yourself",
+        "Platform fees pre-filled: Etsy, Shopify, Amazon Handmade and more"
+      ],
+      "note": "Not affiliated with Etsy.",
+      "related": [
+        "calendar"
+      ]
+    },
+    "vat-free": {
+      "slug": "saudi-vat-threshold-monitor",
+      "price": 0,
+      "img": "saudi-vat-threshold-monitor.jpg",
+      "name": "Free Saudi VAT Threshold Monitor",
+      "h1": "Free Saudi VAT threshold spreadsheet: your rolling 12-month total vs SAR 187,500 and 375,000",
+      "sub": "Excel + Google Sheets, Arabic + English. Verify thresholds on zatca.gov.sa.",
+      "bullets": [
+        "Rolling 12-month total of your taxable supplies",
+        "Status and headroom to the mandatory threshold",
+        "Apply-by date if you cross it, plus a chart",
+        "Arabic and English, free download"
+      ],
+      "note": "Not tax advice; you still file on the ZATCA portal.",
+      "related": [
+        "vat-books"
+      ]
+    },
+    "demo": {
+      "slug": "iqptry",
+      "price": 0,
+      "img": "iqptry.jpg",
+      "name": "Freelance Command Center: Free Demo",
+      "h1": "Free freelance client tracker demo: clients, time and invoices on one dashboard",
+      "sub": "Opens with sample data. No signup, works offline. This is the free demo, not the full app.",
+      "bullets": [
+        "Clients and deal pipeline",
+        "Time tracker",
+        "Invoices and income charts",
+        "Runs in your browser, offline"
+      ],
+      "note": "",
+      "related": [
+        "fcc",
+        "toolkit"
+      ]
+    },
+    "vat-free-ar": {
+      "slug": "saudi-vat-threshold-monitor",
+      "price": 0,
+      "img": "saudi-vat-threshold-monitor.jpg",
+      "lang": "ar",
+      "name": "مراقب حد تسجيل ضريبة القيمة المضافة (مجاني)",
+      "h1": "كم تبقّى لك حتى حد التسجيل في ضريبة القيمة المضافة؟ جدول مجاني يحسب آخر 12 شهرًا",
+      "sub": "إكسل وGoogle Sheets، عربي وإنجليزي. يقارن مجموعك المتحرك بحد 187,500 و375,000 ريال (تحقق من zatca.gov.sa).",
+      "bullets": [
+        "سجّل كل فاتورة حتى 500 سطر",
+        "مجموع آخر 12 شهرًا والحالة والمتبقي حتى الحد الإلزامي",
+        "آخر موعد للتقديم إن تجاوزت، مع رسم بياني",
+        "حاسبة ضريبة 15% من وإلى المبلغ شاملًا الضريبة"
+      ],
+      "note": "أداة حساب ومتابعة وليست استشارة ضريبية. التقديم يبقى على بوابة زاتكا.",
+      "related": [
+        "vat-books-ar"
+      ]
+    },
+    "vat-books-ar": {
+      "slug": "saudi-vat-books-return-prep",
+      "price": 19,
+      "img": "saudi-vat-books-return-prep.jpg",
+      "lang": "ar",
+      "name": "دفاتر ضريبة القيمة المضافة وتجهيز الإقرار",
+      "h1": "جهّز إقرار ضريبة القيمة المضافة: سجل مبيعات ومشتريات مرتب كأقسام الإقرار",
+      "sub": "راجع أرقامك قبل إدخالها في بوابة زاتكا. إكسل وGoogle Sheets، عربي وإنجليزي.",
+      "bullets": [
+        "سجل المبيعات وسجل المشتريات (حتى نحو 500 سطر)",
+        "ورقة تجهيز الإقرار حسب الأقسام مع النتيجة: سداد أو استرداد",
+        "فحوص قبل الرفع: فواتير مكررة، أرقام ضريبية ناقصة، صفوف خارج الفترة",
+        "ملف فارغ وملف بمثال كامل"
+      ],
+      "note": "يجهّز الأرقام فقط؛ لا يرفع إقرارًا ولا يصدر فواتير إلكترونية ولا يتصل بزاتكا. ليس استشارة ضريبية.",
+      "related": [
+        "vat-free-ar"
+      ]
+    }
+  }
+}
