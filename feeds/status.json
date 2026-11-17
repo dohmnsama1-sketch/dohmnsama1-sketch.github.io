@@ -1,5 +1,5 @@
 {
-  "today_riyadh": "2026-11-16",
+  "today_riyadh": "2026-11-17",
   "feed_limit": 25,
   "schedule": {
     "start": "2026-11-12",
@@ -88,7 +88,7 @@
       "board": "Freelancer Profit & Scope Management",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 0,
+      "items_in_feed": 1,
       "url": "https://dohmnsama1-sketch.github.io/feeds/freelancer-profit-scope-management.xml"
     },
     "pricing-handmade-items-etsy-tips": {
