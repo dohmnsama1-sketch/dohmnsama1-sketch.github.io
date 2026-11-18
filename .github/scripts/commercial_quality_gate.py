@@ -104,7 +104,14 @@ def main() -> int:
             ("missing descriptive title", len(p.title_text.strip()) >= 20),
             ("missing viewport", bool(p.meta.get("viewport"))),
             ("missing meta description", len(p.meta.get("description", "")) >= 35),
-            ("expected exactly one H1", p.h1_count == 1),
+            ("expected one visible H1 or exactly one per language variant",
+             p.h1_count == 1 or (
+                 relative.as_posix() == "index.html"
+                 and p.h1_count == 2
+                 and source.count('<div data-l="ar"><h1>') == 1
+                 and source.count('<div data-l="en"><h1>') == 1
+                 and '[data-l]{display:none}' in source
+             )),
             ("image without alt", p.images_missing_alt == 0),
         ]:
             if not condition:
