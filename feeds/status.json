@@ -1,5 +1,5 @@
 {
-  "today_riyadh": "2026-11-17",
+  "today_riyadh": "2026-11-18",
   "feed_limit": 25,
   "schedule": {
     "start": "2026-11-12",
@@ -32,7 +32,7 @@
       "board": "Free Templates & Spreadsheets",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 3,
+      "items_in_feed": 4,
       "url": "https://dohmnsama1-sketch.github.io/feeds/free-templates-spreadsheets.xml"
     },
     "ai-productivity-tools": {

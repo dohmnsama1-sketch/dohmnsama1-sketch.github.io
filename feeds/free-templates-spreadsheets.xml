@@ -8,7 +8,7 @@
     <description>New pins for the Free Templates &amp; Spreadsheets board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Sun, 15 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 18 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/free-templates-spreadsheets.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -40,6 +40,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/03-maker-4b-quote.jpg" type="image/jpeg" length="103117"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/03-maker-4b-quote.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Free Etsy Pricing Calculator: Revenue Is Vanity, Margin Is What You Keep</media:title>
+    </item>
+    <item>
+      <title>Free Etsy Pricing Calculator: Pricing Checklist for Every New Product — Free Download</title>
+      <description>A free Etsy pricing calculator for handmade items: materials, your time and platform fees, with profit and margin on each product. Excel and Google Sheets. Not affiliated with Etsy. I'm the maker. Tap to download it free.</description>
+      <link>https://dohmnsama1-sketch.github.io/p/maker/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=maker-margin-lab&amp;utm_content=y12gap-2026-11-18-maker-0</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12gap-2026-11-18-maker-0</guid>
+      <pubDate>Wed, 18 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12gap-2026-11-18-maker-0.jpg" type="image/jpeg" length="186737"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12gap-2026-11-18-maker-0.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Free Etsy Pricing Calculator: Pricing Checklist for Every New Product — Free Download</media:title>
     </item>
   </channel>
 </rss>
