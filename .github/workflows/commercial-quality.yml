@@ -7,6 +7,8 @@ on:
       - "index.html"
       - "app.html"
       - "gradercheck/**"
+      - "free/**"
+      - "gta6-creator/**"
       - ".github/scripts/commercial_quality_gate.py"
       - ".github/workflows/commercial-quality.yml"
   push:
@@ -15,6 +17,8 @@ on:
       - "index.html"
       - "app.html"
       - "gradercheck/**"
+      - "free/**"
+      - "gta6-creator/**"
       - ".github/scripts/commercial_quality_gate.py"
       - ".github/workflows/commercial-quality.yml"
   workflow_dispatch:
