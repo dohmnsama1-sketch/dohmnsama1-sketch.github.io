@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0c1729">
+<title>GraderCheck Local — Reproducible QA for Exact-Output AI Graders</title>
+<meta name="description" content="Fixed-scope, reproducible QA for deterministic exact-output tabular JSON graders. Ask about a $500 synthetic-data-only pilot.">
+<link rel="canonical" href="https://dohmnsama1-sketch.github.io/gradercheck/">
+<meta property="og:title" content="GraderCheck Local | Deterministic grader QA">
+<meta property="og:description" content="Discover disagreements in exact-output JSON graders using reproducible probes and evidence reports. Limited paid pilots on request.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dohmnsama1-sketch.github.io/gradercheck/">
+<style>
+:root{--bg:#09111e;--card:#101d30;--line:#25354b;--text:#edf4fa;--muted:#a9bbce;--accent:#82edcd;--ink:#102337}
+*,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--accent)}.wrap{max-width:1090px;margin:auto;padding:0 22px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:8px;background:#fff;color:#000;padding:8px;z-index:99}
+header{border-bottom:1px solid var(--line);background:#0c1829}header .wrap{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:19px;font-weight:800;letter-spacing:.01em;text-decoration:none;color:var(--text)}.brand i{display:inline-block;width:13px;height:13px;background:var(--accent);border-radius:4px;transform:rotate(45deg);margin-right:10px}nav{display:flex;align-items:center;gap:19px}nav a{font-size:14px;text-decoration:none;color:#dce9f4}
+.hero{padding:88px 0 65px;background:radial-gradient(ellipse at 85% 0%,#15485077,transparent 54%)}.eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.15em;font-weight:700;font-size:12px}.hero h1{max-width:850px;font-size:clamp(35px,5.8vw,66px);letter-spacing:-.05em;line-height:1.13;margin:16px 0}.lead{max-width:735px;color:#c3d2df;font-size:clamp(17px,2vw,20px)}.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.button{display:inline-block;border-radius:10px;padding:14px 20px;font-weight:750;text-decoration:none;background:var(--accent);color:var(--ink);border:1px solid var(--accent)}.button.alt{color:var(--text);background:transparent;border-color:#6d8a95}.small{font-size:13px;color:var(--muted)}
+section{padding:64px 0;border-top:1px solid #ffffff12}h2{font-size:clamp(27px,3.5vw,39px);line-height:1.18;letter-spacing:-.03em;margin:0 0 13px}.sub{max-width:710px;color:var(--muted);margin-bottom:30px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--card)}.card h3{margin:2px 0 10px;font-size:19px}.card p{margin:0;color:var(--muted)}.marker{display:inline-block;font-size:12px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.evidence{background:#0f2130;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;border-radius:18px;padding:34px;border:1px solid var(--line)}.metric{font-size:42px;font-weight:800;letter-spacing:-.055em;line-height:1.05;color:var(--accent)}.stat{margin:10px 0 18px}.stat strong{display:block}.stat span{display:block;color:var(--muted);font-size:14px}.pre{background:#080f1b;border:1px solid #264456;color:#b6f7dd;border-radius:12px;overflow:auto;padding:20px;font:13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.step{border-top:2px solid #67e1bf;padding-top:16px}.step::before{counter-increment:s;content:"0"counter(s);display:block;color:var(--accent);font-weight:800;margin-bottom:10px}.step h3{font-size:18px;margin:0 0 5px}.step p{margin:0;color:var(--muted)}
+.price{font-size:48px;font-weight:850;letter-spacing:-.06em;margin:8px 0}.price small{font-size:15px;color:var(--muted);font-weight:500;letter-spacing:0}.list{padding-left:20px;color:#d7e7f0}.list li{padding:4px 0}aside{background:#152638;border-left:3px solid var(--accent);padding:15px 20px;color:#d4e2ec;margin-top:18px;border-radius:0 10px 10px 0}
+.faq details{border-bottom:1px solid var(--line);padding:15px 0}.faq summary{cursor:pointer;font-weight:700}.faq p{color:var(--muted);margin-bottom:4px}
+.contact{background:linear-gradient(110deg,#14364a,#122839);border:1px solid #2f5860;border-radius:20px;padding:40px}.contact h2{max-width:750px}.contact p{max-width:720px;color:#cedde5}footer{padding:30px 0 45px;color:var(--muted);font-size:13px}
+a:focus-visible,summary:focus-visible{outline:3px solid #f6d270;outline-offset:4px} @media(max-width:720px){nav a:nth-child(1){display:none}.hero{padding:62px 0 46px}.grid,.steps,.evidence{grid-template-columns:1fr}.evidence{padding:22px}.contact{padding:25px}section{padding:44px 0}header .wrap{min-height:65px}}
+</style></head><body>
+<a href="#main" class="skip">Skip to main content</a>
+<header><div class="wrap"><a class="brand" href="./"><i aria-hidden="true"></i>GraderCheck <span style="font-weight:400">Local</span></a><nav aria-label="Main navigation"><a href="#workflow">Workflow</a><a href="#evidence">Evidence</a><a href="#scope">Pilot & scope</a><a href="#contact">Contact</a></nav></div></header>
+<main id="main">
+<div class="hero"><div class="wrap"><div class="eyebrow">Deterministic AI evaluation · Bounded QA service</div>
+<h1>Your grader can pass outputs that should fail.</h1>
+<p class="lead">Test exact-output tabular JSON graders with reproducible, contract-derived probes. Get a structured mismatch report and a bounded rerun—without sharing production credentials or executing private code on a third-party server.</p>
+<div class="cta"><a class="button" href="mailto:a.a.zalahmd@gmail.com?subject=GraderCheck%20pilot%20inquiry&body=Hello%2C%20I%20would%20like%20to%20discuss%20a%20bounded%20GraderCheck%20pilot.%0AOur%20grader%20accepts%3A%20%0AWe%20can%20provide%20a%20synthetic%20reference%20contract%3A%20">Request a pilot</a><a class="button alt" href="#evidence">Review validation evidence</a></div>
+<p class="small">Prototype-stage service · AI-assisted development · No pre-committed delivery or payment terms.</p></div></div>
+<section aria-labelledby="why"><div class="wrap"><div class="marker">The problem</div><h2 id="why">A passing score is only as trustworthy as the verifier.</h2>
+<p class="sub">If a grader accepts malformed rows, duplicate keys, type mismatches or incorrect values, your benchmark can misrepresent system performance. These checks are most useful when the correct response is strictly specified and machine-verifiable.</p>
+<div class="grid">
+<div class="card"><div class="marker">01 / Input contract</div><h3>Explicit reference semantics</h3><p>Define supported row keys, columns, scalar types and exact target values. The pilot begins with an agreed reference contract—not a vague correctness claim.</p></div>
+<div class="card"><div class="marker">02 / Mutation pack</div><h3>Reproducible edge probes</h3><p>Generate valid controls alongside invalid variants to test strict parser behavior, schema drift, missing entries and wrong-value acceptance.</p></div>
+<div class="card"><div class="marker">03 / Audit output</div><h3>Traceable disagreement reports</h3><p>Compare expected outcomes to the grader decisions you run. Export case-level JSON/HTML findings with missing-evidence counts and reproducible IDs.</p></div>
+</div></div></section>
+<section id="workflow"><div class="wrap"><div class="marker">Workflow</div><h2>Three steps. Clear boundaries.</h2><div class="steps">
+<div class="step"><h3>Agree the contract</h3><p>Provide a synthetic or otherwise appropriately permitted tabular JSON reference, validation expectations and your grader's documented input/output format.</p></div>
+<div class="step"><h3>Run the probes</h3><p>We prepare a finite probe pack. You execute it against your grader in your environment and send back the booleans and probe IDs—not production access.</p></div>
+<div class="step"><h3>Reconcile and rerun</h3><p>Receive a mismatch report and suggested checks; one agreed rerun is included after you adjust your grader.</p></div>
+</div></div></section>
+<section id="evidence"><div class="wrap"><div class="marker">What has been tested</div><h2>Evidence with provenance, not inflated claims.</h2>
+<p class="sub">Version 0.1.1 has internal tests and a synthetic demonstration. No paid production grader has been audited, and the software has not received independent security certification.</p>
+<div class="evidence"><div>
+<div class="stat"><div class="metric">17 / 17</div><strong>Automated Node tests passed</strong><span>Core, CLI and DOM event-flow regression tests.</span></div>
+<div class="stat"><div class="metric">8 / 8</div><strong>Browser interaction checks passed</strong><span>Chromium UI flow tested with a documented SHA-256 harness substitution; unshimmed WebCrypto still requires verification.</span></div>
+<div class="stat"><div class="metric">30</div><strong>Synthetic mutation probes</strong><span>Seventeen false-positive accepts in an intentionally weak demonstration grader. Not a customer result.</span></div>
+</div><div><div class="pre" aria-label="Synthetic evidence excerpt">sample_type: synthetic
+version: 0.1.1
+tests: 17 passed / 0 failed
+browser_flows: 8 passed*
+probe_count: 30
+wrong_accepts: 17
+customer_audits: 0
+paid_acceptances: 0
+
+* WebCrypto digest substituted
+  in test harness only.</div><p class="small">Full technical evidence and demo pack can be provided on request. The synthetic metrics measure only the intentionally weak bundled example.</p></div></div></div></section>
+<section id="scope"><div class="wrap"><div class="marker">Commercial pilot · Proposed, not accepted</div><h2>One exact-output task. Fixed scope.</h2>
+<div class="grid" style="grid-template-columns:1.5fr 1fr"><div class="card"><div class="price">USD 500 <small>/ proposed pilot</small></div>
+<ul class="list"><li>One tabular JSON reference contract (up to 100 rows, 20 supported columns).</li><li>Deterministic valid/invalid probe pack, with case IDs and expected outcomes.</li><li>Reconciliation against grader decisions returned by the buyer.</li><li>Evidence report in JSON and HTML, plus one bounded rerun.</li><li>Initial probe pack target: one business day after accepted scope and complete inputs.</li></ul>
+<p class="small">Price, milestones, payment route, fees, delivery/acceptance and rights require explicit written agreement before any order.</p></div>
+<div class="card"><h3>Not included</h3><ul class="list"><li>Open-ended natural-language grading.</li><li>Running customer code or using live credentials.</li><li>Medical or identifiable personal data.</li><li>Model inference costs or unrelated integrations.</li><li>Exclusive source rights or production SLAs.</li><li>Security certification or exhaustive correctness guarantees.</li></ul></div></div>
+<aside>Data handling: this page collects no form inputs. Pilot data should be synthetic or properly cleared for the agreed use. The buyer can retain control of grader execution and need not share proprietary code.</aside></div></section>
+<section class="faq"><div class="wrap"><div class="marker">Questions</div><h2>Fit before commitment</h2>
+<details><summary>Is this a SaaS subscription or a paid service?</summary><p>Currently a bounded consulting/QA pilot supported by a local prototype, not a self-serve subscription. No live production SLA or subscription is offered.</p></details>
+<details><summary>Is the grader tested on your infrastructure?</summary><p>No. The buyer runs the probes against its grader and returns the result map. This helps avoid collecting credentials or private code.</p></details>
+<details><summary>Can you support arbitrary output formats?</summary><p>No. The current pilot is restricted to supported exact-output tabular JSON contracts and scalar types. Other formats require separate scoping and feasibility checks.</p></details>
+<details><summary>What is the sample's reported 17%?</summary><p>The sample has 17 false-positive acceptances out of 30 probes (not 17%). They were deliberately produced by a weak bundled synthetic grader; they do not represent production error rates.</p></details></div></section>
+<section id="contact"><div class="wrap"><div class="contact"><div class="marker">Start with one task</div><h2>Have an exact-output grader that needs a challenge set?</h2><p>Send a short description of the output contract, your supported grader interface and the kind of incorrect outputs you need to reject. Do not send secrets or sensitive real-world datasets in the first inquiry.</p>
+<a class="button" href="mailto:a.a.zalahmd@gmail.com?subject=GraderCheck%20paid%20QA%20pilot&body=Hello%2C%0AWe%20are%20evaluating%20a%20bounded%20grader-QA%20pilot.%0AOur%20task%20type%3A%20%0AExpected%20output%20contract%3A%20%0AWhat%20we%20want%20to%20validate%3A%20%0A">Discuss a paid pilot</a><p class="small">No payment is collected on this page. No buyer commitment or response time is guaranteed.</p></div></div></section>
+</main><footer><div class="wrap">GraderCheck Local — Independent prototype-stage evaluation QA service. Synthetic examples clearly labeled. &copy; 2026. <a href="mailto:a.a.zalahmd@gmail.com?subject=GraderCheck%20inquiry">Contact</a>.</div></footer></body></html>
