@@ -1,0 +1,35 @@
+name: GTA VI Creator Lab quality gate
+on:
+  push:
+    paths:
+      - 'gta6-creator/**'
+      - '.github/workflows/gta6-creator-check.yml'
+  pull_request:
+    paths:
+      - 'gta6-creator/**'
+  workflow_dispatch:
+jobs:
+  static-qa:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Verify browser JavaScript syntax, required screens, disclosures
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const html = fs.readFileSync('gta6-creator/index.html','utf8');
+          const match = html.match(/<script>([\s\S]*?)<\/script>/);
+          if(!match) throw Error('App JavaScript missing');
+          new vm.Script(match[1], {filename:'gta6-creator-inline.js'});
+          const modules = ['ideaList','editor','queue','exportCSV','importFile','economics','profit','saveDraft','saveApproved','source','verified','rights'];
+          for(const id of modules) if(!html.includes('id="'+id+'"')) throw Error('Missing module: '+id);
+          for(const phrase of ['No gameplay','does not publish','No paid tools','Copyright upload policy','No purchase or payout']) {
+            if(!html.toLowerCase().includes(phrase.toLowerCase())) throw Error('Missing risk disclosure: '+phrase);
+          }
+          console.log('PASS: script syntax,',modules.length,'modules, rights and earnings disclaimers');
+          NODE
