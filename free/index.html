@@ -29,6 +29,22 @@ ul{margin:8px 0;padding-inline-start:20px}
 .jump a{display:inline-block;padding:6px 12px;border:1px solid var(--line);border-radius:999px;text-decoration:none;font-size:14px;color:var(--ink);background:#fff}
 .jump a:hover{border-color:var(--pri);color:var(--pri)}
 .next{font-size:13px;color:var(--mut);margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+
+/* Buyer-fit selector: scoped styles avoid altering existing free downloads. */
+#buyertools{background:#f6f8fc;border-block:1px solid #dce2eb}
+#buyertools .buyer-note{max-width:790px;color:#59677c}
+#buyertools .buyer-filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px}
+#buyertools .buyer-filters button{background:#fff;border:1px solid #c6d2dd;color:#173348;padding:9px 13px;border-radius:999px;cursor:pointer;font-weight:600}
+#buyertools .buyer-filters button[aria-pressed=true]{background:#113e3c;color:white;border-color:#113e3c}
+#buyertools .buyer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px}
+#buyertools .buyer-card{background:white;border:1px solid #d5dee9;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
+#buyertools .buyer-card h3{font-size:17px;line-height:1.4;margin:0}
+#buyertools .buyer-card p{margin:0;color:#556277;font-size:14px;flex:1}
+#buyertools .buyer-meta{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#buyertools .buyer-price{font-size:21px;font-weight:800;color:#105542}
+#buyertools .buyer-kicker{font-size:12px;color:#63748b;text-transform:uppercase;letter-spacing:.05em}
+#buyertools .buyer-card .btn{font-size:14px;text-align:center;padding:9px 12px;margin:4px 0 0}
+#buyertools [hidden]{display:none!important}
 </style>
 </head><body>
 <nav><div class="wrap"><b><a href="/" style="color:#fff;text-decoration:none">⚖️ ميزان · Meezan</a></b><span class="sp"></span><a href="/tools/" style="color:#fff;text-decoration:none;font-size:14px" data-l="en">All tools</a><a href="/tools/" style="color:#fff;text-decoration:none;font-size:14px" data-l="ar">كل الأدوات</a><a href="/services/" style="color:#fff;text-decoration:none;font-size:14px;margin-inline-start:12px" data-l="en">Services</a><a href="/services/" style="color:#fff;text-decoration:none;font-size:14px;margin-inline-start:12px" data-l="ar">خدمات</a><button id="lb">عربي</button></div></nav>
@@ -143,6 +159,30 @@ ul{margin:8px 0;padding-inline-start:20px}
 <a class="btn sec" href="/guides/">اقرأ الأدلة المجانية</a></div>
 </div></section>
 
+
+<section id="buyertools" aria-labelledby="buyerheading"><div class="wrap">
+<div data-l="en"><h2 id="buyerheading">Find the right next tool — no subscription</h2><p class="buyer-note">Start with the free downloads above. If you need a more complete workflow, choose a specific problem below. Each link opens the existing product detail page, then its existing Gumroad checkout. Prices are those advertised on our own product pages; confirm current terms at checkout. No purchase is required.</p></div>
+<div data-l="ar"><h2>اختر الأداة المناسبة لمشكلتك — دون اشتراك</h2><p class="buyer-note">ابدأ بالأدوات المجانية أعلاه. إذا احتجت إلى نظام أكثر اكتمالاً، اختر المجال المناسب. كل رابط يفتح صفحة المنتج الحالية ثم رابط شرائه في Gumroad. الأسعار حسب صفحات المنتجات المنشورة لدينا، ويجب التحقق من السعر والشروط قبل الدفع.</p></div>
+<div class="buyer-filters" role="group" aria-label="Filter tools by purpose">
+<button type="button" data-buyer-filter="all" aria-pressed="true">All / الكل</button>
+<button type="button" data-buyer-filter="freelance" aria-pressed="false">Freelancers / المستقلون</button>
+<button type="button" data-buyer-filter="commerce" aria-pressed="false">Online sellers / التجار</button>
+<button type="button" data-buyer-filter="creator" aria-pressed="false">Creators / صناع المحتوى</button>
+<button type="button" data-buyer-filter="other" aria-pressed="false">Other / أخرى</button>
+</div>
+<div class="buyer-grid" id="buyerGrid">
+<article class="buyer-card" data-buyer-cat="freelance"><div class="buyer-kicker">Client management</div><h3>Freelancer CRM + onboarding</h3><p>Organize prospects, projects, invoices and your onboarding documents in one place.</p><div class="buyer-meta"><span class="buyer-price">$24</span><span class="buyer-kicker">One-time</span></div><a class="btn pri" href="/p/crm/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=crm">View details / التفاصيل</a></article>
+<article class="buyer-card" data-buyer-cat="freelance"><div class="buyer-kicker">Freelance growth</div><h3>Freelancer Mega Bundle</h3><p>A bundled starting point for multiple freelance systems; review the exact contents before buying.</p><div class="buyer-meta"><span class="buyer-price">$45</span><span class="buyer-kicker">Bundle</span></div><a class="btn pri" href="/p/mega/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=mega">View bundle / المجموعة</a></article>
+<article class="buyer-card" data-buyer-cat="commerce"><div class="buyer-kicker">Saudi e-commerce</div><h3>Saudi VAT books &amp; return prep</h3><p>Prepare bookkeeping workbooks for review. Not a tax return filing service or professional tax advice.</p><div class="buyer-meta"><span class="buyer-price">$19</span><span class="buyer-kicker">One-time</span></div><a class="btn pri" href="/p/vat-books/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=vat-books">View details / التفاصيل</a></article>
+<article class="buyer-card" data-buyer-cat="commerce creator"><div class="buyer-kicker">Seller content operations</div><h3>2027 Etsy &amp; Shopify calendar</h3><p>Plan original, consistent seller content with a spreadsheet and PDF companion.</p><div class="buyer-meta"><span class="buyer-price">$15</span><span class="buyer-kicker">One-time</span></div><a class="btn pri" href="/p/calendar/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=calendar">View details / التفاصيل</a></article>
+<article class="buyer-card" data-buyer-cat="freelance"><div class="buyer-kicker">Irregular income</div><h3>Freelancer budget tracker</h3><p>Plan variable revenue, business expenses and monthly spending in one workbook.</p><div class="buyer-meta"><span class="buyer-price">$15</span><span class="buyer-kicker">One-time</span></div><a class="btn pri" href="/p/budget-full/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=budget">View details / التفاصيل</a></article>
+<article class="buyer-card" data-buyer-cat="creator freelance"><div class="buyer-kicker">AI workflow</div><h3>100 prompts for freelancers &amp; sellers</h3><p>Practical drafting prompts; check and edit every generated output before public use.</p><div class="buyer-meta"><span class="buyer-price">$12</span><span class="buyer-kicker">One-time</span></div><a class="btn pri" href="/p/prompts/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=prompts">View details / التفاصيل</a></article>
+<article class="buyer-card" data-buyer-cat="other"><div class="buyer-kicker">Job search</div><h3>AI job search tracker</h3><p>Organize applications and follow-ups; no implied employment or interview guarantee.</p><div class="buyer-meta"><span class="buyer-price">$15</span><span class="buyer-kicker">One-time</span></div><a class="btn pri" href="/p/job/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=job">View details / التفاصيل</a></article>
+<article class="buyer-card" data-buyer-cat="other"><div class="buyer-kicker">Short-term rentals</div><h3>StayReady turnover checklist</h3><p>Coordinate cleaning and turnover workflows for short-term rental operations.</p><div class="buyer-meta"><span class="buyer-price">$19</span><span class="buyer-kicker">One-time</span></div><a class="btn pri" href="/p/stayready/?utm_source=free&amp;utm_medium=tool-finder&amp;utm_campaign=stayready">View details / التفاصيل</a></article>
+</div>
+<p class="buyer-note" style="font-size:13px;margin-top:17px">Independent digital products. No fabricated earnings, ratings or scarcity. Confirm delivery format, refund policy, platform availability and final price on the product/checkout page.</p>
+</div></section>
+<script>(function(){const area=document.getElementById('buyertools');if(!area)return;const buttons=[...area.querySelectorAll('[data-buyer-filter]')],cards=[...area.querySelectorAll('[data-buyer-cat]')];buttons.forEach(b=>b.addEventListener('click',()=>{const cat=b.getAttribute('data-buyer-filter');buttons.forEach(x=>x.setAttribute('aria-pressed',String(x===b)));cards.forEach(x=>{x.hidden=cat!=='all'&&!x.getAttribute('data-buyer-cat').split(' ').includes(cat)})}))})()</script>
 <footer><div class="wrap">
 <a href="/">Meezan</a> · <a href="/free/">Free</a> · <a href="/tools/">Tools</a> · <a href="/books/">Books</a> · <a href="/guides/">Guides</a> · <a href="/services/">Services</a> · <a href="/blog/">Blog</a> · <a href="/answers/">Answers</a>
 <span data-l="en"> · Templates and puzzles by Solo &amp; Co. Spreadsheets are not tax or legal advice.</span>
