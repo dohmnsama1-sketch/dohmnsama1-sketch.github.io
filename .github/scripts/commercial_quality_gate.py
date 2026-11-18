@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
-PAGES = [Path("index.html"), Path("gradercheck/index.html")]
+PAGES = [Path("index.html"), Path("gradercheck/index.html"), Path("free/index.html"), Path("gta6-creator/index.html")]
 BASE_HOST = "dohmnsama1-sketch.github.io"
 
 
@@ -106,7 +106,7 @@ def main() -> int:
             ("missing meta description", len(p.meta.get("description", "")) >= 35),
             ("expected one visible H1 or exactly one per language variant",
              p.h1_count == 1 or (
-                 relative.as_posix() == "index.html"
+                 relative.as_posix() in {"index.html", "free/index.html"}
                  and p.h1_count == 2
                  and source.count('<div data-l="ar"><h1>') == 1
                  and source.count('<div data-l="en"><h1>') == 1
@@ -155,6 +155,18 @@ def main() -> int:
                     errors.append(f"{relative}: missing required commercial disclosure {expected!r}")
             if "mailto:" not in source:
                 errors.append(f"{relative}: no functioning contact path")
+        if relative.as_posix() == "free/index.html":
+            for expected in ('id="buyertools"', 'data-buyer-filter="all"',
+                             'data-buyer-cat="commerce creator"', 'Confirm delivery format'):
+                if expected not in source:
+                    errors.append(f"{relative}: missing product finder safeguard {expected!r}")
+            if source.count('class="buyer-card"') < 8:
+                errors.append(f"{relative}: fewer than 8 qualified product cards")
+        if relative.as_posix() == "gta6-creator/index.html":
+            for expected in ('No gameplay', 'does not publish', 'No paid tools',
+                             'Approval requires fact verification', 'No purchase or payout'):
+                if expected.lower() not in source.lower():
+                    errors.append(f"{relative}: missing original-content safeguard {expected!r}")
         if relative.as_posix() == "index.html":
             if "gumroad.com/l/meezan-pro" not in source:
                 errors.append(f"{relative}: existing paid product route unexpectedly absent")
