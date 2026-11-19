@@ -1,5 +1,5 @@
 {
-  "today_riyadh": "2026-11-18",
+  "today_riyadh": "2026-11-19",
   "feed_limit": 25,
   "schedule": {
     "start": "2026-11-12",
@@ -109,7 +109,7 @@
       "board": "Saudi Freelancer & VAT Tools",
       "exists": false,
       "create_first": true,
-      "items_in_feed": 1,
+      "items_in_feed": 2,
       "url": "https://dohmnsama1-sketch.github.io/feeds/saudi-freelancer-vat-tools.xml"
     },
     "large-print-puzzle-books": {
