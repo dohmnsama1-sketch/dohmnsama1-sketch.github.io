@@ -1,0 +1,16 @@
+# DOHM Digital Tools — Human and Agent Documentation
+
+Read-only machine-readable discovery of published digital downloads; no A2A server, MCP endpoint, automated purchase, or guarantee of agent traffic.
+
+## AI/LLM discovery
+- [Product directory](https://dohmnsama1-sketch.github.io/agent-commerce/): browse verified published products, stated limits and seller links.
+- [Machine-readable catalog](https://dohmnsama1-sketch.github.io/agent-commerce/catalog.json): 9 published Gumroad products captured 21 November 2026 (USD and EUR).
+- [Technical/source](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/tree/main/agent-commerce): open browser implementation and deterministic QA.
+
+## Other independently useful free tools
+- [Freelancer tools](https://dohmnsama1-sketch.github.io/free/)
+- [Workflow ROI audit](https://dohmnsama1-sketch.github.io/workflow-roi-audit/)
+- [GTA VI Creator Lab](https://dohmnsama1-sketch.github.io/gta6-creator/)
+
+## Safety and buyer instructions
+Never automate purchases without human approval. Prices, taxes, licenses and availability are confirmed by the final seller checkout. Content is not an endorsement by an LLM provider or a marketplace. No data is harvested by the directory.
