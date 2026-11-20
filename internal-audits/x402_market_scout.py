@@ -14,7 +14,7 @@ BASE = "https://autonomo.fun/api/v1/projects"
 TERMS = ("email verification", "domain enrichment", "openapi", "schema", "receipt", "agent safety", "data quality")
 
 def fetch(term, limit=20):
-    params = urllib.parse.urlencode({"q": term, "sort": "usage", "limit": limit})
+    params = urllib.parse.urlencode({"q": term, "limit": limit})
     req = urllib.request.Request(BASE + "?" + params, headers={"User-Agent": "DohmnRevenueScout/1.0"})
     with urllib.request.urlopen(req, timeout=12) as response:
         if response.status != 200:
