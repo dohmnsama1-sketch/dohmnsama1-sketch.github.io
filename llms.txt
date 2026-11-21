@@ -14,3 +14,6 @@ Read-only machine-readable discovery of published digital downloads; no A2A serv
 
 ## Safety and buyer instructions
 Never automate purchases without human approval. Prices, taxes, licenses and availability are confirmed by the final seller checkout. Content is not an endorsement by an LLM provider or a marketplace. No data is harvested by the directory.
+
+## Free developer starter
+- [Source Watch Lite](https://dohmnsama1-sketch.github.io/source-watch-lite/): MIT-licensed, Node.js 22+, one public HTTPS source SHA-256 drift checker; 26 regression tests. No agent/model fee or required paid service. [Code](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/tree/main/source-watch-lite).
