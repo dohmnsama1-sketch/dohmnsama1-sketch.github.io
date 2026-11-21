@@ -17,3 +17,8 @@ Never automate purchases without human approval. Prices, taxes, licenses and ava
 
 ## Free developer starter
 - [Source Watch Lite](https://dohmnsama1-sketch.github.io/source-watch-lite/): MIT-licensed, Node.js 22+, one public HTTPS source SHA-256 drift checker; 26 regression tests. No agent/model fee or required paid service. [Code](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/tree/main/source-watch-lite).
+
+## AI-to-AI paid API services
+- [Agent API payment tools](https://dohmnsama1-sketch.github.io/ai-to-ai/): transparent x402 USDC-on-Base email DNS evidence, domain company evidence, batch checking and public-web evidence. Buyer wallet approval and real service execution required.
+- [Machine service pricing](https://dohmnsama1-sketch.github.io/ai-to-ai/services.json): published routes and machine-readable limits, paid calls are not automatically executed.
+- [MCP discovery](https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/mcp-gateway): route and quote discovery only, NOT an automatic payment facilitator.
