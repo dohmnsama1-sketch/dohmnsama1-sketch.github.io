@@ -8,7 +8,7 @@
     <description>New pins for the Free Templates &amp; Spreadsheets board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Wed, 18 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 21 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/free-templates-spreadsheets.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -50,6 +50,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12gap-2026-11-18-maker-0.jpg" type="image/jpeg" length="186737"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12gap-2026-11-18-maker-0.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Free Etsy Pricing Calculator: Pricing Checklist for Every New Product — Free Download</media:title>
+    </item>
+    <item>
+      <title>Free Freelance Budget Tracker: Log Income and Spending in One Sheet — Free Template</title>
+      <description>A free budget tracker spreadsheet for freelancers: log every payment (paid or pending), log expenses by category, and see what was left over, month by month. Excel and Google Sheets, English + Arabic. It does not pay you a fixed salary from a buffer — that is the paid upgrade. I'm the maker. Tap to download it free.</description>
+      <link>https://dohmnsama1-sketch.github.io/p/budget-lite/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=free-budget-tracker&amp;utm_content=y12gap-2026-11-21-budget-lite-0</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12gap-2026-11-21-budget-lite-0</guid>
+      <pubDate>Sat, 21 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12gap-2026-11-21-budget-lite-0.jpg" type="image/jpeg" length="220170"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12gap-2026-11-21-budget-lite-0.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Free Freelance Budget Tracker: Log Income and Spending in One Sheet — Free Template</media:title>
     </item>
   </channel>
 </rss>
