@@ -1,0 +1,68 @@
+name: Nabra Arabic TTS - free runner smoke test
+on:
+  push:
+    paths:
+      - '.github/workflows/nabra-ar-tts-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no_spend_tts_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install open-source TTS and Arabic phonemes
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'kokoro @ git+https://github.com/Oddadmix/kokoro.git@main' numpy soundfile huggingface_hub misaki camel-tools
+          curl --fail --location --silent --show-error 'https://gist.githubusercontent.com/Oddadmix/dc699f7942a9516ce29d4842c7aed756/raw/827b541c892a862f9ef3b44006a6e27b100d1bdd/arabic_g2p.py' --output arabic_g2p.py
+      - name: Generate two test narrations without account secrets or platform uploads
+        shell: bash
+        run: |
+          mkdir -p candidate_audio
+          python - <<'PY'
+          import numpy as np
+          import torch
+          import soundfile as sf
+          from huggingface_hub import hf_hub_download, list_repo_files
+          from arabic_g2p import EXTRA_SYMBOLS, clean_phonemes
+          from kokoro import KModel,KPipeline
+          from kokoro import pipeline as kp
+          repo='oddadmix/Nabra-82M-v0.1'
+          files=list_repo_files(repo)
+          model_file=next(x for x in files if x.endswith('.pth'))
+          voice_file=next(x for x in files if x.endswith('.pt'))
+          model=KModel(repo_id=repo,config=hf_hub_download(repo,'config.json'),model=hf_hub_download(repo,model_file),disable_complex=True).eval()
+          model.vocab.update(EXTRA_SYMBOLS)
+          kp.LANG_CODES.setdefault('ar','ar')
+          pipeline=KPipeline(lang_code='ar',repo_id=repo,model=model)
+          g2p=pipeline.g2p
+          pipeline.g2p=lambda t:(clean_phonemes(g2p(t)[0]),g2p(t)[1])
+          voice=torch.load(hf_hub_download(repo,voice_file),map_location='cpu',weights_only=True)
+          scripts={
+            'YHS_priors_probe':'لِمَاذَا يَطْلُبُ طَبِيبُ الْأَشِعَّةِ صُوَرَكَ السَّابِقَةَ؟ لِأَنَّ الْمُقَارَنَةَ تُسَاعِدُ عَلَى فَهْمِ مَا تَغَيَّرَ.',
+            'Interest_rocket_probe':'كَيْفَ يَتَحَرَّكُ الصَّارُوخُ فِي الْفَضَاءِ؟ مُحَرِّكُ الصَّارُوخِ يَطْرُدُ غَازَاتٍ إِلَى الْخَلْفِ فَتَتَوَلَّدُ قُوَّةٌ إِلَى الْأَمَامِ.'
+          }
+          for name,text in scripts.items():
+              audio=np.concatenate([a.detach().cpu().numpy() for _,_,a in pipeline(text,voice=voice,speed=1.0)]).astype(np.float32)
+              rms=float(np.sqrt(np.mean(audio*audio)))
+              if not np.isfinite(audio).all() or rms < 0.002:
+                  raise RuntimeError('Invalid or silent output for '+name)
+              sf.write('candidate_audio/'+name+'.wav',audio,24000)
+              print(name,'samples',len(audio),'rms',rms)
+          PY
+      - name: Preserve WAV evidence for actual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nabra-TTS-Arabic-probe
+          path: candidate_audio/*.wav
+          if-no-files-found: error
+          retention-days: 3
