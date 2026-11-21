@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "last_catalog_audit": "2026-11-21",
+  "type": "agent_payment_catalog",
+  "hosted": "Supabase Edge Functions",
+  "merchant": "DOHMAN agent tools",
+  "payment": {
+    "protocol": "x402",
+    "currency": "USDC",
+    "network": "eip155:8453",
+    "direct_receipt": "on-chain settlement via PayAI facilitator",
+    "recipient": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946"
+  },
+  "discovery": {
+    "mcp": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/mcp-gateway",
+    "x402": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-market-gateway/.well-known/x402",
+    "openapi": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-market-gateway/openapi.json"
+  },
+  "services": [
+    {
+      "id": "email-evidence",
+      "name": "Email Domain Evidence",
+      "category": "Lead research",
+      "price_usdc": 0.001,
+      "price_atomic": "1000",
+      "payment_network": "eip155:8453",
+      "path": "x402-email-verify-evidence",
+      "method": "POST",
+      "example": {
+        "email": "support@example.com"
+      },
+      "description": "Format and domain/DNS evidence for one email address. Does not verify mailbox existence, inbox access or deliverability.",
+      "limits": [
+        "No guarantee of mailbox existence or delivery",
+        "One address per paid call"
+      ],
+      "endpoint": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-email-verify-evidence"
+    },
+    {
+      "id": "domain-enrichment",
+      "name": "Domain & Company Evidence",
+      "category": "Company research",
+      "price_usdc": 0.003,
+      "price_atomic": "3000",
+      "payment_network": "eip155:8453",
+      "path": "x402-domain-company-enrich",
+      "method": "POST",
+      "example": {
+        "domain": "example.com"
+      },
+      "description": "Bounded evidence about a public company domain from permitted DNS/public website observations. Does not certify legal identity or company status.",
+      "limits": [
+        "Public data only",
+        "Findings may be incomplete or stale"
+      ],
+      "endpoint": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-domain-company-enrich"
+    },
+    {
+      "id": "email-batch",
+      "name": "Batch Email Evidence",
+      "category": "Agent workflows",
+      "price_usdc": 0.005,
+      "price_atomic": "5000",
+      "payment_network": "eip155:8453",
+      "path": "x402-email-verify-batch",
+      "method": "POST",
+      "example": {
+        "emails": [
+          "support@example.com",
+          "sales@example.com"
+        ]
+      },
+      "description": "Evaluate 1–10 addresses in one request for a fixed $0.005 charge. Evidence is domain/DNS-level, not proof of mailbox existence.",
+      "limits": [
+        "Maximum 10 addresses",
+        "No SMTP inbox probe"
+      ],
+      "endpoint": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-email-verify-batch"
+    },
+    {
+      "id": "web-evidence",
+      "name": "Web Content Evidence",
+      "category": "Research agents",
+      "price_usdc": 0.002,
+      "price_atomic": "2000",
+      "payment_network": "eip155:8453",
+      "path": "true402-web-read/invoke",
+      "method": "POST",
+      "example": {
+        "urls": [
+          "https://example.com/"
+        ]
+      },
+      "description": "Read permitted public HTTPS content and return structured, citation-ready source evidence for RAG/research workflows. No authenticated or paywalled fetch.",
+      "limits": [
+        "Up to three public HTTPS URLs",
+        "Public web only; protections and site access rules apply"
+      ],
+      "endpoint": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/true402-web-read/invoke"
+    }
+  ]
+}
