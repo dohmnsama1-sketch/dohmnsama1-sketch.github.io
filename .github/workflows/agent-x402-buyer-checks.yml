@@ -1,0 +1,25 @@
+name: Agent x402 Buyer Safety Checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ai-to-ai/buyer-example/**"
+      - ".github/workflows/agent-x402-buyer-checks.yml"
+  pull_request:
+    paths:
+      - "ai-to-ai/buyer-example/**"
+      - ".github/workflows/agent-x402-buyer-checks.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Pure local tests — no network, no wallet, no funds
+        run: node --test ai-to-ai/buyer-example/test.mjs
