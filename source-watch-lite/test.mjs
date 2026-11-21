@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { validateTarget, probe, compare } from './core.mjs';
+const host='docs.github.com', target='https://docs.github.com/en';
+const allowed=[host];
+const fake=(body='abc', options={})=> async()=>new Response(body,{status:options.status||200,headers:{'content-type': options.type||'text/plain', ...(options.length?{'content-length':options.length}:{})}});
+function err(fn,re){assert.throws(fn,re)}
+
+test('target validation - allowlisted HTTPS',()=>{assert.equal(validateTarget(target,allowed),target);});
+test('reject http',()=>err(()=>validateTarget('http://docs.github.com/en',allowed),/HTTPS/));
+test('reject nonstandard port',()=>err(()=>validateTarget('https://docs.github.com:8080/en',allowed),/HTTPS/));
+test('reject non-allowlisted host',()=>err(()=>validateTarget('https://foo.github.com',allowed),/allowlist/));
+test('reject spoofed suffix',()=>err(()=>validateTarget('https://docs.github.com.evil.test',allowed),/reserved|allowlist/));
+test('reject localhost',()=>err(()=>validateTarget('https://localhost/', ['localhost']),/reserved/));
+test('reject IP',()=>err(()=>validateTarget('https://127.0.0.1/', ['127.0.0.1']),/IP addresses/));
+test('reject credentials',()=>err(()=>validateTarget('https://user:password@docs.github.com/en',allowed),/Credentials/));
+test('reject query tokens',()=>err(()=>validateTarget(target+'?token=secret',allowed),/query/));
+test('reject hash',()=>err(()=>validateTarget(target+'#section',allowed),/fragments/));
+test('reject empty allowlist',()=>err(()=>validateTarget(target,[]),/allowlist/));
+test('reject wildcard allowlist',()=>err(()=>validateTarget(target,['*.github.com']),/exact DNS/));
+test('reject userinfo hostname trick',()=>err(()=>validateTarget('https://docs.github.com@other.site/',allowed),/Credentials/));
+test('test sha256 known abc',async()=>{const r=await probe(target,{allowHosts:allowed,fetchImpl:fake('abc')}); assert.equal(r.sha256,'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');assert.equal(r.bytes,3);});
+test('test baseline-created',async()=>{const r=await probe(target,{allowHosts:allowed,fetchImpl:fake('abc')});assert.equal(compare(r,null),'baseline-created');});
+test('test unchanged',async()=>{const r=await probe(target,{allowHosts:allowed,fetchImpl:fake('abc')});assert.equal(compare(r,{url:target,sha256:r.sha256}),'unchanged');});
+test('test changed',async()=>{const r=await probe(target,{allowHosts:allowed,fetchImpl:fake('abc')});assert.equal(compare(r,{url:target,sha256:'0'.repeat(64)}),'changed');});
+test('test URL mismatch',async()=>{const r=await probe(target,{allowHosts:allowed,fetchImpl:fake('abc')});assert.throws(()=>compare(r,{url:'https://docs.github.com/other',sha256:r.sha256}),/Invalid baseline/);});
+test('test refuse redirects',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake('redirect',{status:302})}),/Redirect/);});
+test('test refuse 404',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake('gone',{status:404})}),/HTTP 404/);});
+test('test deny binary',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake('binary',{type:'application/octet-stream'})}),/Content type/);});
+test('test deny large Content-Length',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake('abc',{length:'300000'})}),/Content-Length/);});
+test('test stream cap',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake('a'.repeat(100)),maxBytes:50}),/Stream exceeds/);});
+test('test valid size bounds',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake(),maxBytes:0}),/maxBytes/);});
+test('test valid timeout bounds',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake(),timeoutMs:0}),/timeoutMs/);});
+test('reject invalid baseline',async()=>{const r=await probe(target,{allowHosts:allowed,fetchImpl:fake()});assert.throws(()=>compare(r,{url:target,sha256:'xxx'}),/Invalid baseline/);});
