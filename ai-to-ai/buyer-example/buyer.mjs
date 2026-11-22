@@ -37,10 +37,17 @@ export function permittedService(raw) {
   if(typeof raw!=='string'||!Object.prototype.hasOwnProperty.call(ROUTES,raw))throw Error('Unknown service; choose email, domain, batch or web');
   return ROUTES[raw];
 }
-export function requirePaymentReceipt(headerValue) {
+export function requirePaymentReceipt(headerValue,expectedNetwork=CHAIN) {
   if(typeof headerValue!=='string'||headerValue.length===0)throw Error('Paid execution missing payment-response receipt; reconcile wallet before retrying');
   if(headerValue.length>40000)throw Error('Payment response receipt exceeds limits');
-  return headerValue;
+  let receipt;
+  try {receipt=JSON.parse(Buffer.from(headerValue.replaceAll('-','+').replaceAll('_','/'),'base64').toString('utf8'))}
+  catch {throw Error('Malformed payment-response receipt')}
+  if(!receipt||receipt.success!==true)throw Error('Payment settlement did not report success; reconcile wallet before retrying');
+  if(receipt.network!==expectedNetwork)throw Error('Payment receipt network mismatch');
+  if(!/^0x[0-9a-fA-F]{64}$/.test(String(receipt.transaction)))throw Error('Payment receipt transaction hash is invalid');
+  if(!/^0x[0-9a-fA-F]{40}$/.test(String(receipt.payer)))throw Error('Payment receipt payer is invalid');
+  return Object.freeze({success:true,transaction:receipt.transaction,network:receipt.network,payer:receipt.payer});
 }
 async function readQuote(url,route) {
   const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),9000);
@@ -76,9 +83,9 @@ export async function main(argv=process.argv.slice(2)) {
   const paidFetch=wrapFetchWithPayment(guarded,client);
   const response=await paidFetch(url,{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify(route.body),redirect:'manual'});
   if(!response.ok)throw Error('Paid execution returned HTTP '+response.status+'; check wallet before retrying.');
-  requirePaymentReceipt(response.headers.get('payment-response'));
+  const receipt=requirePaymentReceipt(response.headers.get('payment-response'));
   const data=await response.json();
-  console.log(JSON.stringify({status:'executed',response:data,payment_receipt_present:true},null,2));
+  console.log(JSON.stringify({status:'executed',response:data,payment_receipt:{transaction:receipt.transaction,network:receipt.network}},null,2));
   return 0;
 }
 if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){main().catch(err=>{console.error('ERROR:',err.message);process.exitCode=1;});}
