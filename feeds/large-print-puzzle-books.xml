@@ -8,7 +8,7 @@
     <description>New pins for the Large Print Puzzle Books board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Thu, 12 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 22 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/large-print-puzzle-books.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -20,6 +20,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/cozy-cover-front-resave.jpg" type="image/jpeg" length="233009"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/cozy-cover-front-resave.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Large Print Word Search: Cozy Village Mysteries (Free Sample Pages)</media:title>
+    </item>
+    <item>
+      <title>Large Print Christmas Puzzle Book: Print a Free Sample Before Black Friday</title>
+      <description>Print a free 4-page sample first: one word search, one sudoku, one scramble and one maze, as printed in the book. The large-print Christmas paperback has 108 holiday puzzles on Amazon. Seasonal through mid-December. I'm the author. Tap to print the free sample.</description>
+      <link>https://dohmnsama1-sketch.github.io/books/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=kdp-christmas&amp;utm_content=y12-2026-11-22-xmas-2</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12-2026-11-22-xmas-2</guid>
+      <pubDate>Sun, 22 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-22-xmas-2.jpg" type="image/jpeg" length="215826"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-22-xmas-2.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Large Print Christmas Puzzle Book: Print a Free Sample Before Black Friday</media:title>
     </item>
   </channel>
 </rss>

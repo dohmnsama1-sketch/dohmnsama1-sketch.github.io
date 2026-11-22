@@ -1,5 +1,5 @@
 {
-  "today_riyadh": "2026-11-21",
+  "today_riyadh": "2026-11-22",
   "feed_limit": 25,
   "schedule": {
     "start": "2026-11-12",
@@ -11,7 +11,7 @@
       "board": "Freelance Client Tracker & CRM",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 2,
+      "items_in_feed": 3,
       "url": "https://dohmnsama1-sketch.github.io/feeds/freelance-client-tracker-crm.xml"
     },
     "freelance-business-systems-templates": {
@@ -88,7 +88,7 @@
       "board": "Freelancer Profit & Scope Management",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 1,
+      "items_in_feed": 2,
       "url": "https://dohmnsama1-sketch.github.io/feeds/freelancer-profit-scope-management.xml"
     },
     "pricing-handmade-items-etsy-tips": {
@@ -116,7 +116,7 @@
       "board": "Large Print Puzzle Books",
       "exists": false,
       "create_first": true,
-      "items_in_feed": 1,
+      "items_in_feed": 2,
       "url": "https://dohmnsama1-sketch.github.io/feeds/large-print-puzzle-books.xml"
     }
   }
