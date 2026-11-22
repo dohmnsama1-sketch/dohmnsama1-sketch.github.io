@@ -32,7 +32,7 @@
       <h1>Validate the quote. Fail closed. Spend only by explicit choice.</h1>
       <p class="lead">This public reference client checks the seller URL, Base network, USDC asset, recipient wallet and per-service price cap before any payment code can run.</p>
       <div class="badges" aria-label="Safety properties">
-        <span class="badge safe">Quote mode spends $0</span><span class="badge">18 synthetic regression tests</span><span class="badge">No seller API key</span><span class="badge">Payment requires explicit --pay</span>
+        <span class="badge safe">Quote mode spends $0</span><span class="badge">31 synthetic regression tests</span><span class="badge">No seller API key</span><span class="badge">Payment requires explicit --pay</span>
       </div>
       <div class="actions">
         <a class="button" href="https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/tree/main/ai-to-ai/buyer-example">View source on GitHub</a>
@@ -73,7 +73,9 @@ node --test test.mjs</code></pre>
     </section>
     <section class="grid" aria-label="Further resources">
       <article class="card"><h2>Read the full guide</h2><p class="muted">Install instructions, production limitations, payment warnings and the exact test commands are in the repository README.</p><a href="https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/blob/main/ai-to-ai/buyer-example/README.md">Open README</a></article>
-      <article class="card"><h2>Machine discovery</h2><p class="muted">Compare the static catalog with the live endpoint quote before authorizing any spend.</p><a href="https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-market-gateway/openapi.json">OpenAPI</a> · <a href="https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/mcp-gateway">MCP gateway</a></article>
+      <article class="card"><h2>Free external discovery</h2><p class="muted">Ask Agent402’s neutral router to compare external sellers before paying. The response is live: inspect price, health and <code>routerDispatchEligible</code>; a listing or high rank is not proof of customer-funded delivery.</p><pre><code>curl -X POST https://agent402.tools/api/route \
+ -H 'content-type: application/json' \
+ -d '{"query":"email domain validation lead screening DNS SPF DMARC evidence","top":5,"include":"external"}'</code></pre><p><a href="https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-market-gateway/openapi.json">Seller OpenAPI</a> · <a href="https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/mcp-gateway">MCP gateway</a></p></article>
     </section>
   </main>
   <footer><div class="wrap">Independent seller reference · No affiliation with Coinbase, Circle, PayAI, Agent402 or Supabase · The page itself cannot initiate payment.</div></footer>
