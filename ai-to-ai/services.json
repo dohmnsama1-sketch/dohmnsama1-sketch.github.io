@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "last_catalog_audit": "2026-11-21",
+  "last_catalog_audit": "2026-11-23",
   "type": "agent_payment_catalog",
   "hosted": "Supabase Edge Functions",
   "merchant": "DOHMAN agent tools",
@@ -19,8 +19,8 @@
   "services": [
     {
       "id": "email-evidence",
-      "name": "Email Domain Evidence",
-      "category": "Lead research",
+      "name": "Email Domain DNS Evidence",
+      "category": "Lead screening",
       "price_usdc": 0.001,
       "price_atomic": "1000",
       "payment_network": "eip155:8453",
@@ -29,12 +29,19 @@
       "example": {
         "email": "support@example.com"
       },
-      "description": "Format and domain/DNS evidence for one email address. Does not verify mailbox existence, inbox access or deliverability.",
+      "description": "Email-domain DNS validation evidence for AI agents and lead-screening workflows: syntax plus public MX/A/AAAA, SPF and DMARC signals, role/free-provider/known-disposable/typo indicators, a bounded DNS-posture score and evidence hash. No SMTP or mailbox-existence probe.",
       "limits": [
         "No guarantee of mailbox existence or delivery",
         "One address per paid call"
       ],
-      "endpoint": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-email-verify-evidence"
+      "endpoint": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-email-verify-evidence",
+      "buyer_intents": [
+        "email validation",
+        "email domain validation",
+        "lead screening",
+        "DNS evidence",
+        "SPF and DMARC evidence"
+      ]
     },
     {
       "id": "domain-enrichment",
