@@ -1,4 +1,5 @@
 name: Nabra Arabic TTS - free runner smoke test
+# Re-trigger marker: 2026-11-22; no secrets, uploads, or paid services.
 on:
   push:
     paths:
