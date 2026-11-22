@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "updated_date": "2026-11-21",
+  "updated_date": "2026-11-23",
   "publisher": "DOHM digital products",
-  "description": "Machine-readable, read-only catalog of verified currently published Gumroad products. Not an AI agent, MCP server, A2A server, payment processor or endorsement.",
+  "description": "Machine-readable, read-only catalog of quality-cleared, currently published Gumroad products. Products on rights or source-review hold are excluded. Not an AI agent, MCP server, A2A server, payment processor or endorsement.",
   "discovery": {
     "human_landing": "https://dohmnsama1-sketch.github.io/agent-commerce/",
     "format": "application/json",
@@ -196,32 +196,6 @@
       "fulfillment": "Digital download via Gumroad; verify terms and purchase flow with seller"
     },
     {
-      "id": "healthcare-ai-article",
-      "title": "AI Tools Transforming Healthcare Administration – 2026 PLR Article",
-      "amount": 5,
-      "currency": "EUR",
-      "price_label": "€5",
-      "checkout_url": "https://dohmnsama.gumroad.com/l/xdejn",
-      "category": "healthcare",
-      "summary": "A private-label-rights article discussing applications of AI in healthcare administration.",
-      "use_case": "Healthcare administration article",
-      "keywords": [
-        "healthcare",
-        "administration",
-        "plr",
-        "article",
-        "clinic",
-        "billing",
-        "scheduling",
-        "ai",
-        "medical",
-        "writing"
-      ],
-      "constraints": "Editorial article; content requires independent fact-checking and compliance review before clinical use.",
-      "availability": "published_at_last_audit",
-      "fulfillment": "Digital download via Gumroad; verify terms and purchase flow with seller"
-    },
-    {
       "id": "monthly-planner",
       "title": "Monthly Goal, Habit & Budget Planner | Text + HTML",
       "amount": 6,
@@ -274,4 +248,3 @@
     }
   ]
 }
-
