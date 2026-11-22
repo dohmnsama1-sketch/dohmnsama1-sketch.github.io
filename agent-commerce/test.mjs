@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import {tokens,validateCatalog,isSafeGumroadUrl,buyerUrl,rankProducts} from './app.mjs';
 const data=JSON.parse(fs.readFileSync(new URL('./catalog.json',import.meta.url),'utf8'));
 const products=validateCatalog(data);let n=0;const check=(label,fn)=>{fn();console.log('PASS',label);n++};
-check('all nine currently published products',()=>assert.equal(products.length,9));
+check('eight quality-cleared published products',()=>assert.equal(products.length,8));
+check('rights-review hold excluded from discovery',()=>assert.equal(products.some(p=>p.id==='healthcare-ai-article'),false));
 check('unique product ids',()=>assert.equal(new Set(products.map(p=>p.id)).size,products.length));
 check('real https gumroad paths',()=>assert.ok(products.every(p=>isSafeGumroadUrl(p.checkout_url))));
 check('reject lookalike gumroad phishing domains',()=>assert.equal(isSafeGumroadUrl('https://gumroad.com.evil.com/l/test'),false));
@@ -14,9 +15,9 @@ check('Arabic captions matching',()=>assert.equal(rankProducts(products,'arabic 
 check('LLM prompts matching',()=>assert.equal(rankProducts(products,'llm prompts')[0].id,'prompt-vault'));
 check('VAT does not invent a product',()=>assert.equal(rankProducts(products,'VAT return filings').length,0));
 check('unknown query has no fabricated matches',()=>assert.equal(rankProducts(products,'quantum pineapple unicycle superconductor').length,0));
-check('category limited',()=>assert.equal(rankProducts(products,'','healthcare').length,1));
-check('all products visible on empty search',()=>assert.equal(rankProducts(products,'').length,9));
+check('held healthcare category absent',()=>assert.equal(rankProducts(products,'','healthcare').length,0));
+check('all quality-cleared products visible on empty search',()=>assert.equal(rankProducts(products,'').length,8));
 check('different currencies retained',()=>assert.ok(products.some(p=>p.currency==='EUR')&&products.some(p=>p.currency==='USD')));
 check('no paid API or fake A2A dependency',()=>{const src=fs.readFileSync(new URL('./app.mjs',import.meta.url),'utf8');assert.ok(!/localStorage|document\.cookie|payment_intent|fetch\(['"]https:\/\//.test(src))});
-check('site includes mobility',()=>{const s=fs.readFileSync(new URL('./index.html',import.meta.url),'utf8');assert.ok(/@media\(max-width/.test(s)&&/aria-live/.test(s))});
+check('site includes mobility',()=>{const s=fs.readFileSync(new URL('./index.html',import.meta.url),'utf8');assert.ok(/@media\(max-width/.test(s)&&/aria-live/.test(s)&&!/value=\"healthcare\"/.test(s))});
 console.log(`${n} deterministic tests passed`);
