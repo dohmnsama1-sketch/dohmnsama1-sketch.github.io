@@ -50,6 +50,19 @@ export function requirePaymentReceipt(headerValue,expectedNetwork=CHAIN,expected
   if(expectedPayer!==null&&(!/^0x[0-9a-fA-F]{40}$/.test(String(expectedPayer))||receipt.payer.toLowerCase()!==String(expectedPayer).toLowerCase()))throw Error('Payment receipt payer does not match signing wallet');
   return Object.freeze({success:true,transaction:receipt.transaction,network:receipt.network,payer:receipt.payer});
 }
+export async function readSettledJson(response,transaction,maxBytes=1_000_000) {
+  const settled='Settlement already reported success in '+transaction+'; ';
+  const fail=reason=>Error(settled+reason+'; do not retry automatically');
+  if(!response||typeof response.arrayBuffer!=='function')throw fail('paid response body is unavailable');
+  const declared=response.headers?.get?.('content-length');
+  if(declared!==null&&declared!==undefined&&/^\d+$/.test(declared)&&Number(declared)>maxBytes)throw fail('paid response exceeds '+maxBytes+' bytes');
+  let bytes;
+  try {bytes=await response.arrayBuffer()} catch {throw fail('paid response body could not be read')}
+  if(bytes.byteLength>maxBytes)throw fail('paid response exceeds '+maxBytes+' bytes');
+  let text;
+  try {text=new TextDecoder('utf-8',{fatal:true}).decode(bytes)} catch {throw fail('paid response is not valid UTF-8')}
+  try {return JSON.parse(text)} catch {throw fail('paid response is not valid JSON')}
+}
 async function readQuote(url,route) {
   const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),9000);
   try {
@@ -85,7 +98,7 @@ export async function main(argv=process.argv.slice(2)) {
   const response=await paidFetch(url,{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify(route.body),redirect:'manual'});
   if(!response.ok)throw Error('Paid execution returned HTTP '+response.status+'; check wallet before retrying.');
   const receipt=requirePaymentReceipt(response.headers.get('payment-response'),CHAIN,account.address);
-  const data=await response.json();
+  const data=await readSettledJson(response,receipt.transaction);
   console.log(JSON.stringify({status:'executed',response:data,payment_receipt:{transaction:receipt.transaction,network:receipt.network}},null,2));
   return 0;
 }
