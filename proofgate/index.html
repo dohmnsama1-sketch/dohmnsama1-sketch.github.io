@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ProofGate | AI Action Preflight</title>
+<style>body{background:#0c1220;color:#e9f0fa;font:16px system-ui;margin:0}main{max-width:940px;margin:auto;padding:30px 18px}h1{font-size:2.5rem}p{line-height:1.6;color:#b9c8dc}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}@media(max-width:700px){.grid{grid-template-columns:1fr}}section{background:#172239;border:1px solid #344765;border-radius:14px;padding:22px;margin:16px 0}label{display:block;margin:12px 0}input,select,textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;background:#0c172b;border:1px solid #526787;border-radius:7px;color:white}button{background:#8ef0d3;color:#061b18;border:0;padding:12px 18px;border-radius:8px;font-weight:bold;cursor:pointer}button.secondary{background:#344965;color:white}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b1526;padding:16px;border-radius:9px}strong{color:#aaf6e2}.note{font-size:.85rem}</style>
+<main><header><h1>ProofGate <span style="color:#8ef0d3">/ AI Action Preflight</span></h1><p>Independent prototype: deterministic policy checks for proposed AI-agent actions, with duplicate detection, human-approval gates and exportable local evidence. No external execution. No account required.</p></header>
+<section><h2>1 · Proposed action</h2><div class="grid"><label>Agent ID<input id="agent" value="support-agent-01" maxlength="100"></label><label>Action ID (idempotency key)<input id="key" value="ticket-1042-reply" maxlength="120"></label><label>Tool<select id="tool"><option>send_email</option><option>read_record</option><option>delete_record</option><option>transfer_funds</option><option>publish_post</option></select></label><label>Environment<select id="env"><option>production</option><option>staging</option></select></label><label>Amount USD (if relevant)<input id="amount" type="number" min="0" max="100000000" step=".01" value="0"></label><label>Human approval reference<input id="approval" placeholder="Approved ticket reference (demo only)" maxlength="120"></label></div><label>Business justification<textarea id="reason" maxlength="1000">Reply to a customer support ticket</textarea></label><label><input id="authorized" type="checkbox" style="display:inline;width:auto"> Confirm the agent is authorized for this action (self-attestation; not identity verification)</label><button id="check">Evaluate proposal</button> <button class="secondary" id="clear">Clear local history</button></section>
+<section><h2>2 · Decision</h2><p id="status" role="status">No evaluation yet.</p><pre id="output">Submit a proposal to evaluate.</pre><button class="secondary" id="download" disabled>Download JSON evidence</button><p class="note">Decisions are advisory unless an external executor is explicitly integrated to enforce them. The demo does not authenticate users, validate approvals, prevent remote duplicates or provide a tamper-proof audit trail.</p></section>
+<section><h2>3 · Scope and commercial validation</h2><p>Designed for teams that need to stop duplicate or unapproved automated actions before they reach email, payment, publishing or record systems. The prototype is a locally executed decision simulator, not a certified security product or a production gateway.</p><p>Potential pilot deliverable: integration-specific policy engine, signed server-side audit events, authenticated approvals, idempotency store and fail-closed enforcement. These capabilities require further engineering and security testing.</p><p>Contact: <a style="color:#8ef0d3" href="https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/issues">Project GitHub issues</a> (public; do not submit secrets).</p></section>
+<footer><p class="note">Original software demo. No AI model calls, analytics, payment collection, third-party assets or claims of certification.</p></footer></main>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id);let latest=null;const historyKey='proofgate-v1';
+function history(){try{const v=JSON.parse(localStorage.getItem(historyKey)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
+function save(h){try{localStorage.setItem(historyKey,JSON.stringify(h.slice(-100)))}catch{}}
+$('check').addEventListener('click',()=>{
+const agent=$('agent').value.trim(),key=$('key').value.trim(),tool=$('tool').value,env=$('env').value,amount=Number($('amount').value),approval=$('approval').value.trim(),reason=$('reason').value.trim(),authorized=$('authorized').checked;
+const reasons=[],past=history();
+if(!agent||!key||!reason)reasons.push('Missing required agent, action key or justification');
+if(!Number.isFinite(amount)||amount<0)reasons.push('Invalid amount');
+if(!authorized)reasons.push('Authorization has not been attested');
+if(past.some(x=>x.agent===agent&&x.key===key))reasons.push('Duplicate agent/action idempotency key in this browser');
+if(['delete_record','transfer_funds'].includes(tool)&&env==='production'&&!approval)reasons.push('Sensitive production action requires human approval reference');
+if(tool==='transfer_funds'&&amount<=0)reasons.push('Transfer amount must be positive');
+if(tool==='transfer_funds'&&amount>1000)reasons.push('Transfers above $1,000 blocked by demo policy');
+const decision=reasons.length?'DENY':'ALLOW (ADVISORY)';
+latest={schema:'proofgate.demo.v1',timestamp:new Date().toISOString(),agent,key,tool,environment:env,amount_usd:amount,approval_reference:approval||null,authorization_attested:authorized,justification:reason,decision,reasons,policy_version:'demo-1',warning:'Not authenticated, cryptographically signed or remotely enforced'};
+$('status').textContent=decision;$('output').textContent=JSON.stringify(latest,null,2);$('download').disabled=false;
+if(!reasons.length)save([...past,{agent,key}]);
+});
+$('download').addEventListener('click',()=>{if(!latest)return;const b=new Blob([JSON.stringify(latest,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='proofgate-evidence.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)});
+$('clear').addEventListener('click',()=>{localStorage.removeItem(historyKey);$('status').textContent='Local history cleared.'});
+})();
+</script></html>
