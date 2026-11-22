@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ROUTES,permittedService,quoteFromHeadersOrBody,requirePaymentReceipt,validateQuote} from './buyer.mjs';
+import {ROUTES,permittedService,quoteFromHeadersOrBody,readSettledJson,requirePaymentReceipt,validateQuote} from './buyer.mjs';
 const good={x402Version:2,accepts:[{scheme:'exact',network:'eip155:8453',amount:'1000',asset:'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',payTo:'0xcfFC976906D38aA752937C9785Ed4f3FD046a946'}]};
 const clone=x=>JSON.parse(JSON.stringify(x));
 test('valid single correct quote',()=>assert.equal(validateQuote(good,ROUTES.email).usd,.001));
@@ -34,3 +34,8 @@ test('rejects invalid settlement transaction hash',()=>assert.throws(()=>require
 test('rejects invalid settlement payer',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,payer:'not-an-address'})),/payer is invalid/));
 test('accepts receipt bound to signing wallet',()=>assert.equal(requirePaymentReceipt(receipt(settled),'eip155:8453',settled.payer).payer,settled.payer));
 test('rejects receipt for a different payer',()=>assert.throws(()=>requirePaymentReceipt(receipt(settled),'eip155:8453','0x'+'c'.repeat(40)),/does not match signing wallet/));
+
+const paidTx='0x'+'d'.repeat(64);
+test('reads bounded JSON after settlement',async()=>assert.deepEqual(await readSettledJson(new Response(JSON.stringify({ok:true})),paidTx),{ok:true}));
+test('rejects malformed paid JSON after settlement with no-retry warning',async()=>await assert.rejects(readSettledJson(new Response('not-json'),paidTx),/Settlement already reported success.*not valid JSON.*do not retry automatically/));
+test('rejects oversized paid output after settlement with no-retry warning',async()=>await assert.rejects(readSettledJson(new Response('x'.repeat(33)),paidTx,32),/Settlement already reported success.*exceeds 32 bytes.*do not retry automatically/));
