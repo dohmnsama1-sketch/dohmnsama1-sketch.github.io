@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ROUTES,permittedService,quoteFromHeadersOrBody,validateQuote} from './buyer.mjs';
+import {ROUTES,permittedService,quoteFromHeadersOrBody,requirePaymentReceipt,validateQuote} from './buyer.mjs';
 const good={x402Version:2,accepts:[{scheme:'exact',network:'eip155:8453',amount:'1000',asset:'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',payTo:'0xcfFC976906D38aA752937C9785Ed4f3FD046a946'}]};
 const clone=x=>JSON.parse(JSON.stringify(x));
 test('valid single correct quote',()=>assert.equal(validateQuote(good,ROUTES.email).usd,.001));
@@ -21,3 +21,7 @@ test('rejects malformed 402 payload',()=>assert.throws(()=>quoteFromHeadersOrBod
 test('reads correctly encoded 402 header',()=>assert.equal(quoteFromHeadersOrBody(Buffer.from(JSON.stringify(good)).toString('base64'),null).accepts[0].amount,'1000'));
 test('fails on invalid 402 header',()=>assert.throws(()=>quoteFromHeadersOrBody('!',good),/Malformed/));
 test('rejects custom max cap',()=>assert.throws(()=>validateQuote(good,ROUTES.email,{maxAtomic:500n}),/maximum/));
+
+test('accepts bounded payment response receipt',()=>assert.equal(requirePaymentReceipt('eyJzdWNjZXNzIjp0cnVlfQ=='),'eyJzdWNjZXNzIjp0cnVlfQ=='));
+test('rejects missing payment response receipt',()=>assert.throws(()=>requirePaymentReceipt(null),/missing payment-response receipt/));
+test('rejects oversized payment response receipt',()=>assert.throws(()=>requirePaymentReceipt('x'.repeat(40001)),/exceeds limits/));
