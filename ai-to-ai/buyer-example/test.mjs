@@ -22,6 +22,13 @@ test('reads correctly encoded 402 header',()=>assert.equal(quoteFromHeadersOrBod
 test('fails on invalid 402 header',()=>assert.throws(()=>quoteFromHeadersOrBody('!',good),/Malformed/));
 test('rejects custom max cap',()=>assert.throws(()=>validateQuote(good,ROUTES.email,{maxAtomic:500n}),/maximum/));
 
-test('accepts bounded payment response receipt',()=>assert.equal(requirePaymentReceipt('eyJzdWNjZXNzIjp0cnVlfQ=='),'eyJzdWNjZXNzIjp0cnVlfQ=='));
+const settled={success:true,transaction:'0x'+'a'.repeat(64),network:'eip155:8453',payer:'0x'+'b'.repeat(40)};
+const receipt=x=>Buffer.from(JSON.stringify(x)).toString('base64');
+test('accepts successful Base settlement receipt',()=>assert.equal(requirePaymentReceipt(receipt(settled)).transaction,settled.transaction));
 test('rejects missing payment response receipt',()=>assert.throws(()=>requirePaymentReceipt(null),/missing payment-response receipt/));
 test('rejects oversized payment response receipt',()=>assert.throws(()=>requirePaymentReceipt('x'.repeat(40001)),/exceeds limits/));
+test('rejects malformed payment response receipt',()=>assert.throws(()=>requirePaymentReceipt('!'),/Malformed/));
+test('rejects failed settlement receipt',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,success:false,errorReason:'insufficient_funds'})),/did not report success/));
+test('rejects settlement receipt from wrong network',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,network:'eip155:1'})),/network mismatch/));
+test('rejects invalid settlement transaction hash',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,transaction:'0x1234'})),/transaction hash/));
+test('rejects invalid settlement payer',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,payer:'not-an-address'})),/payer is invalid/));
