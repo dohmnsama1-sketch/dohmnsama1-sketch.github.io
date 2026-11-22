@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>x402 Buyer Quickstart — DOHMAN Agent Tools</title>
+  <meta name="description" content="A fail-closed Node.js example for validating DOHMAN x402 payment quotes before any buyer-authorized USDC payment.">
+  <style>
+    :root{color-scheme:dark;--bg:#08111f;--panel:#101d31;--line:#263a58;--text:#eef4ff;--muted:#a9bad3;--cyan:#52d8ff;--green:#62e6a7;--warn:#ffd27a;--max:1080px}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#15345a 0,transparent 35%),var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,Segoe UI,sans-serif}
+    a{color:var(--cyan)}a:focus-visible,button:focus-visible{outline:3px solid var(--warn);outline-offset:3px}
+    .wrap{width:min(calc(100% - 32px),var(--max));margin:auto}.nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0}.brand{font-weight:800;color:var(--text);text-decoration:none}.back{font-weight:700}
+    .hero{padding:64px 0 36px}.eyebrow{color:var(--green);font-weight:800;letter-spacing:.1em;font-size:.78rem}.hero h1{font-size:clamp(2.2rem,7vw,4.8rem);line-height:1.02;letter-spacing:-.04em;max-width:850px;margin:.3em 0}.lead{font-size:clamp(1.05rem,2.2vw,1.3rem);max-width:760px;color:var(--muted)}
+    .badges{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0}.badge{border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:#0d192a;font-size:.9rem}.safe{color:var(--green)}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.button{display:inline-block;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:800;background:var(--cyan);color:#04121d}.button.secondary{background:transparent;color:var(--text);border:1px solid var(--line)}
+    main{padding-bottom:70px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:28px 0}.card{background:linear-gradient(150deg,#122139,#0c1728);border:1px solid var(--line);border-radius:16px;padding:24px}.card h2,.card h3{margin-top:0}.price{color:var(--green);font-weight:800}.muted{color:var(--muted)}
+    pre{margin:16px 0 0;padding:18px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#050b13;color:#dfeaff;font:14px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}
+    .notice{border-left:4px solid var(--warn);background:#211b12;padding:18px 20px;border-radius:0 12px 12px 0;margin:28px 0}.notice strong{color:var(--warn)}
+    table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:14px;overflow:hidden}th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}
+    footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted)}
+    @media(max-width:720px){.grid{grid-template-columns:1fr}.hero{padding-top:38px}.nav{align-items:flex-start}.actions .button{width:100%;text-align:center}table{display:block;overflow-x:auto}}
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="../">DOHMAN Agent Tools</a>
+      <a class="back" href="../">← Service catalog</a>
+    </nav>
+    <section class="hero">
+      <div class="eyebrow">X402 BUYER QUICKSTART · NODE.JS 22+</div>
+      <h1>Validate the quote. Fail closed. Spend only by explicit choice.</h1>
+      <p class="lead">This public reference client checks the seller URL, Base network, USDC asset, recipient wallet and per-service price cap before any payment code can run.</p>
+      <div class="badges" aria-label="Safety properties">
+        <span class="badge safe">Quote mode spends $0</span><span class="badge">18 synthetic regression tests</span><span class="badge">No seller API key</span><span class="badge">Payment requires explicit --pay</span>
+      </div>
+      <div class="actions">
+        <a class="button" href="https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/tree/main/ai-to-ai/buyer-example">View source on GitHub</a>
+        <a class="button secondary" href="../services.json">Inspect service catalog JSON</a>
+      </div>
+    </section>
+  </header>
+  <main class="wrap">
+    <section aria-labelledby="start">
+      <h2 id="start">No-cost quote validation</h2>
+      <p class="muted">Clone or download the three source files, then run the unsigned quote path locally. It expects HTTP 402 and does not read a wallet secret.</p>
+      <pre><code>node buyer.mjs --quote email
+node buyer.mjs --quote domain
+node --test test.mjs</code></pre>
+    </section>
+    <div class="notice"><strong>Real-money boundary:</strong> <code>--pay</code> can transfer real USDC from a buyer-controlled wallet. Do not run it unless you own the wallet, approve the live quote and intend to purchase the service. Never paste a private key into this page, GitHub, chat or a public build log. Do not blindly retry after an ambiguous paid response.</div>
+    <section aria-labelledby="routes">
+      <h2 id="routes">Four allowlisted routes</h2>
+      <div class="grid">
+        <article class="card"><h3>Email Domain Evidence</h3><p class="price">0.001 USDC / call</p><p class="muted">Format and public DNS/domain evidence for one address. Not mailbox existence or deliverability proof.</p></article>
+        <article class="card"><h3>Domain &amp; Company Evidence</h3><p class="price">0.003 USDC / call</p><p class="muted">Bounded public DNS and website context. Not corporate identity or KYB certification.</p></article>
+        <article class="card"><h3>Batch Email Evidence</h3><p class="price">0.005 USDC / call</p><p class="muted">Domain evidence for 1–10 addresses. No SMTP mailbox probe.</p></article>
+        <article class="card"><h3>Web Content Evidence</h3><p class="price">0.002 USDC / call</p><p class="muted">Bounded public HTTPS source evidence for RAG. No private login or paywall access.</p></article>
+      </div>
+    </section>
+    <section aria-labelledby="checks">
+      <h2 id="checks">What the client rejects</h2>
+      <table>
+        <thead><tr><th>Gate</th><th>Required value</th><th>Failure behavior</th></tr></thead>
+        <tbody>
+          <tr><td>Network</td><td>Base mainnet · eip155:8453</td><td>Stops before signing</td></tr>
+          <tr><td>Asset</td><td>Published Base USDC contract</td><td>Stops before signing</td></tr>
+          <tr><td>Recipient</td><td>Published seller wallet</td><td>Stops before signing</td></tr>
+          <tr><td>Price</td><td>Route cap and global 0.005 USDC cap</td><td>Stops before signing</td></tr>
+          <tr><td>Route</td><td>One of four fixed seller URLs</td><td>Rejects unknown target or redirect</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="grid" aria-label="Further resources">
+      <article class="card"><h2>Read the full guide</h2><p class="muted">Install instructions, production limitations, payment warnings and the exact test commands are in the repository README.</p><a href="https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/blob/main/ai-to-ai/buyer-example/README.md">Open README</a></article>
+      <article class="card"><h2>Machine discovery</h2><p class="muted">Compare the static catalog with the live endpoint quote before authorizing any spend.</p><a href="https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-market-gateway/openapi.json">OpenAPI</a> · <a href="https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/mcp-gateway">MCP gateway</a></article>
+    </section>
+  </main>
+  <footer><div class="wrap">Independent seller reference · No affiliation with Coinbase, Circle, PayAI, Agent402 or Supabase · The page itself cannot initiate payment.</div></footer>
+</body>
+</html>
