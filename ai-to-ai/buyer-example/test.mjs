@@ -32,3 +32,5 @@ test('rejects failed settlement receipt',()=>assert.throws(()=>requirePaymentRec
 test('rejects settlement receipt from wrong network',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,network:'eip155:1'})),/network mismatch/));
 test('rejects invalid settlement transaction hash',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,transaction:'0x1234'})),/transaction hash/));
 test('rejects invalid settlement payer',()=>assert.throws(()=>requirePaymentReceipt(receipt({...settled,payer:'not-an-address'})),/payer is invalid/));
+test('accepts receipt bound to signing wallet',()=>assert.equal(requirePaymentReceipt(receipt(settled),'eip155:8453',settled.payer).payer,settled.payer));
+test('rejects receipt for a different payer',()=>assert.throws(()=>requirePaymentReceipt(receipt(settled),'eip155:8453','0x'+'c'.repeat(40)),/does not match signing wallet/));
