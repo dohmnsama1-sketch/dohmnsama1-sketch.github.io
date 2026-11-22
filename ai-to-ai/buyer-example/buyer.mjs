@@ -37,6 +37,11 @@ export function permittedService(raw) {
   if(typeof raw!=='string'||!Object.prototype.hasOwnProperty.call(ROUTES,raw))throw Error('Unknown service; choose email, domain, batch or web');
   return ROUTES[raw];
 }
+export function requirePaymentReceipt(headerValue) {
+  if(typeof headerValue!=='string'||headerValue.length===0)throw Error('Paid execution missing payment-response receipt; reconcile wallet before retrying');
+  if(headerValue.length>40000)throw Error('Payment response receipt exceeds limits');
+  return headerValue;
+}
 async function readQuote(url,route) {
   const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),9000);
   try {
@@ -71,8 +76,9 @@ export async function main(argv=process.argv.slice(2)) {
   const paidFetch=wrapFetchWithPayment(guarded,client);
   const response=await paidFetch(url,{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify(route.body),redirect:'manual'});
   if(!response.ok)throw Error('Paid execution returned HTTP '+response.status+'; check wallet before retrying.');
+  requirePaymentReceipt(response.headers.get('payment-response'));
   const data=await response.json();
-  console.log(JSON.stringify({status:'executed',response:data,has_payment_response:!!response.headers.get('payment-response')},null,2));
+  console.log(JSON.stringify({status:'executed',response:data,payment_receipt_present:true},null,2));
   return 0;
 }
 if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){main().catch(err=>{console.error('ERROR:',err.message);process.exitCode=1;});}
