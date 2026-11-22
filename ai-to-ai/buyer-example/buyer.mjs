@@ -37,7 +37,7 @@ export function permittedService(raw) {
   if(typeof raw!=='string'||!Object.prototype.hasOwnProperty.call(ROUTES,raw))throw Error('Unknown service; choose email, domain, batch or web');
   return ROUTES[raw];
 }
-export function requirePaymentReceipt(headerValue,expectedNetwork=CHAIN) {
+export function requirePaymentReceipt(headerValue,expectedNetwork=CHAIN,expectedPayer=null) {
   if(typeof headerValue!=='string'||headerValue.length===0)throw Error('Paid execution missing payment-response receipt; reconcile wallet before retrying');
   if(headerValue.length>40000)throw Error('Payment response receipt exceeds limits');
   let receipt;
@@ -47,6 +47,7 @@ export function requirePaymentReceipt(headerValue,expectedNetwork=CHAIN) {
   if(receipt.network!==expectedNetwork)throw Error('Payment receipt network mismatch');
   if(!/^0x[0-9a-fA-F]{64}$/.test(String(receipt.transaction)))throw Error('Payment receipt transaction hash is invalid');
   if(!/^0x[0-9a-fA-F]{40}$/.test(String(receipt.payer)))throw Error('Payment receipt payer is invalid');
+  if(expectedPayer!==null&&(!/^0x[0-9a-fA-F]{40}$/.test(String(expectedPayer))||receipt.payer.toLowerCase()!==String(expectedPayer).toLowerCase()))throw Error('Payment receipt payer does not match signing wallet');
   return Object.freeze({success:true,transaction:receipt.transaction,network:receipt.network,payer:receipt.payer});
 }
 async function readQuote(url,route) {
@@ -68,8 +69,8 @@ export async function main(argv=process.argv.slice(2)) {
   const key=process.env.EVM_PRIVATE_KEY;
   if(typeof key!=='string'||!/^0x[0-9a-fA-F]{64}$/.test(key))throw Error('EVM_PRIVATE_KEY missing or malformed; do not paste it into a webpage');
   const [{x402Client,wrapFetchWithPayment},{registerExactEvmScheme},{privateKeyToAccount}]=await Promise.all([import('@x402/fetch'),import('@x402/evm/exact/client'),import('viem/accounts')]);
-  const client=new x402Client();
-  registerExactEvmScheme(client,{signer:privateKeyToAccount(key)});
+  const client=new x402Client(),account=privateKeyToAccount(key);
+  registerExactEvmScheme(client,{signer:account});
   const guarded=async(urlOrRequest,init)=>{
     const actual=typeof urlOrRequest==='string'?urlOrRequest:urlOrRequest?.url;
     if(actual!==url)throw Error('Refusing request to unexpected endpoint');
@@ -83,7 +84,7 @@ export async function main(argv=process.argv.slice(2)) {
   const paidFetch=wrapFetchWithPayment(guarded,client);
   const response=await paidFetch(url,{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify(route.body),redirect:'manual'});
   if(!response.ok)throw Error('Paid execution returned HTTP '+response.status+'; check wallet before retrying.');
-  const receipt=requirePaymentReceipt(response.headers.get('payment-response'));
+  const receipt=requirePaymentReceipt(response.headers.get('payment-response'),CHAIN,account.address);
   const data=await response.json();
   console.log(JSON.stringify({status:'executed',response:data,payment_receipt:{transaction:receipt.transaction,network:receipt.network}},null,2));
   return 0;
