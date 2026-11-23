@@ -328,7 +328,15 @@ def main():
     for mode in ("baseline","regime"):
         for slip in (0.00,0.15,0.50):
             results.append(evaluate(bars,mode,slip))
+        # Actual owner target capital is 50 USD. Refuse to round up to an
+        # unsafe broker minimum lot merely to force a trade.
+        results.append(evaluate(bars,mode,0.15,initial_equity=50))
     data={"status":"exploratory_not_MT5_or_Exness_verified",
+          "real_money_release_permitted":False,
+          "real_money_blockers":["external feed is not Exness fills",
+             "historical 5-minute OHLC cannot reconstruct intrabar tick order",
+             "no verified broker margin/swap/fill model",
+             "must demonstrate positive independent forward-test and risk feasibility"],
           "m5_bars":len(bars),
           "first":bars[0]["time"].isoformat(),
           "last":bars[-1]["time"].isoformat(),
