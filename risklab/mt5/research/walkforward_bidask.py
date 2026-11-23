@@ -204,6 +204,18 @@ def conservative_exit_fill(side, stop, target, bar, slippage):
             return target + slippage, False
     return None
 
+def closed_bar_breakout_signal(bars,i,atr):
+    """Donchian breakout from fully closed data only; bar i is never read."""
+    if i<=DONCHIAN_LOOKBACK+1 or atr[i-1] is None:
+        return 0
+    history=bars[i-DONCHIAN_LOOKBACK-1:i-1]
+    recent=bars[i-1]
+    high=max(x["bid_high"] for x in history)
+    low=min(x["bid_low"] for x in history)
+    buffer=BREAKOUT_BUFFER_ATR*atr[i-1]
+    return (1 if recent["bid_close"]>high+buffer else
+            -1 if recent["bid_close"]<low-buffer else 0)
+
 def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_per_lot_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN):
     if mode not in ("baseline","regime","breakout"): raise ValueError("invalid strategy")
     if slippage<0 or initial_equity<=0 or commission_per_lot_round_turn<0: raise ValueError("invalid cost/capital")
@@ -249,15 +261,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
         if atr[i-1] is None if i>0 else True: continue
         if i<max(FAST,SLOW)+2: continue
         if mode=="breakout":
-            if i<=DONCHIAN_LOOKBACK+1: continue
-            # Previous closed M5 bar is the signal. Range excludes this bar.
-            history=bars[i-DONCHIAN_LOOKBACK-1:i-1]
-            recent=bars[i-1]
-            high=max(x["bid_high"] for x in history)
-            low=min(x["bid_low"] for x in history)
-            buffer=BREAKOUT_BUFFER_ATR*atr[i-1]
-            side=(1 if recent["bid_close"]>high+buffer else
-                 -1 if recent["bid_close"]<low-buffer else 0)
+            side=closed_bar_breakout_signal(bars,i,atr)
         else:
             f0=sma(closes,i-1,FAST)
             f1=sma(closes,i,FAST)
