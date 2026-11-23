@@ -37,3 +37,16 @@ The prior year-wide baseline/regime test [GitHub run 45288503401](https://github
 A three-week exploratory run with new **Donchian breakout** hypothesis, [run 45291111217](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45291111217), found just four trades: +49.97 USD with **zero slippage**, but -71.25 USD with **0.15 USD adverse slippage per side**, and -77.90 USD at 0.50 USD. Its win count and optimistic no-slippage result are **not adequate evidence**. On 2026-11-24 the breakout candidate was hardened to fire only on the **first** previously closed-bar channel breach, preventing repeat entries on one extended move. A new full-year run [45291504940](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45291504940) was started with this hardening and remains unapproved until result logs are inspected.
 
 Research source remains **Dukascopy-derived public quotes**, not verified Exness fills. No strategy here has shown reproducible profitable real-money execution; do **not** fund or enable real trading on the strength of automated source-code tests. High win percentage, including 99%, is not equivalent to positive net expectancy.
+
+## Research audit addition — 2026-11-24 (monthly consistency)
+
+The research pipeline now reports individual **exit-attributed** realized monthly P/L, including months with data but no closed trades. Note that a position crossing a calendar month is attributed to its **exit** month; no data is inferred for missing quote periods.
+
+Strict research gate additionally requires:
+- Six or more distinct **active** trading months.
+- Positive net P/L in at least 60% of active months.
+- No observed single realized loss larger than 2% of the simulated initial balance.
+- Previously established cost and chronological holdout checks, including exclusion of boundary-crossing trade P/L and profitability under higher assumed slippage.
+These are **arbitrary prespecified research rejection rules**, not estimates of actual risk of ruin, formal statistical proof of an edge, or permission for live trading. Losses can exceed 2% with broker gaps despite this historical criterion.
+
+Latest source/tests: [GitHub CI run 45292290220](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45292290220): 35 JavaScript tests plus 31 Python tests passed. The latest full 47-week re-run started as [45291504940](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45291504940); no profitability claim until its result and run SHA are inspected. The prior full-year baseline and regime tests were both negative. Do not confuse source-code passing tests with successful live/demo broker orders.
