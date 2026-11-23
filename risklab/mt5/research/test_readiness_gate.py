@@ -63,7 +63,7 @@ class ReadinessChecks(unittest.TestCase):
                 "m5_bars":20000,"status":"external_feeds_only"}
         full=gate.readiness(report)
         self.assertFalse(full["real_money_release_permitted"])
-        self.assertEqual(len(full["candidate_checks"]),2)
+        self.assertEqual(len(full["candidate_checks"]),3)
 
     def test_missing_or_ambiguous_cost_results_fail_closed(self):
         self.assertEqual(gate.judge_one(None,None)["decision"],"INSUFFICIENT_EVIDENCE")
