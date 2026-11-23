@@ -152,6 +152,33 @@ def wilson_interval(wins,total,z=1.96):
     half=z*math.sqrt(p*(1-p)/total+z*z/(4*total*total))/d
     return [round(max(0,mid-half),4),round(min(1,mid+half),4)]
 
+def partition_closed_trades(trades, boundary_1, boundary_2):
+    """Exclude positions crossing a research/validation/holdout boundary.
+
+    Entry-period attribution alone leaks a future outcome into the older
+    segment if its exit occurred in a later segment. Such trades remain
+    in TOTAL account P/L but cannot support per-split profitability.
+    """
+    def segment(t):
+        if t < boundary_1:
+            return "analysis"
+        return "validation" if t < boundary_2 else "holdout"
+
+    buckets = {"analysis": [], "validation": [], "holdout": []}
+    contaminated = []
+    for trade in trades:
+        start = dt.datetime.fromisoformat(trade["entry"])
+        finish = dt.datetime.fromisoformat(trade["exit"])
+        if finish < start:
+            raise ValueError("trade exit precedes trade entry")
+        first, last = segment(start), segment(finish)
+        if first != last:
+            contaminated.append(trade)
+        else:
+            buckets[first].append(trade["pnl"])
+    return buckets, contaminated
+
+
 def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
     if mode not in ("baseline","regime"): raise ValueError("invalid strategy")
     if slippage<0 or initial_equity<=0: raise ValueError("invalid cost/capital")
@@ -293,11 +320,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
     years=["2026"] # report uses chronological segments, never fitted to price outcomes
     i1=bars[len(bars)*3//5]["time"]
     i2=bars[len(bars)*4//5]["time"]
-    split={"analysis":[],"validation":[],"holdout":[]}
-    for t in trades:
-        stamp=dt.datetime.fromisoformat(t["entry"])
-        name="analysis" if stamp<i1 else "validation" if stamp<i2 else "holdout"
-        split[name].append(t["pnl"])
+    split, boundary_crossers = partition_closed_trades(trades,i1,i2)
     return {
         "mode":mode,"slippage_usd_per_oz_per_side":slippage,
         "source":"independent public Dukascopy-derived M5 bid/ask aggregation, not broker fills",
@@ -315,6 +338,8 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
         "split_60_20_20":[{"name":name,"start_boundary":(None if name=="analysis" else
              i1.isoformat() if name=="validation" else i2.isoformat()),
              "trades":len(values),"net_pnl":round(sum(values),2)} for name,values in split.items()],
+        "boundary_crossing_trades":len(boundary_crossers),
+        "cross_partition_pnl_excluded_from_split":round(sum(t["pnl"] for t in boundary_crossers),2),
         "min_sample_reached":len(trades)>=100,
     }
 
