@@ -7,6 +7,7 @@ profits, point estimates of win rate, or merely having tick data.
 import argparse
 import json
 import pathlib
+import math
 
 
 def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_holdout=30):
@@ -17,8 +18,30 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
         reasons.append("benchmark has wrong simulated reference equity")
     for version,run in (("reference",baseline),("stressed",stressed)):
         fee=run.get("assumed_commission_usd_per_lot_round_turn")
-        if not isinstance(fee,(int,float)) or not 0<=fee<=1000:
+        if not isinstance(fee,(int,float)) or not math.isfinite(fee) or not 0<=fee<=1000:
             reasons.append(f"{version} run lacks a valid explicit commission assumption")
+        # Prevent a malformed or selectively edited result from claiming alpha.
+        keys=("initial_equity","ending_equity","net_pnl","gross_profit","gross_loss")
+        vals=[run.get(k) for k in keys]
+        if any(not isinstance(v,(int,float)) or not math.isfinite(v) for v in vals):
+            reasons.append(f"{version} run lacks internally auditable P/L components")
+        else:
+            starting,ending,net,gross_profit,gross_loss=vals
+            if gross_profit<0 or gross_loss<0 or abs((gross_profit-gross_loss)-net)>0.05:
+                reasons.append(f"{version} run gross profit/loss do not reconcile with net P/L")
+            if abs((ending-starting)-net)>0.05:
+                reasons.append(f"{version} run ending equity does not reconcile with net P/L")
+        splits=run.get("split_60_20_20",[])
+        names=[x.get("name") for x in splits] if isinstance(splits,list) else []
+        if sorted(names)!=["analysis","holdout","validation"]:
+            reasons.append(f"{version} run has missing or duplicated chronological partitions")
+        else:
+            total=run.get("number_of_closed_trades")
+            crossed=run.get("boundary_crossing_trades",0)
+            if not isinstance(total,int) or not isinstance(crossed,int) or crossed<0 or (
+                sum(x.get("trades",0) for x in splits)+crossed!=total
+            ):
+                reasons.append(f"{version} run closed trade counts do not reconcile across chronological partitions")
     closed=baseline.get("number_of_closed_trades",0)
     split={x["name"]:x for x in baseline.get("split_60_20_20",[]) }
     holdout=split.get("holdout",{})
