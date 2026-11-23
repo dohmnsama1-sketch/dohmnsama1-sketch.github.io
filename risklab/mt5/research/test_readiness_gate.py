@@ -15,7 +15,9 @@ def case(mode="regime",trades=150,holdout=40,net=1200,holdout_net=240,pf=1.6,dd=
             "initial_equity":10000,"number_of_closed_trades":trades,
             "months_with_trades":8,"positive_month_share_active":0.75,
             "largest_trade_loss_usd":-52,
-            "net_pnl":net,"profit_factor":pf,
+            "net_pnl":net,"ending_equity":10000+net,
+            "gross_profit":max(0,net)+500,"gross_loss":max(0,-net)+500,
+            "profit_factor":pf,
             "max_closed_equity_drawdown_fraction":dd,
             "split_60_20_20":[{"name":"analysis","trades":80,"net_pnl":600},
                              {"name":"validation","trades":30,"net_pnl":360},
@@ -32,6 +34,23 @@ class ReadinessChecks(unittest.TestCase):
         a["win_rate"]=.99
         d=gate.judge_one(a,case(slip=.5,net=-100))
         self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
+
+    def test_forged_net_and_missing_fill_accounting_rejected(self):
+        reference=case()
+        reference["net_pnl"]=999999
+        result=gate.judge_one(reference,case(slip=.5))
+        self.assertEqual(result["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("do not reconcile"," ".join(result["reasons"]))
+        reference=case()
+        del reference["gross_loss"]
+        result=gate.judge_one(reference,case(slip=.5))
+        self.assertIn("auditable P/L"," ".join(result["reasons"]))
+
+    def test_partition_counts_must_reconcile(self):
+        reference=case()
+        reference["split_60_20_20"][0]["trades"]=800
+        result=gate.judge_one(reference,case(slip=.5))
+        self.assertIn("trade counts do not reconcile"," ".join(result["reasons"]))
 
     def test_missing_commission_assumption_blocks_approval(self):
         reference=case()
