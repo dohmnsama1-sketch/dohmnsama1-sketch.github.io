@@ -56,12 +56,12 @@ def read_bars(path: Path):
                     raise ValueError("non-positive or non-finite quote")
             b["ticks"]=int(row["ticks"])
             if b["ticks"]<=0: raise ValueError("empty M5 quote interval")
+            if b["bid_open"]>b["ask_open"] or b["bid_high"]>b["ask_high"] or b["bid_low"]>b["ask_low"]:
+                raise ValueError("crossed or inconsistent BID/ASK data")
             for s in ("bid","ask"):
                 if not (b[s+"_low"]<=min(b[s+"_open"],b[s+"_close"])
                         <=max(b[s+"_open"],b[s+"_close"])<=b[s+"_high"]):
                     raise ValueError("invalid OHLC price range")
-            if b["bid_open"]>b["ask_open"] or b["bid_high"]>b["ask_high"] or b["bid_low"]>b["ask_low"]:
-                raise ValueError("crossed or inconsistent BID/ASK data")
             bars.append(b)
     if not bars: raise ValueError("empty series")
     return bars
