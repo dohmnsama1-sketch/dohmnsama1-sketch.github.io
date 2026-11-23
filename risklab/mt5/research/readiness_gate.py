@@ -22,6 +22,8 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
         reasons.append(f"too few total independent closed trades: {closed} < {min_closed}")
     if holdout.get("trades",0)<min_holdout:
         reasons.append("too few holdout trades")
+    if baseline.get("boundary_crossing_trades",0)>0 or stressed.get("boundary_crossing_trades",0)>0:
+        reasons.append("cross-partition trades require separate embargoed re-runs before research approval")
     if baseline.get("net_pnl",0)<=0:
         reasons.append("negative or zero net profit after modeled trading costs")
     if holdout.get("net_pnl",0)<=0:
