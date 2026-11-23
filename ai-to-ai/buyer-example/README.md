@@ -1,5 +1,7 @@
 # DOHMAN Agent Tools — x402 buyer quickstart
 
+[![Agent x402 Buyer Safety Checks](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/workflows/agent-x402-buyer-checks.yml/badge.svg)](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/workflows/agent-x402-buyer-checks.yml)
+
 **For developers building AI agents that need paid, scoped data evidence.** Use an existing, live x402 endpoint with no seller API key or subscription. A wallet-compatible x402 client must approve and pay the exact quote for real execution.
 
 ## Four real services
