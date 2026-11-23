@@ -29,3 +29,11 @@
 - Real demonstration of profitable holdout after stressed costs and true Exness demo fills is missing.
 - Tiny equity ($50) does not support 0.01 lot gold with strict 0.5 percent risk for many ATR stops. Never widen risk just to force trade.
 - No guaranteed 99 percent win rate or no-loss execution exists.
+
+## 2026-11-24 verified run and third-hypothesis review
+
+The prior year-wide baseline/regime test [GitHub run 45288503401](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45288503401) successfully validated **84,371,369 public quotes** into **63,275 M5 bid/ask bars**. The prespecified baseline and regime models lost money in that historical replay. That run predates subsequent conservative fill and commission changes; do not compare absolute returns without fixing test version.
+
+A three-week exploratory run with new **Donchian breakout** hypothesis, [run 45291111217](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45291111217), found just four trades: +49.97 USD with **zero slippage**, but -71.25 USD with **0.15 USD adverse slippage per side**, and -77.90 USD at 0.50 USD. Its win count and optimistic no-slippage result are **not adequate evidence**. On 2026-11-24 the breakout candidate was hardened to fire only on the **first** previously closed-bar channel breach, preventing repeat entries on one extended move. A new full-year run [45291504940](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45291504940) was started with this hardening and remains unapproved until result logs are inspected.
+
+Research source remains **Dukascopy-derived public quotes**, not verified Exness fills. No strategy here has shown reproducible profitable real-money execution; do **not** fund or enable real trading on the strength of automated source-code tests. High win percentage, including 99%, is not equivalent to positive net expectancy.
