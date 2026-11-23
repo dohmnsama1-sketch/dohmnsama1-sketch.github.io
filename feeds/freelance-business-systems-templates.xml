@@ -8,7 +8,7 @@
     <description>New pins for the Freelance Business Systems &amp; Templates board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Sun, 15 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 23 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/freelance-business-systems-templates.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -40,6 +40,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/14-demo-01-free-app.jpg" type="image/jpeg" length="205505"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/14-demo-01-free-app.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Free Freelance App: Client Tracker, Time Tracking &amp; Invoices in One Dashboard</media:title>
+    </item>
+    <item>
+      <title>Freelance Client Tracker: CRM and Onboarding Pack (Sheets + Docs)</title>
+      <description>A freelancer CRM and onboarding pack: Sheets or Excel CRM plus proposal, contract starter, invoice and questionnaire (English + Arabic). You fill the yellow cells; it does not email clients for you. I'm the maker. Tap to see the preview, $24 instant download.</description>
+      <link>https://dohmnsama1-sketch.github.io/p/crm/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=freelancer-crm&amp;utm_content=y12-2026-11-23-crm-1</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12-2026-11-23-crm-1</guid>
+      <pubDate>Mon, 23 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-23-crm-1.jpg" type="image/jpeg" length="190045"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-23-crm-1.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Freelance Client Tracker: CRM and Onboarding Pack (Sheets + Docs)</media:title>
     </item>
   </channel>
 </rss>
