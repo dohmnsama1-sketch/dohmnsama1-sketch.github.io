@@ -75,6 +75,22 @@ class ResearchTests(unittest.TestCase):
         altered[i-1]["bid_close"]=prior+2+0.1*atr[i-1]
         self.assertEqual(wf.closed_bar_breakout_signal(altered,i,atr),1)
 
+    def test_breakout_is_one_shot_until_price_returns_inside(self):
+        bars=synthetic(100)
+        for j in range(100):
+            bars[j].update({"bid_open":100.0,"bid_high":101.0,
+                            "bid_low":99.0,"bid_close":100.0,
+                            "ask_open":100.2,"ask_high":101.2,
+                            "ask_low":99.2,"ask_close":100.2})
+        for idx,level in [(43,105.0),(44,107.0)]:
+            bars[idx]["bid_close"]=level
+            bars[idx]["bid_high"]=level+0.2
+            bars[idx]["ask_close"]=level+0.2
+            bars[idx]["ask_high"]=level+0.4
+        atr=wf.atr_wilder(bars)
+        self.assertEqual(wf.closed_bar_breakout_signal(bars,44,atr),1)
+        self.assertEqual(wf.closed_bar_breakout_signal(bars,45,atr),0)
+
     def test_commission_research_cost_is_nonnegative_and_explicit(self):
         bars=synthetic(360)
         with self.assertRaisesRegex(ValueError,"invalid cost"):
