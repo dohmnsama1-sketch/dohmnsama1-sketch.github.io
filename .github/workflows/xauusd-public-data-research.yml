@@ -26,7 +26,7 @@ jobs:
         run: python -m unittest discover -s risklab/mt5/research -p "test_*.py" -v
       - name: Download pinned public data and independently validate quotes
         run: python risklab/mt5/research/public_xauusd_ingest.py --weeks "$WEEKS" --output "$RUNNER_TEMP/zalah_xauusd"
-      - name: Independent conservative A/B stress benchmark, no parameter fitting
+      - name: Prespecified baseline versus regime versus Donchian breakout cost stress
         run: python risklab/mt5/research/walkforward_bidask.py --m5 "$RUNNER_TEMP/zalah_xauusd/xauusd_bidask_m5.csv" --output "$RUNNER_TEMP/zalah_xauusd/benchmark.json"
       - name: Refuse unsupported profitability claims and real-money release
         run: python risklab/mt5/research/readiness_gate.py --input "$RUNNER_TEMP/zalah_xauusd/benchmark.json" --output "$RUNNER_TEMP/zalah_xauusd/readiness.json"
