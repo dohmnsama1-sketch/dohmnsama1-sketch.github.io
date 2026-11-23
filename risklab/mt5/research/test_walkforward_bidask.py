@@ -90,6 +90,22 @@ class ResearchTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"exit precedes"):
             wf.partition_closed_trades([t(two,one,12)],one,two)
 
+    def test_take_profit_does_not_grant_unverifiable_favorable_gap(self):
+        b={"bid_open":102.0,"bid_low":101.0,"bid_high":104.0,
+           "ask_open":98.0,"ask_low":96.0,"ask_high":99.0}
+        self.assertEqual(wf.conservative_exit_fill(1,95,100,b,0.2),(99.8,False))
+        self.assertEqual(wf.conservative_exit_fill(-1,105,100,b,0.2),(100.2,False))
+
+    def test_adverse_gap_and_both_levels_hit_choose_stop(self):
+        gap={"bid_open":92.0,"bid_low":90.0,"bid_high":100.0,
+             "ask_open":107.0,"ask_low":96.0,"ask_high":110.0}
+        self.assertEqual(wf.conservative_exit_fill(1,95,105,gap,0.2),(91.8,True))
+        self.assertEqual(wf.conservative_exit_fill(-1,105,95,gap,0.2),(107.2,True))
+        both={"bid_open":100.0,"bid_low":94.0,"bid_high":107.0,
+              "ask_open":101.0,"ask_low":93.0,"ask_high":108.0}
+        self.assertEqual(wf.conservative_exit_fill(1,95,105,both,0.0),(95.0,True))
+        self.assertEqual(wf.conservative_exit_fill(-1,105,95,both,0.0),(105.0,True))
+
     def test_crossed_bidask_fails_closed(self):
         bars=synthetic(3)
         with tempfile.TemporaryDirectory() as temp:
