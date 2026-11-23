@@ -21,6 +21,8 @@ jobs:
         run: python risklab/mt5/research/public_xauusd_ingest.py --weeks 1-47 --output "$RUNNER_TEMP/zalah_full_year"
       - name: Stress benchmark with immutable strategy parameters and chronological splits
         run: python risklab/mt5/research/walkforward_bidask.py --m5 "$RUNNER_TEMP/zalah_full_year/xauusd_bidask_m5.csv" --output "$RUNNER_TEMP/zalah_full_year/benchmark.json"
+      - name: Research-only release gate across all three strategies
+        run: python risklab/mt5/research/readiness_gate.py --input "$RUNNER_TEMP/zalah_full_year/benchmark.json" --output "$RUNNER_TEMP/zalah_full_year/readiness.json"
       - name: Store provenance and aggregated performance only, not third party market data
         uses: actions/upload-artifact@v4
         with:
