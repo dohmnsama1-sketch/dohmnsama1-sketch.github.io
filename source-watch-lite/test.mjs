@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { validateTarget, probe, compare } from './core.mjs';
 const host='docs.github.com', target='https://docs.github.com/en';
 const allowed=[host];
@@ -32,3 +33,10 @@ test('test stream cap',async()=>{await assert.rejects(()=>probe(target,{allowHos
 test('test valid size bounds',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake(),maxBytes:0}),/maxBytes/);});
 test('test valid timeout bounds',async()=>{await assert.rejects(()=>probe(target,{allowHosts:allowed,fetchImpl:fake(),timeoutMs:0}),/timeoutMs/);});
 test('reject invalid baseline',async()=>{const r=await probe(target,{allowHosts:allowed,fetchImpl:fake()});assert.throws(()=>compare(r,{url:target,sha256:'xxx'}),/Invalid baseline/);});
+test('free starter surfaces keep checkout attribution',()=>{
+  const expected='https://dohmnsama.gumroad.com/l/ommpg?utm_source=github-pages&utm_medium=free-starter&utm_campaign=source-watch-lite';
+  const readme=fs.readFileSync(new URL('./README.md',import.meta.url),'utf8');
+  const landing=fs.readFileSync(new URL('./index.html',import.meta.url),'utf8');
+  assert.ok(readme.includes(expected));
+  assert.ok(landing.includes(expected));
+});
