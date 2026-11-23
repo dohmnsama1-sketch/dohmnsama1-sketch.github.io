@@ -1,5 +1,5 @@
 name: Nabra Arabic TTS - free runner smoke test
-# Re-trigger marker: 2026-11-22; no secrets, uploads, or paid services.
+# Health production candidate added 2026-11-23; no secrets, uploads, or paid services.
 on:
   push:
     paths:
@@ -25,7 +25,7 @@ jobs:
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
           python -m pip install 'kokoro @ git+https://github.com/Oddadmix/kokoro.git@main' numpy soundfile huggingface_hub misaki camel-tools
           curl --fail --location --silent --show-error 'https://gist.githubusercontent.com/Oddadmix/dc699f7942a9516ce29d4842c7aed756/raw/827b541c892a862f9ef3b44006a6e27b100d1bdd/arabic_g2p.py' --output arabic_g2p.py
-      - name: Generate two test narrations without account secrets or platform uploads
+      - name: Generate bounded Arabic narrations without account secrets or platform uploads
         shell: bash
         run: |
           mkdir -p candidate_audio
@@ -50,7 +50,8 @@ jobs:
           voice=torch.load(hf_hub_download(repo,voice_file),map_location='cpu',weights_only=True)
           scripts={
             'YHS_priors_probe':'لِمَاذَا يَطْلُبُ طَبِيبُ الْأَشِعَّةِ صُوَرَكَ السَّابِقَةَ؟ لِأَنَّ الْمُقَارَنَةَ تُسَاعِدُ عَلَى فَهْمِ مَا تَغَيَّرَ.',
-            'Interest_rocket_probe':'كَيْفَ يَتَحَرَّكُ الصَّارُوخُ فِي الْفَضَاءِ؟ مُحَرِّكُ الصَّارُوخِ يَطْرُدُ غَازَاتٍ إِلَى الْخَلْفِ فَتَتَوَلَّدُ قُوَّةٌ إِلَى الْأَمَامِ.'
+            'Interest_rocket_probe':'كَيْفَ يَتَحَرَّكُ الصَّارُوخُ فِي الْفَضَاءِ؟ مُحَرِّكُ الصَّارُوخِ يَطْرُدُ غَازَاتٍ إِلَى الْخَلْفِ فَتَتَوَلَّدُ قُوَّةٌ إِلَى الْأَمَامِ.',
+            'YHS_HBA1C_candidate':'قَدْ لَا يَعْنِي ارْتِفَاعُ أَوِ انْخِفَاضُ السُّكَّرِ التَّرَاكُمِيِّ أَنَّ مُتَوَسِّطَ السُّكَّرِ تَغَيَّرَ فِعْلًا. فَالْفَحْصُ يَعْكِسُ ارْتِبَاطَ الْجُلُوكُوزِ بِالْهِيمُوغْلُوبِينِ خِلَالَ نَحْوِ شَهْرَيْنِ إِلَى ثَلَاثَةِ أَشْهُرٍ، لَكِنَّهُ يَعْتَمِدُ أَيْضًا عَلَى عُمْرِ كُرَيَّاتِ الدَّمِ الْحَمْرَاءِ. فَقْدُ دَمٍ حَدِيثٌ أَوِ انْحِلَالُ الدَّمِ قَدْ يُخَفِّضُ النَّتِيجَةَ زَيْفًا، وَنَقْصُ الْحَدِيدِ قَدْ يَرْفَعُهَا. كَمَا قَدْ تُؤَثِّرُ بَعْضُ أَنْوَاعِ الْهِيمُوغْلُوبِينِ أَوْ أَمْرَاضُ الْكُلَى، بِحَسَبِ الْحَالَةِ وَطَرِيقَةِ التَّحْلِيلِ. إِذَا لَمْ تَتَوَافَقِ النَّتِيجَةُ مَعَ قِيَاسَاتِ السُّكَّرِ، فَلَا تُغَيِّرْ عِلَاجَكَ بِنَفْسِكَ. نَاقِشْ مَعَ الطَّبِيبِ إِعَادَةَ الْفَحْصِ أَوِ اسْتِخْدَامَ اخْتِبَارٍ بَدِيلٍ مُنَاسِبٍ.'
           }
           for name,text in scripts.items():
               audio=np.concatenate([a.detach().cpu().numpy() for _,_,a in pipeline(text,voice=voice,speed=1.0)]).astype(np.float32)
