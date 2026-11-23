@@ -3,7 +3,7 @@
 //| Demo-only research EA. No profit or execution guarantee.          |
 //+------------------------------------------------------------------+
 #property strict
-#property version "1.00"
+#property version "1.01"
 #include <Trade/Trade.mqh>
 CTrade trade;
 input string InpSymbol="XAUUSD";
@@ -25,6 +25,8 @@ datetime lastBar=0;
 double dayStartEquity=0,peakEquity=0;
 int dayKey=-1;
 bool locked=false;
+long diagTicks=0,diagSpreadBlocked=0,diagBarChecks=0,diagSignals=0,diagRiskBlocked=0,diagMarginBlocked=0,diagOrderAttempts=0;
+
 int OnInit()
 {
  if(AccountInfoInteger(ACCOUNT_TRADE_MODE)!=ACCOUNT_TRADE_MODE_DEMO)
@@ -50,6 +52,7 @@ int OnInit()
 }
 void OnDeinit(const int reason)
 {
+ PrintFormat("ZALAH_DIAG version=1.01 ticks=%I64d spread_blocked_ticks=%I64d eligible_bars=%I64d crossover_signals=%I64d risk_lot_rejections=%I64d margin_rejections=%I64d order_attempts=%I64d",diagTicks,diagSpreadBlocked,diagBarChecks,diagSignals,diagRiskBlocked,diagMarginBlocked,diagOrderAttempts);
  if(fastHandle!=INVALID_HANDLE) IndicatorRelease(fastHandle);
  if(slowHandle!=INVALID_HANDLE) IndicatorRelease(slowHandle);
  if(atrHandle!=INVALID_HANDLE) IndicatorRelease(atrHandle);
@@ -66,6 +69,7 @@ bool HasPosition()
 }
 void OnTick()
 {
+ diagTicks++;
  if(AccountInfoInteger(ACCOUNT_TRADE_MODE)!=ACCOUNT_TRADE_MODE_DEMO) return;
  MqlDateTime dt; TimeToStruct(TimeTradeServer(),dt);
  int key=dt.year*10000+dt.mon*100+dt.day;
@@ -85,12 +89,12 @@ void OnTick()
  MqlTick tick;
  if(!SymbolInfoTick(InpSymbol,tick)||tick.bid<=0||tick.ask<=tick.bid) return;
  double point=SymbolInfoDouble(InpSymbol,SYMBOL_POINT);
- if(point<=0||(tick.ask-tick.bid)/point>InpMaxSpreadPoints) return;
+ if(point<=0||(tick.ask-tick.bid)/point>InpMaxSpreadPoints) { diagSpreadBlocked++; return; }
  datetime bar=iTime(InpSymbol,InpTimeframe,0);
  if(bar<=0||bar==lastBar) return;
  lastBar=bar;
- double f[3],s[3],a[2];
- ArraySetAsSeries(f,true); ArraySetAsSeries(s,true); ArraySetAsSeries(a,true);
+ diagBarChecks++;
+ double f[2],s[2],a[1];
  // CopyBuffer static arrays: index 0 oldest, so use 0=older, 1=last closed.
  if(CopyBuffer(fastHandle,0,1,2,f)!=2||
     CopyBuffer(slowHandle,0,1,2,s)!=2||
@@ -99,6 +103,7 @@ void OnTick()
  if(f[0]<=s[0]&&f[1]>s[1]) side=1;
  if(f[0]>=s[0]&&f[1]<s[1]) side=-1;
  if(side==0||a[0]<=0) return;
+ diagSignals++;
  double distance=a[0]*InpStopATR;
  double entry=side==1?tick.ask:tick.bid;
  double stop=entry-side*distance;
@@ -120,11 +125,12 @@ void OnTick()
  double raw=budget/lossBudgetPerLot;
  double lots=MathFloor((raw+1e-10)/step)*step;
  lots=NormalizeDouble(lots,8);
- if(lots<minVol||lots>maxVol) { Print("NO TRADE: minimum lot exceeds risk budget."); return; }
+ if(lots<minVol||lots>maxVol) { diagRiskBlocked++; if(diagRiskBlocked<=3) PrintFormat("ZALAH_DIAG risk reject: budget=%.4f USD, estimated minimum-lot loss=%.4f USD, minVol=%.4f, ATR=%.4f, spread_price=%.4f",budget,lossBudgetPerLot*minVol,minVol,a[0],tick.ask-tick.bid); return; }
  double margin=0;
  if(!OrderCalcMargin(kind,InpSymbol,lots,entry,margin)||
-    margin>AccountInfoDouble(ACCOUNT_MARGIN_FREE)*0.5) return;
+    margin>AccountInfoDouble(ACCOUNT_MARGIN_FREE)*0.5) { diagMarginBlocked++; return; }
  // Demo orders are opt-in, and every order includes a broker-side SL and TP.
+ diagOrderAttempts++;
  bool sent=side==1?trade.Buy(lots,InpSymbol,0,stop,target,"ZALAH demo guard"):
                    trade.Sell(lots,InpSymbol,0,stop,target,"ZALAH demo guard");
  Print("DEMO order attempt=",sent," retcode=",trade.ResultRetcode(),
