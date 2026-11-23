@@ -205,16 +205,31 @@ def conservative_exit_fill(side, stop, target, bar, slippage):
     return None
 
 def closed_bar_breakout_signal(bars,i,atr):
-    """Donchian breakout from fully closed data only; bar i is never read."""
-    if i<=DONCHIAN_LOOKBACK+1 or atr[i-1] is None:
+    """Fire only on a *new* confirmed Donchian break, not every bar outside.
+
+    At the open of candle i, only candles up through i-1 are available.
+    A prior break confirmed on i-2 is an already-consumed signal.
+    Both current and prior ranges EXCLUDE their confirming candles.
+    """
+    if i<DONCHIAN_LOOKBACK+3 or atr[i-1] is None or atr[i-2] is None:
         return 0
-    history=bars[i-DONCHIAN_LOOKBACK-1:i-1]
     recent=bars[i-1]
+    previous=bars[i-2]
+    history=bars[i-DONCHIAN_LOOKBACK-1:i-1]
+    prev_history=bars[i-DONCHIAN_LOOKBACK-2:i-2]
     high=max(x["bid_high"] for x in history)
     low=min(x["bid_low"] for x in history)
-    buffer=BREAKOUT_BUFFER_ATR*atr[i-1]
-    return (1 if recent["bid_close"]>high+buffer else
-            -1 if recent["bid_close"]<low-buffer else 0)
+    previous_high=max(x["bid_high"] for x in prev_history)
+    previous_low=min(x["bid_low"] for x in prev_history)
+    threshold=BREAKOUT_BUFFER_ATR*atr[i-1]
+    prev_threshold=BREAKOUT_BUFFER_ATR*atr[i-2]
+    buy=recent["bid_close"]>high+threshold
+    sell=recent["bid_close"]<low-threshold
+    if buy and previous["bid_close"]<=previous_high+prev_threshold:
+        return 1
+    if sell and previous["bid_close"]>=previous_low-prev_threshold:
+        return -1
+    return 0
 
 def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_per_lot_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN):
     if mode not in ("baseline","regime","breakout"): raise ValueError("invalid strategy")
