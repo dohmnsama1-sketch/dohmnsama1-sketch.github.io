@@ -54,6 +54,14 @@ class ResearchTests(unittest.TestCase):
         interval=wf.wilson_interval(8,25)
         self.assertTrue(0<=interval[0]<8/25<interval[1]<=1)
 
+    def test_commission_research_cost_is_nonnegative_and_explicit(self):
+        bars=synthetic(360)
+        with self.assertRaisesRegex(ValueError,"invalid cost"):
+            wf.evaluate(bars,"baseline",commission_per_lot_round_turn=-1)
+        r=wf.evaluate(bars,"baseline",commission_per_lot_round_turn=7.0)
+        self.assertEqual(r["assumed_commission_usd_per_lot_round_turn"],7.0)
+        self.assertIn("generic research assumption",r["approximation"])
+
     def test_no_unbounded_or_negative_slippage(self):
         with self.assertRaises(ValueError):
             wf.evaluate(synthetic(),"baseline",-.1)
