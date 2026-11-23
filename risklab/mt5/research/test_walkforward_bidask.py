@@ -38,7 +38,8 @@ class ResearchTests(unittest.TestCase):
                     self.assertGreater(r["ending_equity"],0)
                     self.assertEqual(len(r["split_60_20_20"]),3)
                     self.assertEqual(r["number_of_closed_trades"],
-                                     sum(x["trades"] for x in r["split_60_20_20"]))
+                                     sum(x["trades"] for x in r["split_60_20_20"])
+                                     +r["boundary_crossing_trades"])
                     self.assertLessEqual(r["max_closed_equity_drawdown_fraction"],1.0)
 
     def test_insufficient_sample_is_not_proven_profitability(self):
@@ -71,6 +72,23 @@ class ResearchTests(unittest.TestCase):
             loaded=wf.read_bars(p)
             self.assertEqual(len(loaded),4)
             self.assertEqual(loaded[0]["bid_open"],rows[0]["bid_open"])
+
+    def test_temporal_boundary_crossers_never_count_as_holdout_or_training_profit(self):
+        base=dt.datetime(2026,1,2,0,0)
+        one=base+dt.timedelta(days=1)
+        two=base+dt.timedelta(days=2)
+        def t(start,finish,pnl):
+            return {"entry":start.isoformat(),"exit":finish.isoformat(),"pnl":pnl}
+        trades=[t(base,base+dt.timedelta(hours=1),-10),
+                t(base,one+dt.timedelta(minutes=1),5000),
+                t(one+dt.timedelta(hours=1),one+dt.timedelta(hours=2),25),
+                t(two,two+dt.timedelta(minutes=5),35)]
+        splits,excluded=wf.partition_closed_trades(trades,one,two)
+        self.assertEqual(splits,{"analysis":[-10],"validation":[25],"holdout":[35]})
+        self.assertEqual(len(excluded),1)
+        self.assertEqual(excluded[0]["pnl"],5000)
+        with self.assertRaisesRegex(ValueError,"exit precedes"):
+            wf.partition_closed_trades([t(two,one,12)],one,two)
 
     def test_crossed_bidask_fails_closed(self):
         bars=synthetic(3)
