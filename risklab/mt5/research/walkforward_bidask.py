@@ -179,6 +179,28 @@ def partition_closed_trades(trades, boundary_1, boundary_2):
     return buckets, contaminated
 
 
+def conservative_exit_fill(side, stop, target, bar, slippage):
+    """Return (executable exit quote, stop_hit) or None.
+
+    Broker-side stop orders can gap through their intended price.
+    Take-profit orders are credited at the limit price, *not* with a
+    favorable price improvement inferred from a 5-minute bar open.
+    Ambiguous intrabar path always chooses the stop (pessimistic).
+    """
+    if side not in (-1, 1) or slippage < 0:
+        raise ValueError("invalid side or slippage")
+    if side == 1:
+        if bar["bid_low"] <= stop:
+            return min(stop, bar["bid_open"]) - slippage, True
+        if bar["bid_high"] >= target:
+            return target - slippage, False
+    else:
+        if bar["ask_high"] >= stop:
+            return max(stop, bar["ask_open"]) + slippage, True
+        if bar["ask_low"] <= target:
+            return target + slippage, False
+    return None
+
 def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
     if mode not in ("baseline","regime"): raise ValueError("invalid strategy")
     if slippage<0 or initial_equity<=0: raise ValueError("invalid cost/capital")
@@ -203,19 +225,9 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
         held_at_open=(position is not None)
         if position is not None:
             pos=position
-            if pos["side"]==1:
-                stop_hit=b["bid_low"]<=pos["stop"]
-                target_hit=b["bid_high"]>=pos["target"]
-                price=min(pos["stop"],b["bid_open"]) if stop_hit else pos["target"]
-                if target_hit and not stop_hit: price=max(pos["target"],b["bid_open"])
-                exit_quote=price-slippage
-            else:
-                stop_hit=b["ask_high"]>=pos["stop"]
-                target_hit=b["ask_low"]<=pos["target"]
-                price=max(pos["stop"],b["ask_open"]) if stop_hit else pos["target"]
-                if target_hit and not stop_hit: price=min(pos["target"],b["ask_open"])
-                exit_quote=price+slippage
-            if stop_hit or target_hit:
+            fill=conservative_exit_fill(pos["side"],pos["stop"],pos["target"],b,slippage)
+            if fill is not None:
+                exit_quote,stop_hit=fill
                 pnl=(exit_quote-pos["entry"])*CONTRACT_UNITS*pos["lots"]*pos["side"]
                 equity+=pnl
                 trades.append({"entry":pos["time"],"exit":b["time"].isoformat(),
@@ -284,20 +296,11 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
         position={"time":b["time"].isoformat(),"side":side,"entry":entry,
                   "stop":stop,"target":target,"lots":lots}
         rejected["entry_attempts"]+=1
-        # Entry is at first quote of bar i; conservative intrabar stop check.
-        if side==1:
-            stop_hit=b["bid_low"]<=stop
-            target_hit=b["bid_high"]>=target
-            if stop_hit or target_hit:
-                price=min(stop,b["bid_open"]) if stop_hit else max(target,b["bid_open"])
-                pnl=(price-slippage-entry)*CONTRACT_UNITS*lots
-        else:
-            stop_hit=b["ask_high"]>=stop
-            target_hit=b["ask_low"]<=target
-            if stop_hit or target_hit:
-                price=max(stop,b["ask_open"]) if stop_hit else min(target,b["ask_open"])
-                pnl=(entry-(price+slippage))*CONTRACT_UNITS*lots
-        if stop_hit or target_hit:
+        # Entry at first quote of bar i; OHLC exit path remains pessimistic.
+        fill=conservative_exit_fill(side,stop,target,b,slippage)
+        if fill is not None:
+            exit_quote,stop_hit=fill
+            pnl=(exit_quote-entry)*CONTRACT_UNITS*lots*side
             equity+=pnl
             trades.append({"entry":position["time"],"exit":b["time"].isoformat(),
                            "side":side,"lots":lots,"pnl":round(pnl,6),"stop_first":bool(stop_hit)})
