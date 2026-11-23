@@ -29,3 +29,10 @@ After recompiling the updated EA in MetaEditor and running a **demo-only Strateg
 
 ### Data-coverage warning
 A run with `History Quality: 0%` is not validated, even if many modeled ticks and bars were processed. Check the Journal line `real ticks begin from ...`: when real ticks begin late in the test interval, most of the earlier test may be based on generated ticks. Seek broker or licensed independent tick history with documented coverage before claiming a real-tick walk-forward result.
+
+## v1.02 Exness XAUUSDm fix
+Broker's XAUUSDm quote point may be 0.001. Previously `InpMaxSpreadPoints=100` meant only 0.10 USD/oz, and the tester rejected every tick. The updated input `InpMaxSpreadPrice=0.50` compares raw `Ask-Bid` in USD per ounce regardless of SYMBOL_POINT precision. This is a *research default*, not a universal broker best setting. Review observed spread distribution, including news spikes, and do not loosen the cap to force trades.
+
+If still on v1.01 and diagnosing without reinstalling, **in Strategy Tester only**, set `InpMaxSpreadPoints=500` for XAUUSDm with `SYMBOL_POINT=0.001`; this is the same 0.50 USD/oz threshold. For other symbols or precision values, do not copy 500: use `desired spread price / SYMBOL_POINT`.
+
+After updating to v1.02, compile on your own MetaEditor; CI checks source safety but **does not compile MQ5**. Do not enable demo live orders until compilation and independent test reports pass. With USD 50 equity and 0.5% risk, expect minimum-lot rejections even after the spread is repaired.
