@@ -5,6 +5,8 @@ on:
       - 'risklab/**'
       - '.github/workflows/risklab-tests.yml'
   workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -16,3 +18,7 @@ jobs:
         with:
           node-version: '22'
       - run: node --test risklab/*.test.cjs risklab/mt5/*.test.cjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest discover -s risklab/mt5/research -p 'test_*.py' -v
