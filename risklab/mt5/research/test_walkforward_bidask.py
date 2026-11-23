@@ -31,7 +31,7 @@ def synthetic(count=360,spread=.25):
 class ResearchTests(unittest.TestCase):
     def test_all_models_parse_and_return_metrics(self):
         bars=synthetic()
-        for mode in ("baseline","regime"):
+        for mode in ("baseline","regime","breakout"):
             for slip in (0.0,.15,.5):
                 with self.subTest(mode=mode,slip=slip):
                     r=wf.evaluate(bars,mode,slip)
@@ -53,6 +53,27 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(wf.wilson_interval(10,10)[1],1.0)
         interval=wf.wilson_interval(8,25)
         self.assertTrue(0<=interval[0]<8/25<interval[1]<=1)
+
+    def test_breakout_signal_does_not_read_future_or_forming_candle(self):
+        bars=synthetic(90)
+        atr=wf.atr_wilder(bars)
+        i=wf.DONCHIAN_LOOKBACK+8
+        before=wf.closed_bar_breakout_signal(bars,i,atr)
+        altered=[dict(b) for b in bars]
+        for k in ("bid_open","bid_high","bid_low","bid_close"):
+            altered[i][k]*=1.35
+        after=wf.closed_bar_breakout_signal(altered,i,atr)
+        self.assertEqual(before,after)
+
+    def test_breakout_requires_confirmed_prior_close_above_history(self):
+        bars=synthetic(90)
+        atr=wf.atr_wilder(bars)
+        i=wf.DONCHIAN_LOOKBACK+8
+        altered=[dict(b) for b in bars]
+        window=altered[i-wf.DONCHIAN_LOOKBACK-1:i-1]
+        prior=max(x["bid_high"] for x in window)
+        altered[i-1]["bid_close"]=prior+2+0.1*atr[i-1]
+        self.assertEqual(wf.closed_bar_breakout_signal(altered,i,atr),1)
 
     def test_commission_research_cost_is_nonnegative_and_explicit(self):
         bars=synthetic(360)
