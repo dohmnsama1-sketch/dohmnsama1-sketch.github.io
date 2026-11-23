@@ -11,6 +11,7 @@ s.loader.exec_module(gate)
 
 def case(mode="regime",trades=150,holdout=40,net=1200,holdout_net=240,pf=1.6,dd=.06,slip=.15):
     return {"mode":mode,"slippage_usd_per_oz_per_side":slip,
+            "assumed_commission_usd_per_lot_round_turn":7.0,
             "initial_equity":10000,"number_of_closed_trades":trades,
             "net_pnl":net,"profit_factor":pf,
             "max_closed_equity_drawdown_fraction":dd,
@@ -29,6 +30,13 @@ class ReadinessChecks(unittest.TestCase):
         a["win_rate"]=.99
         d=gate.judge_one(a,case(slip=.5,net=-100))
         self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
+
+    def test_missing_commission_assumption_blocks_approval(self):
+        reference=case()
+        del reference["assumed_commission_usd_per_lot_round_turn"]
+        d=gate.judge_one(reference,case(slip=.5))
+        self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("commission", " ".join(d["reasons"]))
 
     def test_cost_stress_must_pass(self):
         d=gate.judge_one(case(),case(slip=.5,net=-0.01))
