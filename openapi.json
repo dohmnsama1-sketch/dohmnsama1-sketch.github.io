@@ -1,0 +1,2800 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DOHMAN x402 Market Gateway",
+    "version": "1.0.7",
+    "x-guidance": "Use POST operations for deterministic agent evidence and verification. Each paid operation declares its JSON input, fixed USD price and x402 payment protocol; unpaid requests receive a Base USDC 402 challenge before input validation."
+  },
+  "servers": [
+    {
+      "url": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-market-gateway"
+    }
+  ],
+  "paths": {
+    "/x402-solidity-triage": {
+      "post": {
+        "operationId": "x402_solidity_triage",
+        "summary": "Solidity Security Triage — Public Repository",
+        "description": "Paid Solidity security-triage primitive for agents and CI. Deterministically scans a public GitHub Solidity repository at a pinned commit and returns ranked review leads for tx.origin, selfdestruct, delegatecall, low-level calls, inline assembly and suspicious unguarded admin-style writes. No live-chain access; findings are triage leads, not exploit claims or a formal audit.",
+        "tags": [
+          "solidity",
+          "smart-contract",
+          "solidity-audit",
+          "security-triage",
+          "static-analysis",
+          "code-review",
+          "github",
+          "web3",
+          "ci"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner": {
+                    "type": "string",
+                    "description": "GitHub repository owner or organization"
+                  },
+                  "repo": {
+                    "type": "string",
+                    "description": "Public GitHub repository name"
+                  },
+                  "ref": {
+                    "type": "string",
+                    "description": "Optional branch, tag, or ref"
+                  }
+                },
+                "required": [
+                  "owner",
+                  "repo"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "owner": "transmissions11",
+                "repo": "solmate",
+                "ref": "main"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-solidity-triage",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "50000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.050000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "schema_version": {
+                      "type": "string"
+                    },
+                    "analyzer_version": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "object"
+                    },
+                    "files_scanned": {
+                      "type": "integer"
+                    },
+                    "finding_count": {
+                      "type": "integer"
+                    },
+                    "severity_counts": {
+                      "type": "object"
+                    },
+                    "findings": {
+                      "type": "array"
+                    }
+                  }
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "analyzer_version": "1.1.0",
+                  "source": {
+                    "repository": "https://github.com/transmissions11/solmate",
+                    "ref": "main",
+                    "sha": "..."
+                  },
+                  "files_scanned": 20,
+                  "finding_count": 3,
+                  "severity_counts": {
+                    "high": 0,
+                    "medium": 1,
+                    "low": 2
+                  },
+                  "findings": []
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-tool-call-diff": {
+      "post": {
+        "operationId": "x402_tool_call_diff",
+        "summary": "Tool Call Diff",
+        "description": "Deterministic diff for AI-agent tool-call sequences. Reports added, removed, reordered calls and exact argument-path drift without executing any tool.",
+        "tags": [
+          "agents",
+          "testing",
+          "regression",
+          "tool-calls",
+          "deterministic"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "before": {
+                    "type": "array",
+                    "maxItems": 500
+                  },
+                  "after": {
+                    "type": "array",
+                    "maxItems": 500
+                  }
+                },
+                "required": [
+                  "before",
+                  "after"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "before": [
+                  {
+                    "name": "search",
+                    "args": {
+                      "query": "cats"
+                    }
+                  }
+                ],
+                "after": [
+                  {
+                    "name": "search",
+                    "args": {
+                      "query": "cats and dogs"
+                    }
+                  },
+                  {
+                    "name": "save",
+                    "args": {
+                      "id": 1
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-tool-call-diff",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "8000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.008000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "counts": {
+                    "before": 1,
+                    "after": 2,
+                    "matched": 1,
+                    "added": 1,
+                    "removed": 0,
+                    "reordered": 0,
+                    "argument_changes": 1,
+                    "changed_argument_paths": 1
+                  },
+                  "identical": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-csv-contract-drift": {
+      "post": {
+        "operationId": "x402_csv_contract_drift",
+        "summary": "CSV Contract Drift",
+        "description": "Deterministic CSV contract-drift evidence for data pipelines: schema changes, inferred type drift, missing-rate shifts, duplicate-key regressions, row-width errors, and numeric-range expansion.",
+        "tags": [
+          "csv",
+          "data-quality",
+          "schema-drift",
+          "testing",
+          "developer-tools"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "baseline_csv": {
+                    "type": "string",
+                    "maxLength": 524288
+                  },
+                  "candidate_csv": {
+                    "type": "string",
+                    "maxLength": 524288
+                  },
+                  "key_columns": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 20
+                  },
+                  "missing_rate_shift_threshold": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "baseline_csv",
+                  "candidate_csv"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "baseline_csv": "id,amount,status\n1,10,ok\n2,20,ok\n",
+                "candidate_csv": "id,amount,status\n1,10,ok\n1,35,\n",
+                "key_columns": [
+                  "id"
+                ],
+                "missing_rate_shift_threshold": 0.1
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-csv-contract-drift",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "10000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.010000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "risk": "high",
+                  "identical_contract": false,
+                  "columns": {
+                    "added": [],
+                    "removed": [],
+                    "reordered": false
+                  },
+                  "type_changes": [],
+                  "missing_rate_shifts": [
+                    {
+                      "column": "status",
+                      "before": 0,
+                      "after": 0.5,
+                      "delta": 0.5
+                    }
+                  ],
+                  "key_integrity": {
+                    "duplicate_rows_increased": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-receipt-integrity": {
+      "post": {
+        "operationId": "x402_receipt_integrity",
+        "summary": "Receipt Integrity",
+        "description": "Deterministic machine-revenue receipt integrity audit: canonical fingerprint, duplicate transaction detection, claimed vs evidence-backed totals, and structural settlement findings. No chain access.",
+        "tags": [
+          "x402",
+          "receipts",
+          "verification",
+          "dedupe",
+          "revenue"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "entries": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 1000
+                  }
+                },
+                "required": [
+                  "entries"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "entries": [
+                  {
+                    "receipt_id": "r1",
+                    "service": "agent-task",
+                    "amount_usd": 0.05,
+                    "status": "confirmed",
+                    "tx_hash": "0xabc",
+                    "payer": "0x1",
+                    "receiver": "0x2",
+                    "asset": "USDC",
+                    "network": "eip155:8453",
+                    "external": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-receipt-integrity",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "5000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.005000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "verdict": "pass",
+                  "summary": {
+                    "entries": 1,
+                    "claimed_usd": 0.05,
+                    "evidence_backed_usd": 0.05,
+                    "overcount_usd": 0
+                  },
+                  "canonical_sha256": "..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-json-fingerprint": {
+      "post": {
+        "operationId": "x402_json_fingerprint",
+        "summary": "JSON Fingerprint",
+        "description": "Deterministic canonical JSON SHA-256 fingerprinting for AI-agent idempotency, cache keys and dedupe. Supports optional scope and explicit top-level volatile-key exclusion.",
+        "tags": [
+          "json",
+          "fingerprint",
+          "idempotency",
+          "dedupe",
+          "sha256"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "value"
+                ]
+              },
+              "example": {
+                "value": {
+                  "action": "reserve",
+                  "amount": 5,
+                  "timestamp": "volatile"
+                },
+                "scope": "agent-payment",
+                "exclude_top_level_keys": [
+                  "timestamp"
+                ]
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-json-fingerprint",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "3000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.003000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "sha256": "...",
+                  "idempotency_key": "sha256:...",
+                  "canonical_bytes": 31
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-agent-release-gate": {
+      "post": {
+        "operationId": "x402_agent_release_gate",
+        "summary": "Agent Release Gate",
+        "description": "Deterministic premium pre-release gate for AI agents. Compares baseline vs candidate tools, permissions, runtime configuration and x402 payment settings against caller-supplied policy; returns PASS, REVIEW or BLOCK. No tool execution or model call.",
+        "tags": [
+          "agent-release",
+          "preflight",
+          "policy",
+          "regression",
+          "guardrail"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "baseline",
+                  "candidate"
+                ]
+              },
+              "example": {
+                "baseline": {
+                  "tools": [
+                    {
+                      "name": "search",
+                      "args_schema": {
+                        "q": "string"
+                      },
+                      "side_effect": "read",
+                      "required": true
+                    }
+                  ],
+                  "permissions": [
+                    "network.read"
+                  ],
+                  "config": {
+                    "model": "m1",
+                    "temperature": 0.2,
+                    "max_tokens": 1000,
+                    "system_prompt_hash": "sha256:old",
+                    "idempotency": true,
+                    "receipts": true,
+                    "receipt_fields": [
+                      "transaction",
+                      "payer",
+                      "amount"
+                    ]
+                  },
+                  "payment": {
+                    "enabled": true,
+                    "network": "eip155:8453",
+                    "asset": "USDC",
+                    "pay_to": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+                    "amount_atomic": "5000"
+                  }
+                },
+                "candidate": {
+                  "tools": [
+                    {
+                      "name": "search",
+                      "args_schema": {
+                        "q": "string"
+                      },
+                      "side_effect": "read",
+                      "required": true
+                    },
+                    {
+                      "name": "summarize",
+                      "args_schema": {
+                        "text": "string"
+                      },
+                      "side_effect": "none"
+                    }
+                  ],
+                  "permissions": [
+                    "network.read"
+                  ],
+                  "config": {
+                    "model": "m1",
+                    "temperature": 0.2,
+                    "max_tokens": 1000,
+                    "system_prompt_hash": "sha256:old",
+                    "idempotency": true,
+                    "receipts": true,
+                    "receipt_fields": [
+                      "transaction",
+                      "payer",
+                      "amount"
+                    ]
+                  },
+                  "payment": {
+                    "enabled": true,
+                    "network": "eip155:8453",
+                    "asset": "USDC",
+                    "pay_to": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+                    "amount_atomic": "5000"
+                  }
+                },
+                "policy": {
+                  "allowed_tools": [
+                    "search",
+                    "summarize"
+                  ],
+                  "require_idempotency": true,
+                  "require_receipts": true,
+                  "required_receipt_fields": [
+                    "transaction",
+                    "payer",
+                    "amount"
+                  ],
+                  "allowed_networks": [
+                    "eip155:8453"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-agent-release-gate",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "50000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.050000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "verdict": "REVIEW",
+                  "counts": {
+                    "block": 0,
+                    "review": 1
+                  },
+                  "summary": {
+                    "added_tools": 1,
+                    "removed_tools": 0,
+                    "changed_tools": 0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-mcp-tool-contract-audit": {
+      "post": {
+        "operationId": "x402_mcp_tool_contract_audit",
+        "summary": "MCP Tool Contract Audit",
+        "description": "Deterministic MCP 2026-07-28 tool-contract audit for agent servers. Checks tool names, schemas, x-mcp-header rules, annotations, and breaking changes. Returns PASS, REVIEW or BLOCK. No tool execution.",
+        "tags": [
+          "mcp",
+          "contract-audit",
+          "schema",
+          "breaking-changes",
+          "verification"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tools": {
+                    "type": "array",
+                    "maxItems": 500
+                  },
+                  "previous_tools": {
+                    "type": "array",
+                    "maxItems": 500
+                  }
+                },
+                "required": [
+                  "tools"
+                ]
+              },
+              "example": {
+                "tools": [
+                  {
+                    "name": "get_weather",
+                    "description": "Get current weather",
+                    "inputSchema": {
+                      "type": "object",
+                      "properties": {
+                        "location": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "location"
+                      ]
+                    },
+                    "annotations": {
+                      "readOnlyHint": true,
+                      "destructiveHint": false,
+                      "idempotentHint": true,
+                      "openWorldHint": true
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-mcp-tool-contract-audit",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "30000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.030000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "mcp_spec_version": "2026-07-28",
+                  "verdict": "PASS",
+                  "score": 100
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-solidity-diff-risk": {
+      "post": {
+        "operationId": "x402_solidity_diff_risk",
+        "summary": "Solidity Diff Risk",
+        "description": "Machine-readable Solidity commit-diff risk triage for public GitHub repositories. Reviews changed Solidity patches only; no live-chain access.",
+        "tags": [
+          "solidity",
+          "security",
+          "code-review",
+          "diff",
+          "web3"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "owner": {
+                    "type": "string"
+                  },
+                  "repo": {
+                    "type": "string"
+                  },
+                  "base": {
+                    "type": "string",
+                    "description": "Base branch/tag/commit"
+                  },
+                  "head": {
+                    "type": "string",
+                    "description": "Head branch/tag/commit"
+                  }
+                },
+                "required": [
+                  "owner",
+                  "repo",
+                  "base",
+                  "head"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "owner": "transmissions11",
+                "repo": "solmate",
+                "base": "main~1",
+                "head": "main"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-solidity-diff-risk",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "100000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.100000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "analyzer_version": "1.0.0",
+                  "source": {
+                    "repository": "https://github.com/owner/repo",
+                    "base": "...",
+                    "head": "..."
+                  },
+                  "changed_solidity_files": 2,
+                  "changed_lines": {
+                    "additions": 12,
+                    "deletions": 4
+                  },
+                  "risk_count": 1,
+                  "risks": []
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-openapi-drift-audit": {
+      "post": {
+        "operationId": "x402_openapi_drift_audit",
+        "summary": "OpenAPI Drift Audit",
+        "description": "Deterministic OpenAPI 3.0/3.1 contract-drift audit for autonomous agents. Compares previous and current specs and flags breaking operation, parameter, request, response, schema, security and server changes.",
+        "tags": [
+          "openapi",
+          "api",
+          "schema-drift",
+          "breaking-changes",
+          "verification"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "previous_spec",
+                  "current_spec"
+                ]
+              },
+              "example": {
+                "previous_spec": {
+                  "openapi": "3.1.0",
+                  "paths": {}
+                },
+                "current_spec": {
+                  "openapi": "3.1.0",
+                  "paths": {}
+                }
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-openapi-drift-audit",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "15000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.015000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "verdict": "PASS",
+                  "counts": {
+                    "block": 0,
+                    "review": 0,
+                    "total": 0
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-agent-change-radar": {
+      "post": {
+        "operationId": "x402_agent_change_radar",
+        "summary": "Agent Change Radar",
+        "description": "Cheap recurring change detector for autonomous agents. Compare before/after manifests, configs or tool contracts; get PASS, REVIEW or ESCALATE plus exact changed paths and the next deeper audit to call.",
+        "tags": [
+          "agent-monitoring",
+          "change-detection",
+          "release",
+          "regression",
+          "preflight"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "before",
+                  "after"
+                ],
+                "properties": {
+                  "before": {},
+                  "after": {},
+                  "ignore_top_level_keys": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 50
+                  }
+                }
+              },
+              "example": {
+                "before": {
+                  "tools": [
+                    "search"
+                  ],
+                  "permissions": [
+                    "network.read"
+                  ],
+                  "version": "1"
+                },
+                "after": {
+                  "tools": [
+                    "search",
+                    "send"
+                  ],
+                  "permissions": [
+                    "network.read"
+                  ],
+                  "version": "2"
+                }
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-agent-change-radar",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "1000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.001000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "verdict": "ESCALATE",
+                  "changed": true,
+                  "change_count": 2,
+                  "recommended_next": [
+                    {
+                      "service": "MCP Tool Contract Audit",
+                      "url": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-mcp-tool-contract-audit"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-agent-assurance-pack": {
+      "post": {
+        "operationId": "x402_agent_assurance_pack",
+        "summary": "Agent Release Assurance Pack",
+        "description": "Premium deterministic pre-release assurance for autonomous agents. One call reviews tool/permission/payment/runtime drift plus optional OpenAPI, tool-call and receipt evidence and returns PASS, REVIEW or BLOCK with hashes and remediation.",
+        "tags": [
+          "agent-assurance",
+          "release",
+          "mcp",
+          "openapi",
+          "verification"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "baseline",
+                  "candidate"
+                ],
+                "properties": {
+                  "baseline": {
+                    "type": "object"
+                  },
+                  "candidate": {
+                    "type": "object"
+                  },
+                  "openapi": {
+                    "type": "object"
+                  },
+                  "tool_calls": {
+                    "type": "object"
+                  },
+                  "receipts": {
+                    "type": "array",
+                    "maxItems": 1000
+                  }
+                }
+              },
+              "example": {
+                "baseline": {
+                  "tools": [
+                    {
+                      "name": "search",
+                      "side_effect": "read"
+                    }
+                  ],
+                  "permissions": [
+                    "network.read"
+                  ],
+                  "config": {
+                    "idempotency": true,
+                    "receipts": true
+                  },
+                  "payment": {
+                    "network": "eip155:8453",
+                    "asset": "USDC"
+                  }
+                },
+                "candidate": {
+                  "tools": [
+                    {
+                      "name": "search",
+                      "side_effect": "read"
+                    },
+                    {
+                      "name": "send",
+                      "side_effect": "write"
+                    }
+                  ],
+                  "permissions": [
+                    "network.read",
+                    "network.write"
+                  ],
+                  "config": {
+                    "idempotency": true,
+                    "receipts": true
+                  },
+                  "payment": {
+                    "network": "eip155:8453",
+                    "asset": "USDC"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-agent-assurance-pack",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "250000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.250000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "verdict": "BLOCK",
+                  "score": 64,
+                  "counts": {
+                    "block": 2,
+                    "review": 0,
+                    "total": 2
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-funded-work-radar": {
+      "post": {
+        "operationId": "x402_funded_work_radar",
+        "summary": "Funded Work Radar",
+        "description": "Fresh funded-work radar for autonomous agents. Returns safety-filtered, claimable machine jobs and bounties with payout, platform, funding, gas/wallet friction and source URL, ranked by value and freshness.",
+        "tags": [
+          "bounties",
+          "jobs",
+          "funded-work",
+          "agents",
+          "discovery"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "min_payout_usd": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000000
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 50
+                  },
+                  "exclude_requires_gas": {
+                    "type": "boolean"
+                  },
+                  "platforms": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 10
+                  }
+                }
+              },
+              "example": {
+                "min_payout_usd": 1,
+                "limit": 10,
+                "exclude_requires_gas": true,
+                "platforms": [
+                  "taskmarket",
+                  "clawlancer"
+                ]
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-funded-work-radar",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "5000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.005000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "count": 1,
+                  "items": [
+                    {
+                      "platform": "taskmarket",
+                      "title": "Example funded task",
+                      "gross_payout_usd": 25,
+                      "funded": true,
+                      "claimable": true,
+                      "requires_wallet": true,
+                      "requires_gas": false,
+                      "status": "open"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-revenue-autopilot": {
+      "post": {
+        "operationId": "x402_revenue_autopilot",
+        "summary": "Revenue Autopilot Router",
+        "description": "Machine-revenue autopilot for AI agents. Ranks fresh funded work, inserts a task-safety gate before execution, scores payout/capability/settlement friction, and returns the bounded next action plus release-verification routes.",
+        "tags": [
+          "agent-revenue",
+          "bounties",
+          "jobs",
+          "routing",
+          "autopilot"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "capabilities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "maxItems": 30
+                  },
+                  "min_payout_usd": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "max_items": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 20
+                  },
+                  "allow_requires_wallet": {
+                    "type": "boolean"
+                  },
+                  "allow_requires_gas": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "example": {
+                "capabilities": [
+                  "code",
+                  "research",
+                  "api"
+                ],
+                "min_payout_usd": 1,
+                "max_items": 5,
+                "allow_requires_wallet": false,
+                "allow_requires_gas": false
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-revenue-autopilot",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "20000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.020000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "decision": "EXECUTE_READY_WORK",
+                  "ready_count": 1,
+                  "total_ranked": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-task-safety": {
+      "post": {
+        "operationId": "x402_task_safety",
+        "summary": "Agent Task Safety Gate",
+        "description": "Machine-native safety gate for autonomous task instructions. Detects supply-chain execution, secret/signature requests, spend/KYC gates, unsafe security testing, and human-presence dependencies before an agent executes work.",
+        "tags": [
+          "agent-commerce",
+          "task-safety",
+          "security",
+          "supply-chain",
+          "ai-agent"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "task": {
+                    "description": "Task text or structured task object to classify"
+                  }
+                },
+                "required": [
+                  "task"
+                ]
+              },
+              "example": {
+                "task": {
+                  "title": "Example machine task",
+                  "description": "Analyze this repository and return a JSON summary",
+                  "instructions": "Use public source only; do not execute remote binaries",
+                  "urls": [
+                    "https://github.com/example/repo"
+                  ],
+                  "payout_usd": 5
+                }
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-task-safety",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "20000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.020000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "verdict": "allow",
+                  "risk_score": 0,
+                  "flags": [],
+                  "reasons": [],
+                  "safe_execution": [
+                    "Use bounded public-source reads only"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-safe-web-read": {
+      "post": {
+        "operationId": "x402_safe_web_read",
+        "summary": "Web Contents Evidence Batch",
+        "description": "Low-cost agent web contents + evidence primitive. Fetch one public HTTPS URL or up to 3 URLs in parallel for the same microprice, returning clean text, metadata, links, citation-ready hashed chunks, page hashes, and prompt-injection indicators for autonomous research and RAG workflows.",
+        "tags": [
+          "web-read",
+          "web-contents",
+          "batch-read",
+          "rag",
+          "evidence"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "urls": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  },
+                  "respect_robots": {
+                    "type": "boolean"
+                  }
+                },
+                "anyOf": [
+                  {
+                    "required": [
+                      "url"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "urls"
+                    ]
+                  }
+                ]
+              },
+              "example": {
+                "urls": [
+                  "https://example.com/",
+                  "https://www.iana.org/help/example-domains"
+                ],
+                "respect_robots": true
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-safe-web-read",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "2000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.002000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.1",
+                  "batch": {
+                    "requested": 2,
+                    "unique": 2,
+                    "succeeded": 2,
+                    "failed": 0,
+                    "max_urls": 3
+                  },
+                  "items": [
+                    {
+                      "index": 0,
+                      "url": "https://example.com/",
+                      "ok": true,
+                      "result": {
+                        "source": {
+                          "url": "https://example.com/"
+                        },
+                        "content": {
+                          "safe_text": "Example Domain",
+                          "evidence_chunks": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-web-change-probe": {
+      "post": {
+        "operationId": "x402_web_change_probe",
+        "summary": "Web Change Probe",
+        "description": "Cheap recurring webpage change probe for autonomous agents. Supply a public HTTPS URL plus previous SHA-256/ETag/Last-Modified; get changed/unchanged, current hash and cache-aware next-poll hint without storing state server-side.",
+        "tags": [
+          "web-monitoring",
+          "change-detection",
+          "freshness",
+          "polling",
+          "evidence"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "url"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "previous_sha256": {
+                    "type": "string"
+                  },
+                  "previous_etag": {
+                    "type": "string"
+                  },
+                  "previous_last_modified": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "url": "https://example.com/",
+                "previous_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-web-change-probe",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "1000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.001000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "url": "https://example.com/",
+                  "changed": true,
+                  "sha256": "sha256:...",
+                  "suggested_poll_seconds": 900
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-hash-encode-toolkit": {
+      "post": {
+        "operationId": "x402_hash_encode_toolkit",
+        "summary": "Hash & Encode Toolkit",
+        "description": "Cheap deterministic hashing and encoding utility for autonomous agents: SHA-256, SHA-512, HMAC-SHA256, Base64/Base64URL, hex, and unverified JWT decoding. Built for high-frequency inner-loop calls with no model inference.",
+        "tags": [
+          "hash",
+          "encoding",
+          "sha256",
+          "base64",
+          "jwt"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "operation"
+                ],
+                "properties": {
+                  "operation": {
+                    "type": "string",
+                    "enum": [
+                      "sha256",
+                      "sha512",
+                      "hmac_sha256",
+                      "base64_encode",
+                      "base64_decode",
+                      "base64url_encode",
+                      "base64url_decode",
+                      "hex_encode",
+                      "hex_decode",
+                      "jwt_decode"
+                    ]
+                  },
+                  "text": {
+                    "type": "string",
+                    "maxLength": 262144
+                  },
+                  "key": {
+                    "type": "string",
+                    "maxLength": 262144
+                  },
+                  "token": {
+                    "type": "string",
+                    "maxLength": 262144
+                  }
+                }
+              },
+              "example": {
+                "operation": "sha256",
+                "text": "hello agent"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-hash-encode-toolkit",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "1000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.001000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "operation": "sha256",
+                  "result": {
+                    "digest_hex": "..."
+                  },
+                  "deterministic": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-base-address-snapshot": {
+      "post": {
+        "operationId": "x402_base_address_snapshot",
+        "summary": "Base Wallet + Token Snapshot",
+        "description": "One-call Base wallet + token snapshot for autonomous agents. Returns native ETH balance, USDC balance by default, up to 4 optional ERC-20 balances, nonce, EOA-vs-contract classification, bytecode size/hash and latest block. Read-only public RPC; no wallet connection or transaction.",
+        "tags": [
+          "onchain",
+          "base",
+          "wallet",
+          "erc20",
+          "balance"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "address"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "pattern": "^0x[a-fA-F0-9]{40}$"
+                  },
+                  "include_usdc": {
+                    "type": "boolean"
+                  },
+                  "token_addresses": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^0x[a-fA-F0-9]{40}$"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "address": "0x0000000000000000000000000000000000000000",
+                "include_usdc": true,
+                "token_addresses": []
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-base-address-snapshot",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "3000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.003000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "2.0",
+                  "network": "Base",
+                  "chain_id": 8453,
+                  "address": "0x...",
+                  "account_type": "EOA",
+                  "native_balance": {
+                    "asset": "ETH",
+                    "wei_decimal": "0"
+                  },
+                  "tokens": [
+                    {
+                      "known_asset": "USDC",
+                      "balance": "0",
+                      "decimals": 6
+                    }
+                  ],
+                  "observed_block": {
+                    "decimal": "0"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-machine-market-intel": {
+      "post": {
+        "operationId": "x402_machine_market_intel",
+        "summary": "Machine Market Intelligence",
+        "description": "Machine-commerce demand intelligence built from DOHMAN continuously sampled market history. Returns category momentum, repeat-buyer signals, price/call changes, service leaders and seller opportunity gaps from observed x402 market telemetry.",
+        "tags": [
+          "market-data",
+          "x402",
+          "agent-commerce",
+          "demand-intelligence",
+          "seller-intelligence",
+          "pricing",
+          "trend",
+          "machine-economy"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "leaders",
+                      "categories",
+                      "search",
+                      "gaps"
+                    ]
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "query": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 50
+                  },
+                  "min_payers": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                }
+              },
+              "example": {
+                "mode": "leaders",
+                "category": "search-web",
+                "limit": 10,
+                "min_payers": 2
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-machine-market-intel",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "5000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.005000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "mode": "leaders",
+                  "items": [
+                    {
+                      "service_name": "Example",
+                      "calls_30d": 1000,
+                      "payers_30d": 20,
+                      "calls_per_payer": 50,
+                      "momentum_calls_pct": 12.5
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-package-trust-intelligence": {
+      "post": {
+        "operationId": "x402_package_trust_intelligence",
+        "summary": "Package Trust Intelligence",
+        "description": "Package Trust Intelligence for coding agents. Enrich one npm or PyPI package/version with release/deprecation state, licenses, OSV advisories, provenance/attestation signals, GitHub source relation and optional OpenSSF Scorecard posture in one machine-readable call.",
+        "tags": [
+          "package-security",
+          "npm",
+          "pypi",
+          "supply-chain",
+          "osv"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "ecosystem",
+                  "name"
+                ],
+                "properties": {
+                  "ecosystem": {
+                    "type": "string",
+                    "enum": [
+                      "npm",
+                      "pypi"
+                    ]
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "ecosystem": "npm",
+                "name": "react"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-package-trust-intelligence",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "15000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.015000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "react",
+                    "version": "19.x"
+                  },
+                  "security": {
+                    "advisory_count": 0
+                  },
+                  "provenance": {
+                    "verified_attestation_observed": true
+                  },
+                  "decision_support": {
+                    "trust_score": 92,
+                    "review_priority": "LOW"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-base-tx-receipt-snapshot": {
+      "post": {
+        "operationId": "x402_base_tx_receipt_snapshot",
+        "summary": "Base TX + Receipt Snapshot",
+        "description": "One-call Base transaction + receipt intelligence for agents. Returns transaction fields, receipt status, gas/fee data, contract-creation result, log count and block timestamp from one tx hash. Read-only public RPC.",
+        "tags": [
+          "onchain",
+          "base",
+          "transaction",
+          "receipt",
+          "gas"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "tx_hash"
+                ],
+                "properties": {
+                  "tx_hash": {
+                    "type": "string",
+                    "pattern": "^0x[a-fA-F0-9]{64}$"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "tx_hash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-base-tx-receipt-snapshot",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "6000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.006000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "network": "Base",
+                  "tx_hash": "0x...",
+                  "transaction": {
+                    "found": true
+                  },
+                  "receipt": {
+                    "found": true,
+                    "status": "SUCCESS"
+                  },
+                  "block": {
+                    "timestamp_iso": "2026-01-01T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-email-verify-evidence": {
+      "post": {
+        "operationId": "x402_email_verify_evidence",
+        "summary": "Email Domain DNS Evidence",
+        "description": "Email-domain DNS validation evidence for AI agents and lead-screening workflows at microprice. Checks syntax and public MX/A/AAAA, SPF and DMARC signals; returns role, free-provider, known-disposable and typo indicators, a bounded DNS-posture score and evidence hash. No SMTP or mailbox-existence probe.",
+        "tags": [
+          "email-validation",
+          "email-domain-validation",
+          "lead-screening",
+          "data-enrichment",
+          "dns",
+          "mx",
+          "spf",
+          "dmarc",
+          "agent-tools"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 320
+                  }
+                }
+              },
+              "example": {
+                "email": "support@example.com"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-email-verify-evidence",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "1000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.001000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "email": "support@example.com",
+                  "classification": "strong_dns_posture",
+                  "score": 95,
+                  "verification_level": "dns_domain_evidence_no_mailbox_probe"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-email-verify-batch": {
+      "post": {
+        "operationId": "x402_email_verify_batch",
+        "summary": "Batch Email Verify Evidence",
+        "description": "Batch email-domain verification evidence for enrichment agents. Verify 1-10 emails per paid call with live MX/A/AAAA DNS, SPF/DMARC, role/free-provider/disposable/typo signals, bounded scores and evidence hashes. No SMTP mailbox probing. Designed for lead-enrichment pipelines at lower per-email cost.",
+        "tags": [
+          "email-verify",
+          "batch",
+          "lead-enrichment",
+          "data-enrichment",
+          "dns",
+          "mx",
+          "dmarc"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "emails"
+                ],
+                "properties": {
+                  "emails": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 320
+                    }
+                  }
+                }
+              },
+              "example": {
+                "emails": [
+                  "support@example.com",
+                  "sales@example.com"
+                ]
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-email-verify-batch",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "5000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.005000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "count": 2,
+                  "results": [
+                    {
+                      "email": "support@example.com",
+                      "classification": "strong_dns_posture",
+                      "score": 95
+                    }
+                  ],
+                  "verification_level": "dns_domain_evidence_no_mailbox_probe"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-domain-company-enrich": {
+      "post": {
+        "operationId": "x402_domain_company_enrich",
+        "summary": "Domain Company Evidence Enrich",
+        "description": "Premium low-cost public domain/company enrichment for AI agents. One call combines homepage metadata, JSON-LD organization evidence, public social/about/contact-page links, A/AAAA/MX/SPF/DMARC DNS, security headers, technology hints, redirects, and evidence hashes. Public HTTPS + DNS only.",
+        "tags": [
+          "data-enrichment",
+          "company",
+          "domain",
+          "dns",
+          "evidence"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domain": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                },
+                "anyOf": [
+                  {
+                    "required": [
+                      "domain"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "url"
+                    ]
+                  }
+                ]
+              },
+              "example": {
+                "domain": "example.com"
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-domain-company-enrich",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "3000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.003000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "domain": "example.com",
+                  "web": {
+                    "title": "Example Domain"
+                  },
+                  "dns": {
+                    "mx": []
+                  },
+                  "organization_evidence": {
+                    "names": []
+                  },
+                  "evidence_sha256": "sha256:..."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    },
+    "/x402-domain-company-enrich-batch": {
+      "post": {
+        "operationId": "x402_domain_company_enrich_batch",
+        "summary": "Batch Domain Company Evidence Enrich",
+        "description": "Batch public domain/company enrichment for AI agents. Enrich 1-5 domains per paid call with homepage metadata, JSON-LD organization evidence, public social/about/contact links, A/AAAA/MX/SPF/DMARC DNS, security headers, technology hints, redirects and evidence hashes. Public HTTPS + DNS only; lower per-domain cost at full batch.",
+        "tags": [
+          "data-enrichment",
+          "batch",
+          "company",
+          "domain",
+          "lead-enrichment",
+          "dns",
+          "evidence"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "domains"
+                ],
+                "properties": {
+                  "domains": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "domains": [
+                  "example.com",
+                  "example.org"
+                ]
+              }
+            }
+          }
+        },
+        "x-x402-runtime": {
+          "resource": "https://tutevpsjeewjulryvvdo.supabase.co/functions/v1/x402-domain-company-enrich-batch",
+          "network": "eip155:8453",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "amountAtomic": "10000",
+          "payTo": "0xcfFC976906D38aA752937C9785Ed4f3FD046a946",
+          "scheme": "exact"
+        },
+        "x-payment-info": {
+          "protocols": [
+            {
+              "x402": {}
+            }
+          ],
+          "price": {
+            "mode": "fixed",
+            "currency": "USD",
+            "amount": "0.010000"
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paid successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "schema_version": "1.0",
+                  "count": 2,
+                  "results": [
+                    {
+                      "domain": "example.com",
+                      "web": {
+                        "title": "Example Domain"
+                      },
+                      "dns": {
+                        "mx": []
+                      },
+                      "organization_evidence": {
+                        "names": []
+                      },
+                      "evidence_sha256": "sha256:..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "503": {
+            "description": "Temporary upstream failure"
+          }
+        }
+      }
+    }
+  }
+}
