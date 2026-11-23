@@ -1,0 +1,30 @@
+name: ZALAH full-year XAUUSD tick research (one-time or manual)
+on:
+  push:
+    paths:
+      - ".github/workflows/zalah-full-year-tick-research.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  2026_public_bidask:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Unit test data quality and independent backtest
+        run: python -m unittest discover -s risklab/mt5/research -p "test_*.py" -v
+      - name: Analyze all 47 pinned weeks, source Jan-Nov 2026
+        run: python risklab/mt5/research/public_xauusd_ingest.py --weeks 1-47 --output "$RUNNER_TEMP/zalah_full_year"
+      - name: Stress benchmark with immutable strategy parameters and chronological splits
+        run: python risklab/mt5/research/walkforward_bidask.py --m5 "$RUNNER_TEMP/zalah_full_year/xauusd_bidask_m5.csv" --output "$RUNNER_TEMP/zalah_full_year/benchmark.json"
+      - name: Store provenance and aggregated performance only, not third party market data
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-year-xauusd-research-summary
+          path: "${{ runner.temp }}/zalah_full_year/*.json"
+          retention-days: 45
+          if-no-files-found: error
