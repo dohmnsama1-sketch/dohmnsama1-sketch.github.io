@@ -13,6 +13,8 @@ def case(mode="regime",trades=150,holdout=40,net=1200,holdout_net=240,pf=1.6,dd=
     return {"mode":mode,"slippage_usd_per_oz_per_side":slip,
             "assumed_commission_usd_per_lot_round_turn":7.0,
             "initial_equity":10000,"number_of_closed_trades":trades,
+            "months_with_trades":8,"positive_month_share_active":0.75,
+            "largest_trade_loss_usd":-52,
             "net_pnl":net,"profit_factor":pf,
             "max_closed_equity_drawdown_fraction":dd,
             "split_60_20_20":[{"name":"analysis","trades":80,"net_pnl":600},
@@ -49,6 +51,25 @@ class ReadinessChecks(unittest.TestCase):
         d=gate.judge_one(a,s)
         self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
         self.assertIn("cross-partition", " ".join(d["reasons"]))
+
+    def test_profitability_requires_multiple_profitable_months(self):
+        reference=case()
+        reference["months_with_trades"]=1
+        reference["positive_month_share_active"]=1.0
+        decision=gate.judge_one(reference,case(slip=.5))
+        self.assertEqual(decision["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("six distinct active months"," ".join(decision["reasons"]))
+        reference["months_with_trades"]=8
+        reference["positive_month_share_active"]=0.50
+        decision=gate.judge_one(reference,case(slip=.5))
+        self.assertIn("60% of active calendar months"," ".join(decision["reasons"]))
+
+    def test_large_single_trade_loss_rejects_candidate(self):
+        reference=case()
+        reference["largest_trade_loss_usd"]=-300
+        decision=gate.judge_one(reference,case(slip=.5))
+        self.assertEqual(decision["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("largest individual realized loss"," ".join(decision["reasons"]))
 
     def test_holdout_must_be_large_and_profitable(self):
         d=gate.judge_one(case(holdout=5,holdout_net=-20),case(slip=.5))
