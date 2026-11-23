@@ -48,6 +48,7 @@ int OnInit()
  trade.SetDeviationInPoints(InpMaxDeviationPoints);
  trade.SetTypeFillingBySymbol(InpSymbol);
  Print("ZALAH EA initialized: DEMO ONLY; order opt-in=",InpAllowDemoOrders);
+ PrintFormat("ZALAH_DIAG symbol=%s point=%.6f max_spread_points=%d max_spread_price=%.6f min_lot=%.4f",InpSymbol,SymbolInfoDouble(InpSymbol,SYMBOL_POINT),InpMaxSpreadPoints,InpMaxSpreadPoints*SymbolInfoDouble(InpSymbol,SYMBOL_POINT),SymbolInfoDouble(InpSymbol,SYMBOL_VOLUME_MIN));
  return INIT_SUCCEEDED;
 }
 void OnDeinit(const int reason)
