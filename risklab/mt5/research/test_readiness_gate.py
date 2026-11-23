@@ -34,6 +34,14 @@ class ReadinessChecks(unittest.TestCase):
         d=gate.judge_one(case(),case(slip=.5,net=-0.01))
         self.assertIn("adverse execution-cost stress", " ".join(d["reasons"]))
 
+    def test_boundary_crossing_trade_blocks_approval(self):
+        a=case()
+        a["boundary_crossing_trades"]=1
+        s=case(slip=.5)
+        d=gate.judge_one(a,s)
+        self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("cross-partition", " ".join(d["reasons"]))
+
     def test_holdout_must_be_large_and_profitable(self):
         d=gate.judge_one(case(holdout=5,holdout_net=-20),case(slip=.5))
         self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
