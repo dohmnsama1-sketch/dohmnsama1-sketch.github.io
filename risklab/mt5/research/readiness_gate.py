@@ -40,6 +40,14 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
         reasons.append("stressed-cost run has insufficient trades")
     if baseline.get("max_closed_equity_drawdown_fraction",1)>0.08:
         reasons.append("realized closed-equity drawdown exceeds 8% research ceiling")
+    if baseline.get("months_with_trades",0)<6:
+        reasons.append("fewer than six distinct active months; insufficient regime diversity")
+    monthly_share=baseline.get("positive_month_share_active")
+    if not isinstance(monthly_share,(float,int)) or monthly_share<0.60:
+        reasons.append("fewer than 60% of active calendar months have positive net P/L")
+    largest=baseline.get("largest_trade_loss_usd")
+    if not isinstance(largest,(float,int)) or largest<-(0.02*baseline["initial_equity"]):
+        reasons.append("unverified or excessive largest individual realized loss")
     if not reasons:
         # A candidate worth *further testing*, not live-trading permission.
         return {"decision":"SUPERVISED_DEMO_CANDIDATE_ONLY","reasons":[
