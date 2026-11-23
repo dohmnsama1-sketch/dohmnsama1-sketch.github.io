@@ -99,6 +99,17 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(r["assumed_commission_usd_per_lot_round_turn"],7.0)
         self.assertIn("generic research assumption",r["approximation"])
 
+    def test_calendar_months_include_no_trade_months_and_reconcile_realized_pl(self):
+        bars=synthetic(900) # crosses Jan and Feb, with no assumption of daily trading
+        r=wf.evaluate(bars,"regime",0.15)
+        months=r["calendar_month_performance_exit_attributed"]
+        self.assertEqual(r["months_with_data"],len(months))
+        self.assertEqual(r["months_with_trades"],sum(x["trades"]>0 for x in months))
+        self.assertEqual(r["number_of_closed_trades"],sum(x["trades"] for x in months))
+        self.assertAlmostEqual(r["net_pnl"],sum(x["net_pnl"] for x in months),places=2)
+        self.assertEqual(r["positive_month_share_active"] is None, r["months_with_trades"]==0)
+        self.assertLessEqual(r["positive_months_with_trades"],r["months_with_trades"])
+
     def test_no_unbounded_or_negative_slippage(self):
         with self.assertRaises(ValueError):
             wf.evaluate(synthetic(),"baseline",-.1)
