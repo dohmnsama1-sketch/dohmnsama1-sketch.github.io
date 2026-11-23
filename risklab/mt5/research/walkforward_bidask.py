@@ -34,6 +34,7 @@ LOT_STEP=0.01
 MAX_EQUITY_DRAWDOWN=0.15
 MAX_DAILY_LOSS=0.02
 TICK_SIZE=0.01
+ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN=7.0 # research cost shock; NOT verified Exness Standard fee
 
 def read_bars(path: Path):
     required=["time","bid_open","bid_high","bid_low","bid_close",
@@ -201,9 +202,9 @@ def conservative_exit_fill(side, stop, target, bar, slippage):
             return target + slippage, False
     return None
 
-def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
+def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_per_lot_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN):
     if mode not in ("baseline","regime"): raise ValueError("invalid strategy")
-    if slippage<0 or initial_equity<=0: raise ValueError("invalid cost/capital")
+    if slippage<0 or initial_equity<=0 or commission_per_lot_round_turn<0: raise ValueError("invalid cost/capital")
     atr=atr_wilder(bars)
     adx,plus,minus=directional_wilder(bars) if mode=="regime" else (None,None,None)
     h1=h1_closed_ema(bars) if mode=="regime" else None
@@ -228,7 +229,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
             fill=conservative_exit_fill(pos["side"],pos["stop"],pos["target"],b,slippage)
             if fill is not None:
                 exit_quote,stop_hit=fill
-                pnl=(exit_quote-pos["entry"])*CONTRACT_UNITS*pos["lots"]*pos["side"]
+                pnl=(exit_quote-pos["entry"])*CONTRACT_UNITS*pos["lots"]*pos["side"]-commission_per_lot_round_turn*pos["lots"]
                 equity+=pnl
                 trades.append({"entry":pos["time"],"exit":b["time"].isoformat(),
                                "side":pos["side"],"lots":pos["lots"],"pnl":round(pnl,6),
@@ -287,7 +288,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
                 math.floor((entry-risk_distance*REWARD_RISK)/TICK_SIZE)*TICK_SIZE)
         # Realized loss can exceed budget on price gaps/illiquidity. This
         # estimate adds two adverse slippage allowances per lot.
-        loss_per_lot=(abs(entry-stop)+2*slippage)*CONTRACT_UNITS
+        loss_per_lot=(abs(entry-stop)+2*slippage)*CONTRACT_UNITS+commission_per_lot_round_turn
         lots=math.floor((equity*RISK_FRACTION/loss_per_lot+1e-9)/LOT_STEP)*LOT_STEP
         lots=round(lots,8)
         if lots<MIN_LOT:
@@ -300,7 +301,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
         fill=conservative_exit_fill(side,stop,target,b,slippage)
         if fill is not None:
             exit_quote,stop_hit=fill
-            pnl=(exit_quote-entry)*CONTRACT_UNITS*lots*side
+            pnl=(exit_quote-entry)*CONTRACT_UNITS*lots*side-commission_per_lot_round_turn*lots
             equity+=pnl
             trades.append({"entry":position["time"],"exit":b["time"].isoformat(),
                            "side":side,"lots":lots,"pnl":round(pnl,6),"stop_first":bool(stop_hit)})
@@ -310,7 +311,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
     if position:
         b=bars[-1]
         exit_quote=b["bid_close"]-slippage if position["side"]==1 else b["ask_close"]+slippage
-        pnl=(exit_quote-position["entry"])*CONTRACT_UNITS*position["lots"]*position["side"]
+        pnl=(exit_quote-position["entry"])*CONTRACT_UNITS*position["lots"]*position["side"]-commission_per_lot_round_turn*position["lots"]
         equity+=pnl
         trades.append({"entry":position["time"],"exit":b["time"].isoformat(),
                        "side":position["side"],"lots":position["lots"],"pnl":round(pnl,6),
@@ -326,8 +327,9 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000):
     split, boundary_crossers = partition_closed_trades(trades,i1,i2)
     return {
         "mode":mode,"slippage_usd_per_oz_per_side":slippage,
+        "assumed_commission_usd_per_lot_round_turn":commission_per_lot_round_turn,
         "source":"independent public Dukascopy-derived M5 bid/ask aggregation, not broker fills",
-        "approximation":"M5 candle stop/target path ambiguous; stop-first, not tick-exact; no margin/swap modelling",
+        "approximation":"M5 candle stop/target path ambiguous; stop-first, not tick-exact; no margin/swap modelling; commission is a generic research assumption, not a verified Exness Standard account fee",
         "initial_equity":initial_equity,
         "ending_equity":round(equity,2),
         "net_pnl":round(equity-initial_equity,2),
