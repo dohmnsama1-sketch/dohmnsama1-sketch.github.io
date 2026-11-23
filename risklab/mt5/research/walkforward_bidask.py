@@ -358,6 +358,20 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
     i1=bars[len(bars)*3//5]["time"]
     i2=bars[len(bars)*4//5]["time"]
     split, boundary_crossers = partition_closed_trades(trades,i1,i2)
+    # Calendar-month attribution uses EXIT timestamps only (realized P/L).
+    # A trade crossing a month boundary is reported in its EXIT month.
+    months={}
+    for bar in bars:
+        months.setdefault(bar["time"].strftime("%Y-%m"),{"trades":0,"net_pnl":0.0})
+    for trade in trades:
+        key=dt.datetime.fromisoformat(trade["exit"]).strftime("%Y-%m")
+        months[key]["trades"]+=1
+        months[key]["net_pnl"]+=trade["pnl"]
+    monthly=[{"month":key,"trades":val["trades"],
+              "net_pnl":round(val["net_pnl"],2)} for key,val in sorted(months.items())]
+    active_months=sum(item["trades"]>0 for item in monthly)
+    positive_months=sum(item["trades"]>0 and item["net_pnl"]>0 for item in monthly)
+    losing_months=sum(item["trades"]>0 and item["net_pnl"]<0 for item in monthly)
     return {
         "mode":mode,"slippage_usd_per_oz_per_side":slippage,
         "assumed_commission_usd_per_lot_round_turn":commission_per_lot_round_turn,
@@ -376,6 +390,13 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
         "split_60_20_20":[{"name":name,"start_boundary":(None if name=="analysis" else
              i1.isoformat() if name=="validation" else i2.isoformat()),
              "trades":len(values),"net_pnl":round(sum(values),2)} for name,values in split.items()],
+        "calendar_month_performance_exit_attributed":monthly,
+        "months_with_data":len(monthly),
+        "months_with_trades":active_months,
+        "positive_months_with_trades":positive_months,
+        "negative_months_with_trades":losing_months,
+        "positive_month_share_active":round(positive_months/active_months,4) if active_months else None,
+        "largest_trade_loss_usd":round(min([0]+[t["pnl"] for t in trades]),2),
         "boundary_crossing_trades":len(boundary_crossers),
         "cross_partition_pnl_excluded_from_split":round(sum(t["pnl"] for t in boundary_crossers),2),
         "min_sample_reached":len(trades)>=100,
