@@ -1,0 +1,36 @@
+name: Independent XAUUSD tick quality research
+on:
+  push:
+    paths:
+      - "risklab/mt5/research/**"
+      - ".github/workflows/xauusd-public-data-research.yml"
+  workflow_dispatch:
+    inputs:
+      weeks:
+        description: "Published 2026 source weeks (e.g. 1 or 1-3 or 1,3,5), max 47"
+        required: true
+        default: "1"
+permissions:
+  contents: read
+jobs:
+  data_quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      WEEKS: "${{ github.event.inputs.weeks || '1' }}"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test pure ingestion functions before external download
+        run: python -m unittest discover -s risklab/mt5/research -p "test_*.py" -v
+      - name: Download pinned public data and independently validate quotes
+        run: python risklab/mt5/research/public_xauusd_ingest.py --weeks "$WEEKS" --output "$RUNNER_TEMP/zalah_xauusd"
+      - name: Preserve aggregate quality report only; no third-party raw feed redistribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: zalah-xauusd-public-quality
+          path: "${{ runner.temp }}/zalah_xauusd/quality.json"
+          retention-days: 30
+          if-no-files-found: error
