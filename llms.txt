@@ -4,7 +4,7 @@ Read-only machine-readable discovery of published digital downloads; no A2A serv
 
 ## AI/LLM discovery
 - [Product directory](https://dohmnsama1-sketch.github.io/agent-commerce/): browse verified published products, stated limits and seller links.
-- [Machine-readable catalog](https://dohmnsama1-sketch.github.io/agent-commerce/catalog.json): 9 published Gumroad products captured 21 November 2026 (USD and EUR).
+- [Machine-readable catalog](https://dohmnsama1-sketch.github.io/agent-commerce/catalog.json): 8 published Gumroad products quality-cleared for this directory on 23 November 2026 (USD and EUR); products under rights or source review are excluded.
 - [Technical/source](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/tree/main/agent-commerce): open browser implementation and deterministic QA.
 
 ## Other independently useful free tools
