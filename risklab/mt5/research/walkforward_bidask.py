@@ -34,6 +34,8 @@ LOT_STEP=0.01
 MAX_EQUITY_DRAWDOWN=0.15
 MAX_DAILY_LOSS=0.02
 TICK_SIZE=0.01
+DONCHIAN_LOOKBACK=36  # fixed, prespecified 3-hour M5 breakout window
+BREAKOUT_BUFFER_ATR=0.10  # requires last CLOSED bar to clear range by 0.1 ATR
 ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN=7.0 # research cost shock; NOT verified Exness Standard fee
 
 def read_bars(path: Path):
@@ -203,11 +205,11 @@ def conservative_exit_fill(side, stop, target, bar, slippage):
     return None
 
 def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_per_lot_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN):
-    if mode not in ("baseline","regime"): raise ValueError("invalid strategy")
+    if mode not in ("baseline","regime","breakout"): raise ValueError("invalid strategy")
     if slippage<0 or initial_equity<=0 or commission_per_lot_round_turn<0: raise ValueError("invalid cost/capital")
     atr=atr_wilder(bars)
     adx,plus,minus=directional_wilder(bars) if mode=="regime" else (None,None,None)
-    h1=h1_closed_ema(bars) if mode=="regime" else None
+    h1=h1_closed_ema(bars) if mode in ("regime","breakout") else None
     closes=[b["bid_close"] for b in bars]
     equity=initial_equity
     peak=equity
@@ -246,14 +248,25 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
             continue
         if atr[i-1] is None if i>0 else True: continue
         if i<max(FAST,SLOW)+2: continue
-        f0=sma(closes,i-1,FAST)
-        f1=sma(closes,i,FAST)
-        s0=sma(closes,i-1,SLOW)
-        s1=sma(closes,i,SLOW)
-        side=(1 if f0<=s0 and f1>s1 else
-             -1 if f0>=s0 and f1<s1 else 0)
+        if mode=="breakout":
+            if i<=DONCHIAN_LOOKBACK+1: continue
+            # Previous closed M5 bar is the signal. Range excludes this bar.
+            history=bars[i-DONCHIAN_LOOKBACK-1:i-1]
+            recent=bars[i-1]
+            high=max(x["bid_high"] for x in history)
+            low=min(x["bid_low"] for x in history)
+            buffer=BREAKOUT_BUFFER_ATR*atr[i-1]
+            side=(1 if recent["bid_close"]>high+buffer else
+                 -1 if recent["bid_close"]<low-buffer else 0)
+        else:
+            f0=sma(closes,i-1,FAST)
+            f1=sma(closes,i,FAST)
+            s0=sma(closes,i-1,SLOW)
+            s1=sma(closes,i,SLOW)
+            side=(1 if f0<=s0 and f1>s1 else
+                 -1 if f0>=s0 and f1<s1 else 0)
         if not side: continue
-        rejected["crossover_signals"]+=1
+        rejected["breakout_signals" if mode=="breakout" else "crossover_signals"]+=1
         if i>0 and (b["time"]-bars[i-1]["time"]).total_seconds()>1800:
             rejected["gap_first_bar"]+=1
             continue
@@ -261,7 +274,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
         if spread>MAX_SPREAD_PRICE:
             rejected["spread_cap"]+=1
             continue
-        if mode=="regime":
+        if mode in ("regime","breakout"):
             h=h1[i]
             if h is None:
                 rejected["h1_warmup"]+=1
@@ -270,12 +283,13 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
             if (side==1 and higher_close<=higher_ema) or (side==-1 and higher_close>=higher_ema):
                 rejected["h1_trend"]+=1
                 continue
-            if adx[i-1] is None:
-                rejected["adx_warmup"]+=1
-                continue
-            if adx[i-1]<MIN_ADX or (side==1 and plus[i-1]<=minus[i-1]) or (side==-1 and minus[i-1]<=plus[i-1]):
-                rejected["adx_direction"]+=1
-                continue
+            if mode=="regime":
+                if adx[i-1] is None:
+                    rejected["adx_warmup"]+=1
+                    continue
+                if adx[i-1]<MIN_ADX or (side==1 and plus[i-1]<=minus[i-1]) or (side==-1 and minus[i-1]<=plus[i-1]):
+                    rejected["adx_direction"]+=1
+                    continue
             if spread/atr[i-1]>MAX_SPREAD_ATR:
                 rejected["cost_to_atr"]+=1
                 continue
@@ -355,7 +369,7 @@ def main():
     a=p.parse_args()
     bars=read_bars(Path(a.m5))
     results=[]
-    for mode in ("baseline","regime"):
+    for mode in ("baseline","regime","breakout"):
         for slip in (0.00,0.15,0.50):
             results.append(evaluate(bars,mode,slip))
         # Actual owner target capital is 50 USD. Refuse to round up to an
