@@ -29,6 +29,8 @@ jobs:
         run: python risklab/mt5/research/public_xauusd_ingest.py --weeks "$WEEKS" --output "$RUNNER_TEMP/zalah_xauusd"
       - name: Independent conservative A/B stress benchmark, no parameter fitting
         run: python risklab/mt5/research/walkforward_bidask.py --m5 "$RUNNER_TEMP/zalah_xauusd/xauusd_bidask_m5.csv" --output "$RUNNER_TEMP/zalah_xauusd/benchmark.json"
+      - name: Refuse unsupported profitability claims and real-money release
+        run: python risklab/mt5/research/readiness_gate.py --input "$RUNNER_TEMP/zalah_xauusd/benchmark.json" --output "$RUNNER_TEMP/zalah_xauusd/readiness.json"
       - name: Preserve aggregate quality report only; no third-party raw feed redistribution
         uses: actions/upload-artifact@v4
         with:
