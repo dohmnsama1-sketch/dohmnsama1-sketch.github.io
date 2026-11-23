@@ -1,9 +1,5 @@
 name: Independent XAUUSD tick quality research
 on:
-  push:
-    paths:
-      - "risklab/mt5/research/*.py"
-      - ".github/workflows/xauusd-public-data-research.yml"
   workflow_dispatch:
     inputs:
       weeks:
