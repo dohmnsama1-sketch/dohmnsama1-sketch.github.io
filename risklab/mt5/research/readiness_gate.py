@@ -51,7 +51,7 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
 def readiness(report:dict):
     results=report.get("results",[])
     checks=[]
-    for mode in ("baseline","regime"):
+    for mode in ("baseline","regime","breakout"):
         def choose(slip):
             hits=[x for x in results if
                   x.get("mode")==mode and x.get("initial_equity")==10000 and
