@@ -3,7 +3,7 @@
 //| Demo-only research EA. No profit or execution guarantee.          |
 //+------------------------------------------------------------------+
 #property strict
-#property version "1.01"
+#property version "1.02"
 #include <Trade/Trade.mqh>
 CTrade trade;
 input string InpSymbol="XAUUSD";
@@ -16,7 +16,7 @@ input int InpSlowMA=30;
 input int InpATRPeriod=14;
 input double InpStopATR=2.0;
 input double InpRewardRisk=1.5;
-input int InpMaxSpreadPoints=100;
+input double InpMaxSpreadPrice=0.50; // Ask-Bid maximum in USD/oz (price units), NOT points
 input int InpMaxDeviationPoints=30;
 input ulong InpMagic=20261123;
 input bool InpAllowDemoOrders=false; // Opt-in only; still DEMO ONLY
@@ -34,7 +34,7 @@ int OnInit()
  if(InpRiskPct<=0||InpRiskPct>1||InpDailyLossPct<=0||InpDailyLossPct>5||
     InpMaxDrawdownPct<=0||InpMaxDrawdownPct>25||InpFastMA<2||
     InpSlowMA<=InpFastMA||InpATRPeriod<2||InpStopATR<=0||
-    InpRewardRisk<=0||InpMaxSpreadPoints<=0||InpMaxDeviationPoints<=0)
+    InpRewardRisk<=0||InpMaxSpreadPrice<=0||InpMaxSpreadPrice>2.0||InpMaxDeviationPoints<=0)
  return INIT_PARAMETERS_INCORRECT;
  if(!SymbolSelect(InpSymbol,true)) return INIT_FAILED;
  fastHandle=iMA(InpSymbol,InpTimeframe,InpFastMA,0,MODE_SMA,PRICE_CLOSE);
@@ -48,12 +48,12 @@ int OnInit()
  trade.SetDeviationInPoints(InpMaxDeviationPoints);
  trade.SetTypeFillingBySymbol(InpSymbol);
  Print("ZALAH EA initialized: DEMO ONLY; order opt-in=",InpAllowDemoOrders);
- PrintFormat("ZALAH_DIAG symbol=%s point=%.6f max_spread_points=%d max_spread_price=%.6f min_lot=%.4f",InpSymbol,SymbolInfoDouble(InpSymbol,SYMBOL_POINT),InpMaxSpreadPoints,InpMaxSpreadPoints*SymbolInfoDouble(InpSymbol,SYMBOL_POINT),SymbolInfoDouble(InpSymbol,SYMBOL_VOLUME_MIN));
+ PrintFormat("ZALAH_DIAG v1.02 symbol=%s point=%.6f max_spread_price=%.6f min_lot=%.4f",InpSymbol,SymbolInfoDouble(InpSymbol,SYMBOL_POINT),InpMaxSpreadPrice,SymbolInfoDouble(InpSymbol,SYMBOL_VOLUME_MIN));
  return INIT_SUCCEEDED;
 }
 void OnDeinit(const int reason)
 {
- PrintFormat("ZALAH_DIAG version=1.01 ticks=%I64d spread_blocked_ticks=%I64d eligible_bars=%I64d crossover_signals=%I64d risk_lot_rejections=%I64d margin_rejections=%I64d order_attempts=%I64d",diagTicks,diagSpreadBlocked,diagBarChecks,diagSignals,diagRiskBlocked,diagMarginBlocked,diagOrderAttempts);
+ PrintFormat("ZALAH_DIAG version=1.02 ticks=%I64d spread_blocked_ticks=%I64d eligible_bars=%I64d crossover_signals=%I64d risk_lot_rejections=%I64d margin_rejections=%I64d order_attempts=%I64d",diagTicks,diagSpreadBlocked,diagBarChecks,diagSignals,diagRiskBlocked,diagMarginBlocked,diagOrderAttempts);
  if(fastHandle!=INVALID_HANDLE) IndicatorRelease(fastHandle);
  if(slowHandle!=INVALID_HANDLE) IndicatorRelease(slowHandle);
  if(atrHandle!=INVALID_HANDLE) IndicatorRelease(atrHandle);
@@ -90,7 +90,7 @@ void OnTick()
  MqlTick tick;
  if(!SymbolInfoTick(InpSymbol,tick)||tick.bid<=0||tick.ask<=tick.bid) return;
  double point=SymbolInfoDouble(InpSymbol,SYMBOL_POINT);
- if(point<=0||(tick.ask-tick.bid)/point>InpMaxSpreadPoints) { diagSpreadBlocked++; return; }
+ if(point<=0||(tick.ask-tick.bid)>InpMaxSpreadPrice) { diagSpreadBlocked++; return; }
  datetime bar=iTime(InpSymbol,InpTimeframe,0);
  if(bar<=0||bar==lastBar) return;
  lastBar=bar;
