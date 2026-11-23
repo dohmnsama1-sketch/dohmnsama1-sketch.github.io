@@ -31,7 +31,7 @@ For CI, you can set `WATCH_FAIL_ON_CHANGE=1` so a detected change exits with sta
 
 ## Paid option (different, larger scope)
 
-For multiple sources, cache-aware checks, validators (ETag/Last-Modified), JSONL proof and stronger private-network filtering, see the separate **[AI Agent Web Change & Source Health Kit — $79](https://dohmnsama.gumroad.com/l/ommpg)**. The paid kit's published description is the authoritative list of capabilities and limits. **Buying it does not guarantee security, commercial success, uptime or factual truth.** This free sample is not the premium source package.
+For multiple sources, cache-aware checks, validators (ETag/Last-Modified), JSONL proof and stronger private-network filtering, see the separate **[AI Agent Web Change & Source Health Kit — $79](https://dohmnsama.gumroad.com/l/ommpg?utm_source=github-pages&utm_medium=free-starter&utm_campaign=source-watch-lite)**. The paid kit's published description is the authoritative list of capabilities and limits. **Buying it does not guarantee security, commercial success, uptime or factual truth.** This free sample is not the premium source package.
 
 ## Licenses and attribution
 
