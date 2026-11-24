@@ -3,7 +3,7 @@ import gzip
 import pathlib
 import tempfile
 import unittest
-from tick_exact_sma_replay import actual_tick_exit,crossover_from_closed_bars,replay_week
+from tick_exact_sma_replay import actual_tick_exit,crossover_from_closed_bars,replay_week,next_wilder_atr
 from public_xauusd_ingest import HEADER
 
 class TickExactReplayTests(unittest.TestCase):
@@ -32,6 +32,24 @@ class TickExactReplayTests(unittest.TestCase):
         bars[-1]["bid_close"]=95.0
         self.assertEqual(crossover_from_closed_bars(bars),-1)
         self.assertEqual(crossover_from_closed_bars(bars[:25]),0)
+
+    def test_streaming_closed_bar_atr_matches_reference_wilder(self):
+        import datetime as dt
+        from walkforward_bidask import atr_wilder
+        completed=[]
+        state=(0,0.0,None)
+        for i in range(80):
+            current=4400+((i*13)%19)
+            bar={"time":dt.datetime(2026,1,1)+dt.timedelta(minutes=5*i),
+                 "bid_high":current+1.5,
+                 "bid_low":current-2.0,
+                 "bid_close":current+0.3}
+            previous=completed[-1]["bid_close"] if completed else None
+            state=next_wilder_atr(state,bar,previous)
+            completed.append(bar)
+            reference=atr_wilder(completed)[-1]
+            if reference is None:self.assertIsNone(state[2])
+            else:self.assertAlmostEqual(state[2],reference,places=10)
 
     def test_short_tick_sample_no_future_data_or_pnl(self):
         rows=[
