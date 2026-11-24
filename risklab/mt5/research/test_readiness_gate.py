@@ -75,6 +75,23 @@ class ReadinessChecks(unittest.TestCase):
         result=gate.judge_one(ref,case(slip=.5))
         self.assertIn("95% of weekly", " ".join(result["reasons"]))
 
+    def test_stressed_cost_holdout_cannot_hide_losses_in_training(self):
+        baseline=case()
+        stress=case(slip=.5,net=3000,holdout_net=-25)
+        result=gate.judge_one(baseline,stress)
+        self.assertEqual(result["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("stressed-cost holdout net profit"," ".join(result["reasons"]))
+        stress=case(slip=.5,net=3000,holdout=4)
+        result=gate.judge_one(baseline,stress)
+        self.assertIn("insufficient stressed-cost holdout"," ".join(result["reasons"]))
+
+    def test_stressed_intrabar_tail_risk_cannot_be_hidden(self):
+        stress=case(slip=.5)
+        stress["max_adverse_intrabar_equity_proxy_fraction"]=0.14
+        result=gate.judge_one(case(),stress)
+        self.assertEqual(result["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("STRESSED-cost intrabar"," ".join(result["reasons"]))
+
     def test_weekly_stress_missing_or_short_sample_blocks_approval(self):
         ref=case()
         ref.pop("bootstrap_status")
