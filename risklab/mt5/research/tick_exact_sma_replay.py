@@ -19,7 +19,7 @@ from pathlib import Path
 from public_xauusd_ingest import HEADER,parse_tick_row,m5_bucket
 from walkforward_bidask import (FAST,SLOW,ATR_PERIOD,SL_ATR,REWARD_RISK,
     MIN_LOT,LOT_STEP,CONTRACT_UNITS,RISK_FRACTION,MAX_SPREAD_PRICE,
-    TICK_SIZE,ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN,atr_wilder)
+    TICK_SIZE,ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN)
 
 
 def actual_tick_exit(position:dict, bid:float, ask:float, slip:float):
@@ -54,11 +54,35 @@ def crossover_from_closed_bars(bars:list[dict])->int:
     return 0
 
 
+def next_wilder_atr(state:tuple[int,float,float|None],
+                    completed:dict,previous_bid_close:float|None):
+    """O(1) exact Wilder ATR(14) update using only the just-CLOSED bar.
+
+    Compare to independent atr_wilder() unit tests before using any
+    additional year-wide tick replay; no current-candle lookahead.
+    """
+    count,total,prior_atr=state
+    if previous_bid_close is None:
+        return state
+    high=completed["bid_high"]
+    low=completed["bid_low"]
+    tr=max(high-low,abs(high-previous_bid_close),abs(low-previous_bid_close))
+    count+=1
+    if count<=ATR_PERIOD:
+        total+=tr
+        if count==ATR_PERIOD:
+            prior_atr=total/ATR_PERIOD
+    else:
+        prior_atr=(prior_atr*(ATR_PERIOD-1)+tr)/ATR_PERIOD
+    return count,total,prior_atr
+
+
 def replay_week(path:Path,initial_equity:float=10000.0,
                 slippage:float=.15,commission_per_lot:float=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN)->dict:
     if initial_equity<=0 or slippage<0 or commission_per_lot<0:
         raise ValueError("invalid simulation risk/cost parameters")
     closed_bars=[]
+    atr_state=(0,0.0,None)
     bar=None
     prior_tick_time=None
     position=None
@@ -101,6 +125,8 @@ def replay_week(path:Path,initial_equity:float=10000.0,
             was_open_at_bar_start=bool(position)
             if new_bar:
                 if bar is not None:
+                    previous_close=closed_bars[-1]["bid_close"] if closed_bars else None
+                    atr_state=next_wilder_atr(atr_state,bar,previous_close)
                     closed_bars.append(bar)
                     if new_bucket<=bar["time"]:
                         raise ValueError("bar time moved backwards")
@@ -162,10 +188,9 @@ def replay_week(path:Path,initial_equity:float=10000.0,
             if spread>MAX_SPREAD_PRICE:
                 rejected["spread_cap"]+=1
                 continue
-            # Uses all closed bars only; the live open M5 candle is excluded.
-            bars_for_atr=[{**x,"time":dt.datetime.strptime(x["time"],"%Y-%m-%d %H:%M:%S")}
-                           for x in closed_bars]
-            a=atr_wilder(bars_for_atr)[-1]
+            # ATR is incrementally updated in O(1) on each CLOSED M5 bar.
+            # The current forming candle is never used for its entry signal.
+            a=atr_state[2]
             if a is None or a<=0:
                 rejected["indicator_warmup"]+=1
                 continue
