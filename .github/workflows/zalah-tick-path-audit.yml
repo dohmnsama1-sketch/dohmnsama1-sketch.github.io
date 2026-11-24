@@ -1,0 +1,49 @@
+name: ZALAH first-touch tick order audit
+on:
+  push:
+    paths:
+      - ".github/workflows/zalah-tick-path-audit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check chronological tick path functions
+        run: python -m unittest discover -s risklab/mt5/research -p "test_*.py" -v
+      - name: Audit public source week 1 with no broker orders or raw tick redistribution
+        run: |
+          python - <<'PY'
+          import pathlib,sys,os,json
+          sys.path.insert(0,str(pathlib.Path("risklab/mt5/research").resolve()))
+          from public_xauusd_ingest import REPO,PIN,download_file
+          from tick_bar_path_audit import audit_ticks
+          folder=pathlib.Path(os.environ["RUNNER_TEMP"])/"zalah_tick_path"
+          folder.mkdir(parents=True,exist_ok=True)
+          quotes=folder/"week1.csv.gz"
+          url=f"https://raw.githubusercontent.com/{REPO}/{PIN}/data/tick/XAUUSD_2026_w01.csv.gz"
+          got=download_file(url,quotes)
+          result=audit_ticks(quotes,stop_distance=2.0,target_distance=3.0)
+          result["source_pinned_commit"]=PIN
+          result["input_sha256"]=got["sha256"]
+          result["input_download_bytes"]=got["bytes"]
+          (folder/"summary.json").write_text(json.dumps(result,indent=2),encoding="utf-8")
+          quotes.unlink() # raw third-party ticks are never uploaded
+          print(json.dumps(result,indent=2))
+          assert result["m5_bars"]>100
+          assert result["ticks"]>1000000
+          PY
+      - name: Publish aggregate tick-order quality counts ONLY
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: first-touch-week1-summary
+          path: "${{ runner.temp }}/zalah_tick_path/summary.json"
+          retention-days: 30
+          if-no-files-found: warn
