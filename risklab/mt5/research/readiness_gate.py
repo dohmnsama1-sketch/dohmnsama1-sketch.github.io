@@ -63,6 +63,11 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
         reasons.append("stressed-cost run has insufficient trades")
     if baseline.get("max_closed_equity_drawdown_fraction",1)>0.08:
         reasons.append("realized closed-equity drawdown exceeds 8% research ceiling")
+    # Closed-balance P/L hides positions temporarily underwater. The OHLC
+    # adverse proxy is deliberately conservative and not a tick-accurate DD.
+    excursion=baseline.get("max_adverse_intrabar_equity_proxy_fraction")
+    if not isinstance(excursion,(int,float)) or not math.isfinite(excursion) or excursion>0.08 or excursion<0:
+        reasons.append("missing or excessive intrabar adverse-equity excursion proxy (>8% research ceiling)")
     if baseline.get("months_with_trades",0)<6:
         reasons.append("fewer than six distinct active months; insufficient regime diversity")
     monthly_share=baseline.get("positive_month_share_active")
