@@ -14,6 +14,10 @@ def case(mode="regime",trades=150,holdout=40,net=1200,holdout_net=240,pf=1.6,dd=
             "assumed_commission_usd_per_lot_round_turn":7.0,
             "initial_equity":10000,"number_of_closed_trades":trades,
             "months_with_trades":8,"positive_month_share_active":0.75,
+            "bootstrap_status":"EXPLORATORY",
+            "bootstrap_week_count":36,
+            "bootstrap_net_pnl_p2p5":230.0,
+            "bootstrap_positive_fraction":0.97,
             "largest_trade_loss_usd":-52,
             "net_pnl":net,"ending_equity":10000+net,
             "gross_profit":max(0,net)+500,"gross_loss":max(0,-net)+500,
@@ -59,6 +63,27 @@ class ReadinessChecks(unittest.TestCase):
         d=gate.judge_one(reference,case(slip=.5))
         self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
         self.assertIn("commission", " ".join(d["reasons"]))
+
+    def test_weekly_stress_rejects_rare_winner_and_nonpositive_lower_bound(self):
+        ref=case()
+        ref["bootstrap_net_pnl_p2p5"]=-80.0
+        result=gate.judge_one(ref,case(slip=.5))
+        self.assertEqual(result["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("weekly block-resampling lower", " ".join(result["reasons"]))
+        ref["bootstrap_net_pnl_p2p5"]=50.0
+        ref["bootstrap_positive_fraction"]=0.80
+        result=gate.judge_one(ref,case(slip=.5))
+        self.assertIn("95% of weekly", " ".join(result["reasons"]))
+
+    def test_weekly_stress_missing_or_short_sample_blocks_approval(self):
+        ref=case()
+        ref.pop("bootstrap_status")
+        result=gate.judge_one(ref,case(slip=.5))
+        self.assertIn("shorter than 26 weeks", " ".join(result["reasons"]))
+        ref=case()
+        ref["bootstrap_week_count"]=12
+        result=gate.judge_one(ref,case(slip=.5))
+        self.assertEqual(result["decision"],"INSUFFICIENT_EVIDENCE")
 
     def test_cost_stress_must_pass(self):
         d=gate.judge_one(case(),case(slip=.5,net=-0.01))
