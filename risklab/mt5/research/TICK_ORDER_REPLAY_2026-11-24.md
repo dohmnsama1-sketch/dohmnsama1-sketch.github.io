@@ -26,3 +26,12 @@ With simulated $10,000, 0.5% risk/trade, minimum 0.01 lot, adverse slippage 0.15
 - The separate full-year research run [45299310847](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45299310847) was ongoing at initial report verification. It does not certify profitable alpha or live financial returns.
 - `ZALAH_RiskHeartbeat_Research_v107.mq5` remains uncompiled/unverified in MetaEditor and DEMO only; the tick simulator is a distinct Python research application, NOT a deployable EA.
 - **No real-money release authorized**; no deposits, subscriptions or account actions. This data does not support claims of 99-100% winning trades, zero losses, permanent income, predicting surprise geopolitics or beating every competitor.
+
+## Verified second execution: optimized streaming ATR retained the same outcomes
+
+Following the code optimization, [GitHub Action 45300474605](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45300474605) **completed successfully** on exactly the same pinned week-one quote sample:
+- `$10,000` simulated deposit: **2 closed trades, +$19.28**, quote-marked maximum drawdown **0.607%**.
+- `$50` simulated deposit: **0 trades, $0 simulated P/L**. Do not interpret no trades as profitability.
+- This reproduces the earlier result [45299980158](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45299980158), demonstrating **no change to the measured results from replacing quadratic ATR calculation with incremental closed-bar Wilder ATR** for this specific week.
+- Dedicated [GitHub CI 45300309939](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45300309939) passed **53 JavaScript and 69 Python tests** including comparison with the independent Wilder ATR formula (122/122).
+- No broker order or real-money transaction was placed. The bot itself `v1.07` still needs MetaEditor compilation and Exness DEMO forward validation; Python analysis and MQL5 execution must not be equated.
