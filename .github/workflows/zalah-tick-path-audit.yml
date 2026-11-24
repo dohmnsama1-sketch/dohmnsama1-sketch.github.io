@@ -24,6 +24,7 @@ jobs:
           sys.path.insert(0,str(pathlib.Path("risklab/mt5/research").resolve()))
           from public_xauusd_ingest import REPO,PIN,download_file
           from tick_bar_path_audit import audit_ticks
+          from tick_exact_sma_replay import replay_week
           folder=pathlib.Path(os.environ["RUNNER_TEMP"])/"zalah_tick_path"
           folder.mkdir(parents=True,exist_ok=True)
           quotes=folder/"week1.csv.gz"
@@ -33,6 +34,12 @@ jobs:
           result["source_pinned_commit"]=PIN
           result["input_sha256"]=got["sha256"]
           result["input_download_bytes"]=got["bytes"]
+          # Separate actual chronological strategy replay from the hypothetical
+          # first-touch quality audit. No orders; no look-ahead price series.
+          tick_reference=replay_week(quotes,initial_equity=10000)
+          tick_small=replay_week(quotes,initial_equity=50)
+          result["tick_replay_reference_deposit_10000_usd"]=tick_reference
+          result["tick_replay_small_deposit_50_usd"]=tick_small
           (folder/"summary.json").write_text(json.dumps(result,indent=2),encoding="utf-8")
           quotes.unlink() # raw third-party ticks are never uploaded
           print(json.dumps(result,indent=2))
