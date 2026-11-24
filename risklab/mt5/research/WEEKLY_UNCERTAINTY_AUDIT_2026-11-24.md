@@ -16,3 +16,11 @@ The prior full 84.37m BID/ASK quote replay on simulated $10k showed all three st
 - The newest MQL5 EA risk-heartbeat source v1.07 is **not yet compiled/forward tested** in the user's MT5 terminal; no broker-side receipt, position close retcode or price-event replay has been validated.
 - Cannot guarantee daily profit, 99% wins, 100% returns, zero drawdown or future geopolitical prediction. Surprise events can only be guarded **after** evidence becomes available, while known scheduled releases require genuine point-in-time records.
 - The repo does not activate real-money trading or request additional deposits.
+
+## Added afterward: daily reliability ledger (verified)
+
+- `daily_reliability_profile()` now measures the share of **quote-covered trading days with positive realized trade-exit P/L**, total market-data days, days with closed trades, days without a closed trade, days with negative realized P/L, the longest consecutive sequence of **nonpositive quote-covered days**, and the worst exit-attributed realized trading day.
+- **Zero-trade days are not winning days.** This is not a promise of daily income, and quote coverage is not proof that an order could have been filled in that session. The metric excludes unclosed floating P/L, which is disclosed separately via the adverse intrabar proxy.
+- One test initially expected three non-profitable days from a fixture; the accurate result was **five consecutive nonpositive days**, including days with no trades. Corrected the test based on the actual ledger rather than changing the metric.
+- [CI run 45297956083](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45297956083): **53/53 JavaScript and 54/54 Python checks passed** on code commit `9cd40ae230737fdbf59519f03459be7d5354cfce`. These are software tests, not profitability.
+- The full-year replay [45297331643](https://github.com/dohmnsama1-sketch/dohmnsama1-sketch.github.io/actions/runs/45297331643) was initiated on an earlier commit before these daily ledger updates and later stressed holdout checks. Its output must not be represented as having tested those later changes.
