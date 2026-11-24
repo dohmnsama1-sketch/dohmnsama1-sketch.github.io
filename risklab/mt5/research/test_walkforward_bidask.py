@@ -110,6 +110,30 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(r["positive_month_share_active"] is None, r["months_with_trades"]==0)
         self.assertLessEqual(r["positive_months_with_trades"],r["months_with_trades"])
 
+    def test_optional_news_gate_blocks_only_point_in_time_known_events(self):
+        from news_event_gate import Event, UTC
+        bars=synthetic(360)
+        first=bars[0]["time"].replace(tzinfo=UTC)
+        good=[]
+        for i in range(36):
+            t=first+dt.timedelta(hours=i)
+            good.append(Event(str(i),"scheduled_economic",t,first-dt.timedelta(days=1),
+                              "high","https://example.org/fixture"))
+        blocked=wf.evaluate(bars,"baseline",news_events=good)
+        self.assertGreater(blocked["rejections"].get("point_in_time_news_embargo",0),0)
+        self.assertEqual(blocked["rejections"].get("entry_attempts",0),0)
+        self.assertEqual(blocked["news_event_mode"],"archived_events_point_in_time")
+        future=[Event("unannounced","unscheduled_geopolitical",
+                      first+dt.timedelta(minutes=20),
+                      first+dt.timedelta(days=10),
+                      "critical","https://example.org/fixture")]
+        no_future=wf.evaluate(bars,"baseline",news_events=future)
+        ordinary=wf.evaluate(bars,"baseline")
+        self.assertEqual(no_future["net_pnl"],ordinary["net_pnl"])
+        self.assertEqual(no_future["number_of_closed_trades"],ordinary["number_of_closed_trades"])
+        with self.assertRaisesRegex(ValueError,"nonempty event feed"):
+            wf.evaluate(bars,"baseline",news_events=[])
+
     def test_no_unbounded_or_negative_slippage(self):
         with self.assertRaises(ValueError):
             wf.evaluate(synthetic(),"baseline",-.1)
