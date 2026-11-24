@@ -14,6 +14,7 @@ import datetime as dt
 import json
 import math
 import statistics
+import random
 from collections import Counter
 from pathlib import Path
 from news_event_gate import event_embargo, load_events, UTC
@@ -155,6 +156,51 @@ def wilson_interval(wins,total,z=1.96):
     mid=(p+z*z/(2*total))/d
     half=z*math.sqrt(p*(1-p)/total+z*z/(4*total*total))/d
     return [round(max(0,mid-half),4),round(min(1,mid+half),4)]
+
+def weekly_resampling_stress(trades, bars, repetitions=2000, seed=20261124):
+    """Deterministic exploratory whole-week P/L block bootstrap.
+
+    Calendar-week blocks retain clustered trade results and weeks with ZERO
+    trades. This assumes weeks are exchangeable, which is not generally true
+    for gold market regimes. NOT a formally calibrated statistical CI, not a
+    forecast, and not a substitute for genuinely new out-of-sample data.
+    """
+    if repetitions<100 or not bars:
+        raise ValueError("invalid weekly stress bootstrap configuration")
+    weekly={}
+    for b in bars:
+        iso=b["time"].isocalendar()
+        weekly.setdefault((iso.year,iso.week),0.0)
+    trades_per_week=set()
+    for t in trades:
+        when=dt.datetime.fromisoformat(t["exit"]).isocalendar()
+        key=(when.year,when.week)
+        if key not in weekly:
+            raise ValueError("trade exit outside documented market data")
+        weekly[key]+=t["pnl"]
+        trades_per_week.add(key)
+    values=list(weekly.values())
+    n=len(values)
+    output={"bootstrap_week_count":n,
+            "bootstrap_weeks_with_trades":len(trades_per_week),
+            "bootstrap_repetitions":repetitions,
+            "bootstrap_seed":seed,
+            "bootstrap_interpretation":"exploratory resampling of exit-attributed weekly P/L; not a calibrated confidence interval or future profit forecast"}
+    if n<26:
+        return {**output,"bootstrap_status":"INSUFFICIENT_WEEKS",
+                "bootstrap_net_pnl_p2p5":None,
+                "bootstrap_net_pnl_p97p5":None,
+                "bootstrap_positive_fraction":None}
+    rng=random.Random(seed)
+    totals=[]
+    for _ in range(repetitions):
+        totals.append(sum(values[rng.randrange(n)] for _ in range(n)))
+    totals.sort()
+    return {**output,"bootstrap_status":"EXPLORATORY",
+            "bootstrap_net_pnl_p2p5":round(totals[int(0.025*repetitions)],2),
+            "bootstrap_net_pnl_p97p5":round(totals[min(repetitions-1,math.ceil(0.975*repetitions)-1)],2),
+            "bootstrap_positive_fraction":round(sum(v>0 for v in totals)/repetitions,4)}
+
 
 def partition_closed_trades(trades, boundary_1, boundary_2):
     """Exclude positions crossing a research/validation/holdout boundary.
@@ -416,7 +462,9 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
     active_months=sum(item["trades"]>0 for item in monthly)
     positive_months=sum(item["trades"]>0 and item["net_pnl"]>0 for item in monthly)
     losing_months=sum(item["trades"]>0 and item["net_pnl"]<0 for item in monthly)
+    weekly_stress=weekly_resampling_stress(trades,bars)
     return {
+        **weekly_stress,
         "mode":mode,"slippage_usd_per_oz_per_side":slippage,
         "news_event_mode":"archived_events_point_in_time" if news_events is not None else "not_enabled",
         "assumed_commission_usd_per_lot_round_turn":commission_per_lot_round_turn,
