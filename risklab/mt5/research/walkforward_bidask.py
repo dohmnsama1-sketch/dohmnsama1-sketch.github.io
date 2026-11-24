@@ -205,6 +205,26 @@ def conservative_exit_fill(side, stop, target, bar, slippage):
             return target + slippage, False
     return None
 
+def adverse_ohlc_equity_proxy(realized_equity, position, bar, slippage,
+                              commission_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN):
+    """Stress estimate of intrabar open equity at the worst M5 BID/ASK extreme.
+
+    Not tick-accurate and NOT a true time-ordered floating-equity series.
+    The low/high may occur before entry or after exit in this same bar.
+    This deliberately pessimistic diagnostic exposes risk hidden by reports
+    that only compute drawdown from closed trade balances.
+    """
+    if slippage<0 or commission_round_turn<0 or position["lots"]<=0:
+        raise ValueError("invalid adverse valuation inputs")
+    side=position["side"]
+    if side not in (-1,1):
+        raise ValueError("invalid position side")
+    adverse_quote=(bar["bid_low"]-slippage if side==1
+                   else bar["ask_high"]+slippage)
+    unrealized=(adverse_quote-position["entry"])*CONTRACT_UNITS*position["lots"]*side
+    unrealized-=commission_round_turn*position["lots"]
+    return realized_equity+unrealized,unrealized
+
 def closed_bar_breakout_signal(bars,i,atr):
     """Fire only on a *new* confirmed Donchian break, not every bar outside.
 
@@ -243,6 +263,9 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
     equity=initial_equity
     peak=equity
     max_dd=0
+    max_adverse_intrabar_dd=0.0
+    max_open_position_adverse_loss=0.0
+    bars_with_open_position=0
     locked=False
     day=None
     daystart=equity
@@ -257,6 +280,13 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
         held_at_open=(position is not None)
         if position is not None:
             pos=position
+            bars_with_open_position+=1
+            marked_equity,unrealized=adverse_ohlc_equity_proxy(
+                equity,pos,b,slippage,commission_per_lot_round_turn)
+            max_open_position_adverse_loss=max(max_open_position_adverse_loss,-unrealized)
+            if peak>0:
+                max_adverse_intrabar_dd=max(
+                    max_adverse_intrabar_dd,max(0.0,1.0-marked_equity/peak))
             fill=conservative_exit_fill(pos["side"],pos["stop"],pos["target"],b,slippage)
             if fill is not None:
                 exit_quote,stop_hit=fill
@@ -334,6 +364,15 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
             continue
         position={"time":b["time"].isoformat(),"side":side,"entry":entry,
                   "stop":stop,"target":target,"lots":lots}
+        # Same-bar OHLC ordering is unknown; include pessimistic adverse mark
+        # even if the low/high was before the order. Not an actual observed DD.
+        bars_with_open_position+=1
+        marked_equity,unrealized=adverse_ohlc_equity_proxy(
+            equity,position,b,slippage,commission_per_lot_round_turn)
+        max_open_position_adverse_loss=max(max_open_position_adverse_loss,-unrealized)
+        if peak>0:
+            max_adverse_intrabar_dd=max(
+                max_adverse_intrabar_dd,max(0.0,1.0-marked_equity/peak))
         rejected["entry_attempts"]+=1
         # Entry at first quote of bar i; OHLC exit path remains pessimistic.
         fill=conservative_exit_fill(side,stop,target,b,slippage)
@@ -382,7 +421,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
         "news_event_mode":"archived_events_point_in_time" if news_events is not None else "not_enabled",
         "assumed_commission_usd_per_lot_round_turn":commission_per_lot_round_turn,
         "source":"independent public Dukascopy-derived M5 bid/ask aggregation, not broker fills",
-        "approximation":"M5 candle stop/target path ambiguous; stop-first, not tick-exact; no margin/swap modelling; commission is a generic research assumption, not a verified Exness Standard account fee",
+        "approximation":"M5 candle stop/target path ambiguous; stop-first, not tick-exact; no margin/swap modelling; commission is a generic research assumption, not a verified Exness Standard account fee; adverse intrabar equity proxy uses full candle extremes without tick order and is NOT a true observed floating-equity drawdown",
         "initial_equity":initial_equity,
         "ending_equity":round(equity,2),
         "net_pnl":round(equity-initial_equity,2),
@@ -391,6 +430,9 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
         "win_rate_wilson_95_interval":wilson_interval(wins,len(trades)),
         "profit_factor":round(profits/losses,4) if losses else None,
         "max_closed_equity_drawdown_fraction":round(max_dd,5),
+        "max_adverse_intrabar_equity_proxy_fraction":round(max_adverse_intrabar_dd,5),
+        "max_open_position_adverse_loss_proxy_usd":round(max_open_position_adverse_loss,2),
+        "bars_with_open_position":bars_with_open_position,
         "gross_profit":round(profits,2),"gross_loss":round(losses,2),
         "rejections":dict(rejected),
         "split_60_20_20":[{"name":name,"start_boundary":(None if name=="analysis" else
