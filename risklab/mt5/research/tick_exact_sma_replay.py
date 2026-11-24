@@ -77,8 +77,27 @@ def next_wilder_atr(state:tuple[int,float,float|None],
     return count,total,prior_atr
 
 
-def replay_week(path:Path,initial_equity:float=10000.0,
-                slippage:float=.15,commission_per_lot:float=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN)->dict:
+def iter_verified_quote_rows(paths):
+    """Yield raw chronological records from separate validated gzip files.
+
+    The previous file's state must be preserved across boundaries. The caller
+    enforces globally nondecreasing timestamps, including file boundaries.
+    """
+    for path in paths:
+        with gzip.open(path,"rt",encoding="utf-8",newline="") as handle:
+            reader=csv.reader(handle)
+            if next(reader,None)!=HEADER:
+                raise ValueError(f"unexpected source columns in {Path(path).name}")
+            for row in reader:
+                yield row
+
+
+def replay_files(paths,initial_equity:float=10000.0,
+                 slippage:float=.15,commission_per_lot:float=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN)->dict:
+    """One continuous portfolio across files: no artificial weekly resets."""
+    paths=tuple(Path(p) for p in paths)
+    if not paths:
+        raise ValueError("at least one pinned tick-data file is required")
     if initial_equity<=0 or slippage<0 or commission_per_lot<0:
         raise ValueError("invalid simulation risk/cost parameters")
     closed_bars=[]
@@ -103,124 +122,121 @@ def replay_week(path:Path,initial_equity:float=10000.0,
         return ((exit_price-p["entry"])*CONTRACT_UNITS*p["lots"]*p["side"]
                 -commission_per_lot*p["lots"])
 
-    with gzip.open(path,"rt",encoding="utf-8",newline="") as handle:
-        reader=csv.reader(handle)
-        if next(reader,None)!=HEADER:raise ValueError("unexpected source columns")
-        for raw in reader:
-            when,ask,bid=parse_tick_row(raw)
-            if prior_tick_time is not None and when<prior_tick_time:
-                raise ValueError("nonmonotonic actual tick times")
-            prior_tick_time=when
-            ticks+=1
-            if first is None:first=when
-            last=when
-            last_bid=bid
-            last_ask=ask
-            current_day=when[:10]
-            if current_day!=day:
-                day=current_day
-                daily_ref=equity
-            new_bucket=m5_bucket(when)
-            new_bar=(bar is None or new_bucket!=bar["time"])
-            was_open_at_bar_start=bool(position)
-            if new_bar:
-                if bar is not None:
-                    previous_close=closed_bars[-1]["bid_close"] if closed_bars else None
-                    atr_state=next_wilder_atr(atr_state,bar,previous_close)
-                    closed_bars.append(bar)
-                    if new_bucket<=bar["time"]:
-                        raise ValueError("bar time moved backwards")
-                bar={"time":new_bucket,"bid_open":bid,"bid_high":bid,"bid_low":bid,
-                     "bid_close":bid,"ask_open":ask,"ask_high":ask,"ask_low":ask,
-                     "ask_close":ask,"ticks":0}
-            bar["ticks"]+=1
-            for label,price in (("bid",bid),("ask",ask)):
-                bar[f"{label}_high"]=max(bar[f"{label}_high"],price)
-                bar[f"{label}_low"]=min(bar[f"{label}_low"],price)
-                bar[f"{label}_close"]=price
+    for raw in iter_verified_quote_rows(paths):
+        when,ask,bid=parse_tick_row(raw)
+        if prior_tick_time is not None and when<prior_tick_time:
+            raise ValueError("nonmonotonic actual tick times")
+        prior_tick_time=when
+        ticks+=1
+        if first is None:first=when
+        last=when
+        last_bid=bid
+        last_ask=ask
+        current_day=when[:10]
+        if current_day!=day:
+            day=current_day
+            daily_ref=equity
+        new_bucket=m5_bucket(when)
+        new_bar=(bar is None or new_bucket!=bar["time"])
+        was_open_at_bar_start=bool(position)
+        if new_bar:
+            if bar is not None:
+                previous_close=closed_bars[-1]["bid_close"] if closed_bars else None
+                atr_state=next_wilder_atr(atr_state,bar,previous_close)
+                closed_bars.append(bar)
+                if new_bucket<=bar["time"]:
+                    raise ValueError("bar time moved backwards")
+            bar={"time":new_bucket,"bid_open":bid,"bid_high":bid,"bid_low":bid,
+                 "bid_close":bid,"ask_open":ask,"ask_high":ask,"ask_low":ask,
+                 "ask_close":ask,"ticks":0}
+        bar["ticks"]+=1
+        for label,price in (("bid",bid),("ask",ask)):
+            bar[f"{label}_high"]=max(bar[f"{label}_high"],price)
+            bar[f"{label}_low"]=min(bar[f"{label}_low"],price)
+            bar[f"{label}_close"]=price
 
-            mark=equity
-            if position is not None:
-                mark=equity+((bid if position["side"]==1 else ask)-position["entry"])*CONTRACT_UNITS*position["lots"]*position["side"]-commission_per_lot*position["lots"]
-                equity_peak=max(equity_peak,mark)
-                if equity_peak>0:
-                    max_true_tick_equity_dd=max(max_true_tick_equity_dd,max(0,1-mark/equity_peak))
-                fill=actual_tick_exit(position,bid,ask,slippage)
-                if fill is not None:
-                    exit_price,why=fill
-                    pnl=pnl_at(exit_price,position)
-                    equity+=pnl
-                    trades.append({"entry":position["entry_time"],"exit":when,
-                                   "side":position["side"],"lot":position["lots"],
-                                   "pnl":round(pnl,6),"exit_reason":why})
-                    position=None
-                    equity_peak=max(equity_peak,equity)
-
-            if mark<=daily_ref*(1-.02) or (equity_peak>0 and mark<=equity_peak*(1-.15)):
-                frozen=True
-                if position is not None:
-                    # Supervised simulation of immediate adverse-market close.
-                    # No guarantee broker could fill this in live conditions.
-                    exit_price=bid-slippage if position["side"]==1 else ask+slippage
-                    pnl=pnl_at(exit_price,position)
-                    equity+=pnl
-                    trades.append({"entry":position["entry_time"],"exit":when,
-                                   "side":position["side"],"lot":position["lots"],
-                                   "pnl":round(pnl,6),"exit_reason":"equity_guard_attempt"})
-                    rejected["floating_equity_guard_close"]+=1
-                    position=None
-            # Do not open on a candle where a prior trade just closed. Signals
-            # are consumed only from fully completed candles and at 1st tick.
-            if not new_bar or was_open_at_bar_start or position or frozen:
-                continue
-            side=crossover_from_closed_bars(closed_bars)
-            if side==0:continue
-            rejected["crossover_signals"]+=1
-            if len(closed_bars)<ATR_PERIOD+1:continue
-            # M5 signal would be unsafe after a multi-bar market-data gap.
-            if closed_bars:
-                prev_time=dt.datetime.strptime(closed_bars[-1]["time"],"%Y-%m-%d %H:%M:%S")
-                this_time=dt.datetime.strptime(new_bucket,"%Y-%m-%d %H:%M:%S")
-                if (this_time-prev_time).total_seconds()>1800:
-                    rejected["market_data_gap"]+=1
-                    continue
-            spread=ask-bid
-            if spread>MAX_SPREAD_PRICE:
-                rejected["spread_cap"]+=1
-                continue
-            # ATR is incrementally updated in O(1) on each CLOSED M5 bar.
-            # The current forming candle is never used for its entry signal.
-            a=atr_state[2]
-            if a is None or a<=0:
-                rejected["indicator_warmup"]+=1
-                continue
-            entry=(ask+slippage) if side==1 else (bid-slippage)
-            distance=a*SL_ATR
-            if side==1:
-                stop=math.floor((entry-distance)/TICK_SIZE)*TICK_SIZE
-                target=math.ceil((entry+distance*REWARD_RISK)/TICK_SIZE)*TICK_SIZE
-            else:
-                stop=math.ceil((entry+distance)/TICK_SIZE)*TICK_SIZE
-                target=math.floor((entry-distance*REWARD_RISK)/TICK_SIZE)*TICK_SIZE
-            risk_lot=(abs(entry-stop)+2*slippage)*CONTRACT_UNITS+commission_per_lot
-            qty=round(math.floor((equity*RISK_FRACTION/risk_lot+1e-9)/LOT_STEP)*LOT_STEP,8)
-            if qty<MIN_LOT:
-                rejected["risk_reject_min_lot"]+=1
-                continue
-            position={"side":side,"entry":entry,"stop":stop,"target":target,
-                      "lots":qty,"entry_time":when}
-            rejected["entry_attempts"]+=1
-            # The first quote itself may cross a stop when spread is unusually wide.
+        mark=equity
+        if position is not None:
+            mark=equity+((bid if position["side"]==1 else ask)-position["entry"])*CONTRACT_UNITS*position["lots"]*position["side"]-commission_per_lot*position["lots"]
+            equity_peak=max(equity_peak,mark)
+            if equity_peak>0:
+                max_true_tick_equity_dd=max(max_true_tick_equity_dd,max(0,1-mark/equity_peak))
             fill=actual_tick_exit(position,bid,ask,slippage)
             if fill is not None:
                 exit_price,why=fill
                 pnl=pnl_at(exit_price,position)
                 equity+=pnl
                 trades.append({"entry":position["entry_time"],"exit":when,
-                               "side":side,"lot":qty,"pnl":round(pnl,6),
-                               "exit_reason":why})
+                               "side":position["side"],"lot":position["lots"],
+                               "pnl":round(pnl,6),"exit_reason":why})
                 position=None
                 equity_peak=max(equity_peak,equity)
+
+        if mark<=daily_ref*(1-.02) or (equity_peak>0 and mark<=equity_peak*(1-.15)):
+            frozen=True
+            if position is not None:
+                # Supervised simulation of immediate adverse-market close.
+                # No guarantee broker could fill this in live conditions.
+                exit_price=bid-slippage if position["side"]==1 else ask+slippage
+                pnl=pnl_at(exit_price,position)
+                equity+=pnl
+                trades.append({"entry":position["entry_time"],"exit":when,
+                               "side":position["side"],"lot":position["lots"],
+                               "pnl":round(pnl,6),"exit_reason":"equity_guard_attempt"})
+                rejected["floating_equity_guard_close"]+=1
+                position=None
+        # Do not open on a candle where a prior trade just closed. Signals
+        # are consumed only from fully completed candles and at 1st tick.
+        if not new_bar or was_open_at_bar_start or position or frozen:
+            continue
+        side=crossover_from_closed_bars(closed_bars)
+        if side==0:continue
+        rejected["crossover_signals"]+=1
+        if len(closed_bars)<ATR_PERIOD+1:continue
+        # M5 signal would be unsafe after a multi-bar market-data gap.
+        if closed_bars:
+            prev_time=dt.datetime.strptime(closed_bars[-1]["time"],"%Y-%m-%d %H:%M:%S")
+            this_time=dt.datetime.strptime(new_bucket,"%Y-%m-%d %H:%M:%S")
+            if (this_time-prev_time).total_seconds()>1800:
+                rejected["market_data_gap"]+=1
+                continue
+        spread=ask-bid
+        if spread>MAX_SPREAD_PRICE:
+            rejected["spread_cap"]+=1
+            continue
+        # ATR is incrementally updated in O(1) on each CLOSED M5 bar.
+        # The current forming candle is never used for its entry signal.
+        a=atr_state[2]
+        if a is None or a<=0:
+            rejected["indicator_warmup"]+=1
+            continue
+        entry=(ask+slippage) if side==1 else (bid-slippage)
+        distance=a*SL_ATR
+        if side==1:
+            stop=math.floor((entry-distance)/TICK_SIZE)*TICK_SIZE
+            target=math.ceil((entry+distance*REWARD_RISK)/TICK_SIZE)*TICK_SIZE
+        else:
+            stop=math.ceil((entry+distance)/TICK_SIZE)*TICK_SIZE
+            target=math.floor((entry-distance*REWARD_RISK)/TICK_SIZE)*TICK_SIZE
+        risk_lot=(abs(entry-stop)+2*slippage)*CONTRACT_UNITS+commission_per_lot
+        qty=round(math.floor((equity*RISK_FRACTION/risk_lot+1e-9)/LOT_STEP)*LOT_STEP,8)
+        if qty<MIN_LOT:
+            rejected["risk_reject_min_lot"]+=1
+            continue
+        position={"side":side,"entry":entry,"stop":stop,"target":target,
+                  "lots":qty,"entry_time":when}
+        rejected["entry_attempts"]+=1
+        # The first quote itself may cross a stop when spread is unusually wide.
+        fill=actual_tick_exit(position,bid,ask,slippage)
+        if fill is not None:
+            exit_price,why=fill
+            pnl=pnl_at(exit_price,position)
+            equity+=pnl
+            trades.append({"entry":position["entry_time"],"exit":when,
+                           "side":side,"lot":qty,"pnl":round(pnl,6),
+                           "exit_reason":why})
+            position=None
+            equity_peak=max(equity_peak,equity)
 
     if ticks==0:raise ValueError("no actual tick observations")
     if position is not None:
@@ -239,6 +255,8 @@ def replay_week(path:Path,initial_equity:float=10000.0,
         "status":"INDEPENDENT_TICK_REPLAY_NO_REAL_BROKER_FILLS",
         "trading_model":"SMA10/30 confirmed crossover, fixed SL 2 ATR, TP 1.5R",
         "first_tick_utc":first,"last_tick_utc":last,"ticks":ticks,
+        "input_gzip_file_count":len(paths),
+        "cross_file_continuity_preserved":True,
         "m5_bars":len(closed_bars)+int(bar is not None),
         "reference_initial_equity_usd":initial_equity,
         "final_equity_usd":round(equity,2),"net_profit_usd":round(equity-initial_equity,2),
@@ -253,6 +271,11 @@ def replay_week(path:Path,initial_equity:float=10000.0,
         "real_money_release_permitted":False
     }
 
+
+def replay_week(path:Path,initial_equity:float=10000.0,
+                slippage:float=.15,commission_per_lot:float=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN)->dict:
+    """Backwards-compatible one-file wrapper; does not reset within source."""
+    return replay_files([path],initial_equity,slippage,commission_per_lot)
 
 def main():
     p=argparse.ArgumentParser()
