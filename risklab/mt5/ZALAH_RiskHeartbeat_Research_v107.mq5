@@ -308,7 +308,7 @@ void OnTimer()
  diagTimerChecks++;
  if(AccountInfoInteger(ACCOUNT_TRADE_MODE)!=ACCOUNT_TRADE_MODE_DEMO) return;
  if(!MonitorEquitySafety()) return;
- if(!InpAllowDemoOrders||!HasPosition()) return;
+ if(!InpAllowDemoOrders||!HasOwnPosition()) return;
  MqlTick lastTick;
  if(!SymbolInfoTick(InpSymbol,lastTick)||lastTick.time<=0||
     TimeTradeServer()-(datetime)lastTick.time>InpOpenPositionMaxQuoteAgeSeconds)
@@ -410,6 +410,18 @@ void OnDeinit(const int reason)
  if(atrHandle!=INVALID_HANDLE) IndicatorRelease(atrHandle);
  if(trendHandle!=INVALID_HANDLE) IndicatorRelease(trendHandle);
  if(adxHandle!=INVALID_HANDLE) IndicatorRelease(adxHandle);
+}
+bool HasOwnPosition()
+{
+ for(int i=PositionsTotal()-1;i>=0;i--)
+ {
+  ulong ticket=PositionGetTicket(i);
+  if(ticket>0&&PositionSelectByTicket(ticket)&&
+     PositionGetString(POSITION_SYMBOL)==InpSymbol&&
+     (ulong)PositionGetInteger(POSITION_MAGIC)==InpMagic)
+   return true;
+ }
+ return false;
 }
 bool HasPosition()
 {
