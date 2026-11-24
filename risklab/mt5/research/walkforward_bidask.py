@@ -16,6 +16,7 @@ import math
 import statistics
 from collections import Counter
 from pathlib import Path
+from news_event_gate import event_embargo, load_events, UTC
 
 FAST=10
 SLOW=30
@@ -231,7 +232,7 @@ def closed_bar_breakout_signal(bars,i,atr):
         return -1
     return 0
 
-def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_per_lot_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN):
+def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_per_lot_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN,news_events=None):
     if mode not in ("baseline","regime","breakout"): raise ValueError("invalid strategy")
     if slippage<0 or initial_equity<=0 or commission_per_lot_round_turn<0: raise ValueError("invalid cost/capital")
     atr=atr_wilder(bars)
@@ -286,6 +287,9 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
                  -1 if f0>=s0 and f1<s1 else 0)
         if not side: continue
         rejected["breakout_signals" if mode=="breakout" else "crossover_signals"]+=1
+        if news_events is not None and event_embargo(b["time"].replace(tzinfo=UTC),news_events):
+            rejected["point_in_time_news_embargo"]+=1
+            continue
         if i>0 and (b["time"]-bars[i-1]["time"]).total_seconds()>1800:
             rejected["gap_first_bar"]+=1
             continue
@@ -374,6 +378,7 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
     losing_months=sum(item["trades"]>0 and item["net_pnl"]<0 for item in monthly)
     return {
         "mode":mode,"slippage_usd_per_oz_per_side":slippage,
+        "news_event_mode":"archived_events_point_in_time" if news_events is not None else "not_enabled",
         "assumed_commission_usd_per_lot_round_turn":commission_per_lot_round_turn,
         "source":"independent public Dukascopy-derived M5 bid/ask aggregation, not broker fills",
         "approximation":"M5 candle stop/target path ambiguous; stop-first, not tick-exact; no margin/swap modelling; commission is a generic research assumption, not a verified Exness Standard account fee",
@@ -406,16 +411,21 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--m5",required=True)
     p.add_argument("--output",required=True)
+    p.add_argument("--news-events-csv",default=None,
+                   help="Optional independently sourced ISO-UTC point-in-time event CSV; otherwise NO news embargo")
     a=p.parse_args()
     bars=read_bars(Path(a.m5))
+    news_events=load_events(Path(a.news_events_csv)) if a.news_events_csv else None
     results=[]
     for mode in ("baseline","regime","breakout"):
         for slip in (0.00,0.15,0.50):
-            results.append(evaluate(bars,mode,slip))
+            results.append(evaluate(bars,mode,slip,news_events=news_events))
         # Actual owner target capital is 50 USD. Refuse to round up to an
         # unsafe broker minimum lot merely to force a trade.
-        results.append(evaluate(bars,mode,0.15,initial_equity=50))
+        results.append(evaluate(bars,mode,0.15,initial_equity=50,news_events=news_events))
     data={"status":"exploratory_not_MT5_or_Exness_verified",
+          "point_in_time_news_filter":"enabled_from_supplied_file" if news_events is not None else "NOT_ENABLED_no_event_feed",
+          "news_event_count":len(news_events) if news_events is not None else 0,
           "real_money_release_permitted":False,
           "real_money_blockers":["external feed is not Exness fills",
              "historical 5-minute OHLC cannot reconstruct intrabar tick order",
