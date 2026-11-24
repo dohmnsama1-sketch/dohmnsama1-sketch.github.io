@@ -158,6 +158,37 @@ class ResearchTests(unittest.TestCase):
         if r["number_of_closed_trades"]>0:
             self.assertGreater(r["bars_with_open_position"],0)
 
+    def test_weekly_resampling_preserves_no_trade_weeks(self):
+        first=dt.datetime(2026,1,5)
+        weeks=[{"time":first+dt.timedelta(weeks=i)} for i in range(30)]
+        one=[{"exit":weeks[0]["time"].isoformat(),"pnl":100.0}]
+        result=wf.weekly_resampling_stress(one,weeks,repetitions=500)
+        self.assertEqual(result["bootstrap_week_count"],30)
+        self.assertEqual(result["bootstrap_weeks_with_trades"],1)
+        self.assertEqual(result["bootstrap_net_pnl_p2p5"],0.0)
+        self.assertLess(result["bootstrap_positive_fraction"],0.9)
+
+    def test_weekly_resampling_is_deterministic_and_fails_for_short_history(self):
+        first=dt.datetime(2026,1,5)
+        weeks=[{"time":first+dt.timedelta(weeks=i)} for i in range(30)]
+        trades=[{"exit":b["time"].isoformat(),"pnl":12.0} for b in weeks]
+        a=wf.weekly_resampling_stress(trades,weeks,repetitions=500)
+        b=wf.weekly_resampling_stress(trades,weeks,repetitions=500)
+        self.assertEqual(a,b)
+        self.assertEqual(a["bootstrap_net_pnl_p2p5"],360.0)
+        self.assertEqual(a["bootstrap_net_pnl_p97p5"],360.0)
+        self.assertEqual(a["bootstrap_positive_fraction"],1.0)
+        short=wf.weekly_resampling_stress(trades[:5],weeks[:5],repetitions=500)
+        self.assertEqual(short["bootstrap_status"],"INSUFFICIENT_WEEKS")
+        self.assertIsNone(short["bootstrap_net_pnl_p2p5"])
+
+    def test_weekly_resampling_rejects_outside_data(self):
+        first=dt.datetime(2026,1,5)
+        bars=[{"time":first+dt.timedelta(weeks=i)} for i in range(30)]
+        trades=[{"exit":dt.datetime(2027,1,1).isoformat(),"pnl":100.0}]
+        with self.assertRaisesRegex(ValueError,"outside documented"):
+            wf.weekly_resampling_stress(trades,bars,repetitions=100)
+
     def test_no_unbounded_or_negative_slippage(self):
         with self.assertRaises(ValueError):
             wf.evaluate(synthetic(),"baseline",-.1)
