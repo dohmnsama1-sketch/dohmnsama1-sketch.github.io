@@ -113,6 +113,7 @@ def replay_week(path:Path,initial_equity:float=10000.0,
                 bar[f"{label}_low"]=min(bar[f"{label}_low"],price)
                 bar[f"{label}_close"]=price
 
+            mark=equity
             if position is not None:
                 mark=equity+((bid if position["side"]==1 else ask)-position["entry"])*CONTRACT_UNITS*position["lots"]*position["side"]-commission_per_lot*position["lots"]
                 equity_peak=max(equity_peak,mark)
@@ -129,8 +130,19 @@ def replay_week(path:Path,initial_equity:float=10000.0,
                     position=None
                     equity_peak=max(equity_peak,equity)
 
-            if equity<=daily_ref*(1-.02) or (equity_peak>0 and equity<=equity_peak*(1-.15)):
+            if mark<=daily_ref*(1-.02) or (equity_peak>0 and mark<=equity_peak*(1-.15)):
                 frozen=True
+                if position is not None:
+                    # Supervised simulation of immediate adverse-market close.
+                    # No guarantee broker could fill this in live conditions.
+                    exit_price=bid-slippage if position["side"]==1 else ask+slippage
+                    pnl=pnl_at(exit_price,position)
+                    equity+=pnl
+                    trades.append({"entry":position["entry_time"],"exit":when,
+                                   "side":position["side"],"lot":position["lots"],
+                                   "pnl":round(pnl,6),"exit_reason":"equity_guard_attempt"})
+                    rejected["floating_equity_guard_close"]+=1
+                    position=None
             # Do not open on a candle where a prior trade just closed. Signals
             # are consumed only from fully completed candles and at 1st tick.
             if not new_bar or was_open_at_bar_start or position or frozen:
