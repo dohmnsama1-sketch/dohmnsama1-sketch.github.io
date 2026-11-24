@@ -55,6 +55,14 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
         reasons.append("negative or zero net profit after modeled trading costs")
     if holdout.get("net_pnl",0)<=0:
         reasons.append("negative or zero holdout net profit")
+    # A profitable holdout at normal costs is not enough if it turns into
+    # a loss under the prespecified adverse execution-cost scenario.
+    stress_split={x["name"]:x for x in stressed.get("split_60_20_20",[]) }
+    stress_holdout=stress_split.get("holdout",{})
+    if stress_holdout.get("trades",0)<min_holdout:
+        reasons.append("insufficient stressed-cost holdout trades")
+    if stress_holdout.get("net_pnl",0)<=0:
+        reasons.append("negative or zero stressed-cost holdout net profit")
     if baseline.get("profit_factor") is None or baseline["profit_factor"]<=1.25:
         reasons.append("profit factor does not exceed prespecified 1.25 threshold")
     if stressed.get("net_pnl",0)<=0:
@@ -68,6 +76,9 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
     excursion=baseline.get("max_adverse_intrabar_equity_proxy_fraction")
     if not isinstance(excursion,(int,float)) or not math.isfinite(excursion) or excursion>0.08 or excursion<0:
         reasons.append("missing or excessive intrabar adverse-equity excursion proxy (>8% research ceiling)")
+    stressed_excursion=stressed.get("max_adverse_intrabar_equity_proxy_fraction")
+    if not isinstance(stressed_excursion,(int,float)) or not math.isfinite(stressed_excursion) or stressed_excursion>0.08 or stressed_excursion<0:
+        reasons.append("missing or excessive STRESSED-cost intrabar equity excursion proxy (>8% research ceiling)")
     if baseline.get("months_with_trades",0)<6:
         reasons.append("fewer than six distinct active months; insufficient regime diversity")
     # Conservative research screening only: weekly bootstrap is an imperfect
