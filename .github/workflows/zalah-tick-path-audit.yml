@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - ".github/workflows/zalah-tick-path-audit.yml"
+      - "risklab/mt5/research/tick_exact_sma_replay.py"
+      - "risklab/mt5/research/tick_bar_path_audit.py"
   workflow_dispatch:
 permissions:
   contents: read
