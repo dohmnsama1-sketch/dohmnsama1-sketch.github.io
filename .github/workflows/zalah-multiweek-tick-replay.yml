@@ -1,0 +1,73 @@
+name: ZALAH continuous multiweek tick replay
+on:
+  push:
+    paths:
+      - ".github/workflows/zalah-multiweek-tick-replay.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  continuous_quotes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Confirm point-in-time, risk, and cross-file continuity unit tests
+        run: python -m unittest discover -s risklab/mt5/research -p "test_*.py" -v
+      - name: Replay four real-source weeks without resetting open positions or indicators
+        run: |
+          python - <<'PY'
+          import os,sys,json,pathlib
+          sys.path.insert(0,str(pathlib.Path("risklab/mt5/research").resolve()))
+          from public_xauusd_ingest import REPO,PIN,download_file
+          from tick_exact_sma_replay import replay_files
+          folder=pathlib.Path(os.environ["RUNNER_TEMP"])/"zalah_continuous_ticks"
+          folder.mkdir(parents=True,exist_ok=True)
+          root=f"https://raw.githubusercontent.com/{REPO}/{PIN}"
+          catalog_file=folder/"catalog.json"
+          catalogue_proof=download_file(root+"/DATA_STATUS.json",catalog_file)
+          catalog=json.loads(catalog_file.read_text(encoding="utf-8"))
+          inventory={int(x["week"]):x for x in catalog["files"]}
+          weeks=(1,2,3,4)
+          paths=[]
+          source_provenance=[]
+          for week in weeks:
+              p=folder/f"XAUUSD_2026_w{week:02d}.csv.gz"
+              record=download_file(root+f"/data/tick/{p.name}",p)
+              paths.append(p)
+              source_provenance.append({"week":week,"sha256":record["sha256"],
+                                        "bytes":record["bytes"],"expected_rows":inventory[week]["rows"]})
+          reference=replay_files(paths,initial_equity=10000.0)
+          safety_small=replay_files(paths,initial_equity=50.0)
+          expected_ticks=sum(inventory[w]["rows"] for w in weeks)
+          assert reference["ticks"]==safety_small["ticks"]==expected_ticks
+          assert reference["input_gzip_file_count"]==safety_small["input_gzip_file_count"]==len(weeks)
+          assert reference["first_tick_utc"]==inventory[1]["first_tick_utc"]
+          assert reference["last_tick_utc"]==inventory[4]["last_tick_utc"]
+          assert reference["real_money_release_permitted"] is False
+          assert safety_small["real_money_release_permitted"] is False
+          result={"status":"INDEPENDENT_RESEARCH_NOT_EXNESS",
+                  "provenance":{"source_repo":REPO,"pinned_source_commit":PIN,
+                                "manifest_sha256":catalogue_proof["sha256"],
+                                "weeks":list(weeks),"files":source_provenance},
+                  "reference_simulated_usd_10000":reference,
+                  "min_lot_safety_simulated_usd_50":safety_small,
+                  "real_money_release_permitted":False}
+          (folder/"continuous_summary.json").write_text(json.dumps(result,indent=2),encoding="utf-8")
+          for p in paths:p.unlink()  # Never upload third-party tick files
+          catalog_file.unlink()
+          for title,record in (("$10k",reference),("$50",safety_small)):
+              print(f"{title}: ticks={record['ticks']} bars={record['m5_bars']} trades={record['closed_trades']} net={record['net_profit_usd']} max_tick_marked_dd={record['tick_order_max_marked_equity_drawdown_fraction']} entries={record['rejections'].get('entry_attempts',0)}")
+          print("PERSISTENT_MULTI_WEEK_STATE_VERIFIED: no account funding or real broker orders")
+          PY
+      - name: Publish summary JSON only; do not redistribute historical raw prices
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zalah-four-week-continuous-tick-replay-summary
+          path: "${{ runner.temp }}/zalah_continuous_ticks/continuous_summary.json"
+          retention-days: 30
+          if-no-files-found: warn
