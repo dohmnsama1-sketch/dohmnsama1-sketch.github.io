@@ -22,6 +22,21 @@ from walkforward_bidask import (FAST,SLOW,ATR_PERIOD,SL_ATR,REWARD_RISK,
     TICK_SIZE,ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN)
 
 
+def update_equity_drawdown(peak:float, maximum_fraction:float, observed_equity:float):
+    """Include both quote-marked floating equity AND realized exit fills.
+
+    Stops may execute below BID/above ASK after adverse slippage. A quote-only
+    mark is not enough to measure realized drawdown at that execution tick.
+    """
+    if not all(math.isfinite(x) for x in (peak,maximum_fraction,observed_equity)):
+        raise ValueError("equity tracking requires finite values")
+    if peak<=0 or maximum_fraction<0:
+        raise ValueError("invalid initial equity risk state")
+    peak=max(peak,observed_equity)
+    maximum_fraction=max(maximum_fraction,max(0.0,1-observed_equity/peak))
+    return peak,maximum_fraction
+
+
 def actual_tick_exit(position:dict, bid:float, ask:float, slip:float):
     """Stop order gaps may worsen fill; target cannot get optimistic improvement."""
     side=position["side"]
@@ -158,14 +173,15 @@ def replay_files(paths,initial_equity:float=10000.0,
         mark=equity
         if position is not None:
             mark=equity+((bid if position["side"]==1 else ask)-position["entry"])*CONTRACT_UNITS*position["lots"]*position["side"]-commission_per_lot*position["lots"]
-            equity_peak=max(equity_peak,mark)
-            if equity_peak>0:
-                max_true_tick_equity_dd=max(max_true_tick_equity_dd,max(0,1-mark/equity_peak))
+            equity_peak,max_true_tick_equity_dd=update_equity_drawdown(
+                equity_peak,max_true_tick_equity_dd,mark)
             fill=actual_tick_exit(position,bid,ask,slippage)
             if fill is not None:
                 exit_price,why=fill
                 pnl=pnl_at(exit_price,position)
                 equity+=pnl
+                equity_peak,max_true_tick_equity_dd=update_equity_drawdown(
+                    equity_peak,max_true_tick_equity_dd,equity)
                 trades.append({"entry":position["entry_time"],"exit":when,
                                "side":position["side"],"lot":position["lots"],
                                "pnl":round(pnl,6),"exit_reason":why})
@@ -180,6 +196,8 @@ def replay_files(paths,initial_equity:float=10000.0,
                 exit_price=bid-slippage if position["side"]==1 else ask+slippage
                 pnl=pnl_at(exit_price,position)
                 equity+=pnl
+                equity_peak,max_true_tick_equity_dd=update_equity_drawdown(
+                    equity_peak,max_true_tick_equity_dd,equity)
                 trades.append({"entry":position["entry_time"],"exit":when,
                                "side":position["side"],"lot":position["lots"],
                                "pnl":round(pnl,6),"exit_reason":"equity_guard_attempt"})
@@ -232,6 +250,8 @@ def replay_files(paths,initial_equity:float=10000.0,
             exit_price,why=fill
             pnl=pnl_at(exit_price,position)
             equity+=pnl
+            equity_peak,max_true_tick_equity_dd=update_equity_drawdown(
+                equity_peak,max_true_tick_equity_dd,equity)
             trades.append({"entry":position["entry_time"],"exit":when,
                            "side":side,"lot":qty,"pnl":round(pnl,6),
                            "exit_reason":why})
@@ -244,6 +264,8 @@ def replay_files(paths,initial_equity:float=10000.0,
         exit_price=final_quote-slippage if position["side"]==1 else final_quote+slippage
         pnl=pnl_at(exit_price,position)
         equity+=pnl
+        equity_peak,max_true_tick_equity_dd=update_equity_drawdown(
+            equity_peak,max_true_tick_equity_dd,equity)
         trades.append({"entry":position["entry_time"],"exit":last,
                        "side":position["side"],"lot":position["lots"],
                        "pnl":round(pnl,6),"exit_reason":"forced_data_end"})
@@ -263,6 +285,7 @@ def replay_files(paths,initial_equity:float=10000.0,
         "closed_trades":len(trades),"win_rate":round(sum(t["pnl"]>0 for t in trades)/len(trades),4) if trades else None,
         "profit_factor":round(gains/losses,4) if losses else None,
         "tick_order_max_marked_equity_drawdown_fraction":round(max_true_tick_equity_dd,5),
+        "tick_order_equity_risk_includes_realized_exit_fills":True,
         "assumed_adverse_slippage_usd_per_oz_per_side":slippage,
         "assumed_commission_usd_per_lot_round_turn":commission_per_lot,
         "rejections":dict(rejected),
