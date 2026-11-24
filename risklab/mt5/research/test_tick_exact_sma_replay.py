@@ -48,6 +48,24 @@ class TickExactReplayTests(unittest.TestCase):
             self.assertFalse(result["real_money_release_permitted"])
             self.assertIsNone(result["profit_factor"])
 
+    def test_50_dollar_account_refuses_minimum_gold_lot(self):
+        # Synthetic quote changes generate crossovers, but risk budget is
+        # just USD 0.25. Do not force an unsafe 0.01 lot trade.
+        import datetime as dt,math
+        base=dt.datetime(2026,1,2,0,0)
+        rows=[]
+        for i in range(100):
+            price=100+3*math.sin(i/7.0)
+            when=(base+dt.timedelta(minutes=5*i)).strftime("%Y-%m-%d %H:%M:%S")
+            rows.append(f"{when}.000,{price+0.2:.6f},{price:.6f},1,1")
+        with tempfile.TemporaryDirectory() as root:
+            result=replay_week(self.gz(root,rows),initial_equity=50)
+            self.assertGreater(result["rejections"].get("crossover_signals",0),0)
+            self.assertGreater(result["rejections"].get("risk_reject_min_lot",0),0)
+            self.assertEqual(result["closed_trades"],0)
+            self.assertEqual(result["final_equity_usd"],50)
+            self.assertFalse(result["real_money_release_permitted"])
+
     def test_nonmonotonic_and_invalid_price_rejected(self):
         rows=["2026-01-02 10:00:01.000,100.2,100.0,1,1",
               "2026-01-02 10:00:00.000,100.2,100.0,1,1"]
