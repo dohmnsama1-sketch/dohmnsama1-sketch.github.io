@@ -21,6 +21,21 @@ jobs:
         run: python risklab/mt5/research/public_xauusd_ingest.py --weeks 1-47 --output "$RUNNER_TEMP/zalah_full_year"
       - name: Stress benchmark with immutable strategy parameters and chronological splits
         run: python risklab/mt5/research/walkforward_bidask.py --m5 "$RUNNER_TEMP/zalah_full_year/xauusd_bidask_m5.csv" --output "$RUNNER_TEMP/zalah_full_year/benchmark.json"
+      - name: Verify whole-week resampling outputs on the full quote dataset
+        run: |
+          python - <<'PY'
+          import json, os
+          filename=os.path.join(os.environ["RUNNER_TEMP"],"zalah_full_year","benchmark.json")
+          with open(filename,encoding="utf-8") as f:
+              result=json.load(f)
+          expected={"baseline","regime","breakout"}
+          candidates=[x for x in result["results"] if x["slippage_usd_per_oz_per_side"]==0.15]
+          assert len(candidates)==3 and {x["mode"] for x in candidates}==expected
+          for run in candidates:
+              assert run["bootstrap_week_count"]>=26
+              assert run["bootstrap_status"]=="EXPLORATORY"
+              print(f'{run["mode"]}: weeks={run["bootstrap_week_count"]} trades={run["number_of_closed_trades"]} net={run["net_pnl"]} bootstrap_p2p5={run["bootstrap_net_pnl_p2p5"]} bootstrap_positive_share={run["bootstrap_positive_fraction"]}')
+          PY
       - name: Research-only release gate across all three strategies
         run: python risklab/mt5/research/readiness_gate.py --input "$RUNNER_TEMP/zalah_full_year/benchmark.json" --output "$RUNNER_TEMP/zalah_full_year/readiness.json"
       - name: Store provenance and aggregated performance only, not third party market data
