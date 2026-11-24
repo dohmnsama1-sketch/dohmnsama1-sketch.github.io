@@ -157,6 +157,47 @@ def wilson_interval(wins,total,z=1.96):
     half=z*math.sqrt(p*(1-p)/total+z*z/(4*total*total))/d
     return [round(max(0,mid-half),4),round(min(1,mid+half),4)]
 
+def daily_reliability_profile(trades,bars):
+    """Observed trade-exit P/L by market-data day, with NO-TRADE days included.
+
+    This is retrospective daily realized bookkeeping, not a daily prediction.
+    Intraday unrealized P/L is excluded and profit is not guaranteed.
+    """
+    if not bars:
+        raise ValueError("daily profile requires market observations")
+    by_day={}
+    active_days=set()
+    for b in bars:
+        by_day.setdefault(b["time"].date(),0.0)
+    for trade in trades:
+        day=dt.datetime.fromisoformat(trade["exit"]).date()
+        if day not in by_day:
+            raise ValueError("trade exit outside daily data coverage")
+        by_day[day]+=trade["pnl"]
+        active_days.add(day)
+    days=sorted(by_day)
+    wins=sum(by_day[d]>0 for d in days)
+    losses=sum(by_day[d]<0 for d in days)
+    inactive=len(days)-len(active_days)
+    nonpositive_streak=0
+    max_streak=0
+    for d in days:
+        if by_day[d]<=0:
+            nonpositive_streak+=1
+            max_streak=max(max_streak,nonpositive_streak)
+        else:
+            nonpositive_streak=0
+    return {"days_with_quote_bars":len(days),
+            "days_with_closed_trades":len(active_days),
+            "days_without_closed_trades":inactive,
+            "days_with_positive_realized_pnl":wins,
+            "days_with_negative_realized_pnl":losses,
+            "positive_day_share_of_quote_days":round(wins/len(days),4),
+            "longest_nonpositive_quote_day_streak":max_streak,
+            "worst_exit_attributed_realized_day_usd":round(min(by_day.values()),2),
+            "daily_profile_disclaimer":"exit-attributed realized P/L only; no-trade is not a winning day and floating risk is excluded"}
+
+
 def weekly_resampling_stress(trades, bars, repetitions=2000, seed=20261124):
     """Deterministic exploratory whole-week P/L block bootstrap.
 
@@ -463,7 +504,9 @@ def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_
     positive_months=sum(item["trades"]>0 and item["net_pnl"]>0 for item in monthly)
     losing_months=sum(item["trades"]>0 and item["net_pnl"]<0 for item in monthly)
     weekly_stress=weekly_resampling_stress(trades,bars)
+    daily_profile=daily_reliability_profile(trades,bars)
     return {
+        **daily_profile,
         **weekly_stress,
         "mode":mode,"slippage_usd_per_oz_per_side":slippage,
         "news_event_mode":"archived_events_point_in_time" if news_events is not None else "not_enabled",
