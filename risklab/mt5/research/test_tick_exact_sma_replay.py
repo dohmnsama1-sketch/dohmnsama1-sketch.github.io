@@ -3,7 +3,7 @@ import gzip
 import pathlib
 import tempfile
 import unittest
-from tick_exact_sma_replay import actual_tick_exit,crossover_from_closed_bars,replay_week,next_wilder_atr
+from tick_exact_sma_replay import actual_tick_exit,crossover_from_closed_bars,replay_week,replay_files,next_wilder_atr
 from public_xauusd_ingest import HEADER
 
 class TickExactReplayTests(unittest.TestCase):
@@ -92,6 +92,53 @@ class TickExactReplayTests(unittest.TestCase):
                 replay_week(self.gz(root,rows))
             with self.assertRaises(ValueError):
                 replay_week(self.gz(root,["2026-01-02 10:00:00.000,99,100,1,1"]))
+
+    def test_split_input_files_preserve_exact_portfolio_and_indicators(self):
+        # A file boundary MUST NOT close a trade, reset equity/drawdown,
+        # restart ATR, or create a new artificial five-minute candle.
+        import datetime as dt, math
+        base=dt.datetime(2026,1,2)
+        rows=[]
+        for i in range(175):
+            price=4400+12*math.sin(i/9.0)
+            t=base+dt.timedelta(minutes=5*i)
+            for milliseconds,delta in ((0,0.0),(100,0.3)):
+                stamp=t.strftime("%Y-%m-%d %H:%M:%S")+f".{milliseconds:03d}"
+                rows.append(f"{stamp},{price+0.25+delta:.6f},{price+delta:.6f},1,1")
+        with tempfile.TemporaryDirectory() as root:
+            a=pathlib.Path(root)/"a"
+            b=pathlib.Path(root)/"b"
+            joined=pathlib.Path(root)/"joined"
+            for folder in (a,b,joined):folder.mkdir()
+            p1=self.gz(a,rows[:141])  # Deliberately split within an M5 bar
+            p2=self.gz(b,rows[141:])
+            p3=self.gz(joined,rows)
+            chunked=replay_files([p1,p2])
+            continuous=replay_week(p3)
+            for key in ("net_profit_usd","closed_trades",
+                        "tick_order_max_marked_equity_drawdown_fraction",
+                        "rejections","m5_bars","first_tick_utc","last_tick_utc",
+                        "most_recent_5_trades"):
+                self.assertEqual(chunked[key],continuous[key],key)
+            self.assertEqual(chunked["input_gzip_file_count"],2)
+            self.assertEqual(continuous["input_gzip_file_count"],1)
+
+    def test_cross_file_time_reversal_and_invalid_headers_fail_closed(self):
+        with tempfile.TemporaryDirectory() as root:
+            a=pathlib.Path(root)/"a"
+            b=pathlib.Path(root)/"b"
+            a.mkdir();b.mkdir()
+            earlier=self.gz(a,["2026-01-02 10:00:00.000,100.2,100.0,1,1"])
+            later=self.gz(b,["2026-01-02 10:05:00.000,100.2,100.0,1,1"])
+            with self.assertRaisesRegex(ValueError,"nonmonotonic"):
+                replay_files([later,earlier])
+            with self.assertRaisesRegex(ValueError,"at least one"):
+                replay_files([])
+            broken=b/"broken.gz"
+            with gzip.open(broken,"wt") as handle:
+                handle.write("time,close\\n2026-01-02 10:10:00.000,100\\n")
+            with self.assertRaisesRegex(ValueError,"source columns"):
+                replay_files([earlier,broken])
 
     def test_reject_risk_increasing_inputs(self):
         with tempfile.TemporaryDirectory() as root:
