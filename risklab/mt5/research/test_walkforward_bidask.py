@@ -134,6 +134,30 @@ class ResearchTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"nonempty event feed"):
             wf.evaluate(bars,"baseline",news_events=[])
 
+    def test_worst_open_equity_quote_is_bid_for_long_ask_for_short(self):
+        bar={"bid_open":101.0,"bid_low":90.0,"bid_high":112.0,
+             "bid_close":102.0,"ask_open":101.5,"ask_low":90.5,
+             "ask_high":112.5,"ask_close":102.5}
+        long={"entry":101.5,"side":1,"lots":0.1}
+        short={"entry":101.0,"side":-1,"lots":0.1}
+        l_equity,l_open=wf.adverse_ohlc_equity_proxy(10000,long,bar,0.5,7.0)
+        s_equity,s_open=wf.adverse_ohlc_equity_proxy(10000,short,bar,0.5,7.0)
+        self.assertAlmostEqual(l_open,(89.5-101.5)*10-0.7,places=6)
+        self.assertAlmostEqual(s_open,(101.0-113.0)*10-0.7,places=6)
+        self.assertAlmostEqual(l_equity,10000+l_open,places=6)
+        self.assertAlmostEqual(s_equity,10000+s_open,places=6)
+
+    def test_simulation_reports_intrabar_adverse_mark_separately(self):
+        r=wf.evaluate(synthetic(500),"baseline",slippage=0.15)
+        self.assertIn("max_adverse_intrabar_equity_proxy_fraction",r)
+        self.assertIn("max_open_position_adverse_loss_proxy_usd",r)
+        self.assertIn("bars_with_open_position",r)
+        self.assertGreaterEqual(r["max_adverse_intrabar_equity_proxy_fraction"],0)
+        self.assertGreaterEqual(r["max_open_position_adverse_loss_proxy_usd"],0)
+        self.assertIn("NOT a true observed floating-equity drawdown",r["approximation"])
+        if r["number_of_closed_trades"]>0:
+            self.assertGreater(r["bars_with_open_position"],0)
+
     def test_no_unbounded_or_negative_slippage(self):
         with self.assertRaises(ValueError):
             wf.evaluate(synthetic(),"baseline",-.1)
