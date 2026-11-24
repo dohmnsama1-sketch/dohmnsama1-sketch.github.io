@@ -158,6 +158,32 @@ class ResearchTests(unittest.TestCase):
         if r["number_of_closed_trades"]>0:
             self.assertGreater(r["bars_with_open_position"],0)
 
+    def test_daily_profile_counts_no_trades_as_not_profitable(self):
+        first=dt.datetime(2026,1,5)
+        bars=[{"time":first+dt.timedelta(days=i)} for i in range(7)]
+        trades=[{"exit":bars[0]["time"].isoformat(),"pnl":15.0},
+                {"exit":bars[3]["time"].isoformat(),"pnl":-8.0},
+                {"exit":bars[6]["time"].isoformat(),"pnl":4.0}]
+        r=wf.daily_reliability_profile(trades,bars)
+        self.assertEqual(r["days_with_quote_bars"],7)
+        self.assertEqual(r["days_with_closed_trades"],3)
+        self.assertEqual(r["days_without_closed_trades"],4)
+        self.assertEqual(r["days_with_positive_realized_pnl"],2)
+        self.assertEqual(r["days_with_negative_realized_pnl"],1)
+        self.assertEqual(r["positive_day_share_of_quote_days"],round(2/7,4))
+        self.assertEqual(r["longest_nonpositive_quote_day_streak"],3)
+        self.assertEqual(r["worst_exit_attributed_realized_day_usd"],-8.0)
+
+    def test_daily_profile_rejects_missing_dates_and_never_makes_zero_trades_wins(self):
+        first=dt.datetime(2026,1,5)
+        bars=[{"time":first+dt.timedelta(days=i)} for i in range(6)]
+        r=wf.daily_reliability_profile([],bars)
+        self.assertEqual(r["positive_day_share_of_quote_days"],0.0)
+        self.assertEqual(r["longest_nonpositive_quote_day_streak"],6)
+        self.assertEqual(r["days_with_closed_trades"],0)
+        with self.assertRaisesRegex(ValueError,"outside daily data"):
+            wf.daily_reliability_profile([{"exit":"2026-02-10T00:00:00","pnl":5}],bars)
+
     def test_weekly_resampling_preserves_no_trade_weeks(self):
         first=dt.datetime(2026,1,5)
         weeks=[{"time":first+dt.timedelta(weeks=i)} for i in range(30)]
