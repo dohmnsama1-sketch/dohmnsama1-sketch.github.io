@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+import gzip
+import pathlib
+import tempfile
+import unittest
+from tick_exact_sma_replay import actual_tick_exit,crossover_from_closed_bars,replay_week
+from public_xauusd_ingest import HEADER
+
+class TickExactReplayTests(unittest.TestCase):
+    def gz(self,root,rows):
+        p=pathlib.Path(root)/"quote_fixture.gz"
+        with gzip.open(p,"wt",encoding="utf-8") as f:
+            f.write(",".join(HEADER)+"\n")
+            for x in rows:f.write(x+"\n")
+        return p
+
+    def test_actual_tick_stop_gap_and_target_use_correct_bid_ask(self):
+        long={"side":1,"stop":99.0,"target":106.0}
+        short={"side":-1,"stop":106.0,"target":99.0}
+        self.assertEqual(actual_tick_exit(long,98.0,98.2,0.2),(97.8,"stop"))
+        self.assertEqual(actual_tick_exit(long,106.8,107.0,0.2),(105.8,"target"))
+        self.assertEqual(actual_tick_exit(short,108.0,108.3,0.2),(108.5,"stop"))
+        self.assertEqual(actual_tick_exit(short,98.0,98.5,0.2),(99.2,"target"))
+        self.assertIsNone(actual_tick_exit(long,103.0,103.2,0.2))
+
+    def test_crossover_uses_last_two_fully_closed_candles(self):
+        bars=[{"bid_close":100.0} for _ in range(31)]
+        self.assertEqual(crossover_from_closed_bars(bars),0)
+        bars[-1]["bid_close"]=105.0
+        self.assertEqual(crossover_from_closed_bars(bars),1)
+        bars=[{"bid_close":100.0} for _ in range(31)]
+        bars[-1]["bid_close"]=95.0
+        self.assertEqual(crossover_from_closed_bars(bars),-1)
+        self.assertEqual(crossover_from_closed_bars(bars[:25]),0)
+
+    def test_short_tick_sample_no_future_data_or_pnl(self):
+        rows=[
+            "2026-01-02 10:00:00.000,100.2,100.0,1,1",
+            "2026-01-02 10:00:00.100,100.4,100.2,1,1",
+            "2026-01-02 10:05:00.000,100.3,100.1,1,1",
+            "2026-01-02 10:05:01.000,100.5,100.3,1,1"]
+        with tempfile.TemporaryDirectory() as root:
+            result=replay_week(self.gz(root,rows))
+            self.assertEqual(result["m5_bars"],2)
+            self.assertEqual(result["ticks"],4)
+            self.assertEqual(result["closed_trades"],0)
+            self.assertEqual(result["net_profit_usd"],0)
+            self.assertFalse(result["real_money_release_permitted"])
+            self.assertIsNone(result["profit_factor"])
+
+    def test_nonmonotonic_and_invalid_price_rejected(self):
+        rows=["2026-01-02 10:00:01.000,100.2,100.0,1,1",
+              "2026-01-02 10:00:00.000,100.2,100.0,1,1"]
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaisesRegex(ValueError,"nonmonotonic"):
+                replay_week(self.gz(root,rows))
+            with self.assertRaises(ValueError):
+                replay_week(self.gz(root,["2026-01-02 10:00:00.000,99,100,1,1"]))
+
+    def test_reject_risk_increasing_inputs(self):
+        with tempfile.TemporaryDirectory() as root:
+            p=self.gz(root,["2026-01-02 10:00:00.000,100.2,100.0,1,1"])
+            for kwargs in ({"slippage":-0.1},{"commission_per_lot":-7},{"initial_equity":0}):
+                with self.subTest(kwargs=kwargs),self.assertRaises(ValueError):
+                    replay_week(p,**kwargs)
+
+if __name__=="__main__":
+    unittest.main()
