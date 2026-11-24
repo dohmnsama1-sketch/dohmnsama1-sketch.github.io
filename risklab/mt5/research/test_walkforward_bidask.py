@@ -171,7 +171,7 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(r["days_with_positive_realized_pnl"],2)
         self.assertEqual(r["days_with_negative_realized_pnl"],1)
         self.assertEqual(r["positive_day_share_of_quote_days"],round(2/7,4))
-        self.assertEqual(r["longest_nonpositive_quote_day_streak"],3)
+        self.assertEqual(r["longest_nonpositive_quote_day_streak"],5)  # Tue-Sat had no positive realized P/L
         self.assertEqual(r["worst_exit_attributed_realized_day_usd"],-8.0)
 
     def test_daily_profile_rejects_missing_dates_and_never_makes_zero_trades_wins(self):
