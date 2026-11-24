@@ -70,6 +70,16 @@ def judge_one(baseline: dict | None, stressed: dict | None, min_closed=100, min_
         reasons.append("missing or excessive intrabar adverse-equity excursion proxy (>8% research ceiling)")
     if baseline.get("months_with_trades",0)<6:
         reasons.append("fewer than six distinct active months; insufficient regime diversity")
+    # Conservative research screening only: weekly bootstrap is an imperfect
+    # exchangeability assumption, not a future-guaranteeing confidence limit.
+    if baseline.get("bootstrap_status")!="EXPLORATORY" or baseline.get("bootstrap_week_count",0)<26:
+        reasons.append("weekly block-resampling evidence missing or shorter than 26 weeks")
+    low=baseline.get("bootstrap_net_pnl_p2p5")
+    if not isinstance(low,(int,float)) or not math.isfinite(low) or low<=0:
+        reasons.append("weekly block-resampling lower net-P/L stress bound is not positive")
+    fraction=baseline.get("bootstrap_positive_fraction")
+    if not isinstance(fraction,(int,float)) or not math.isfinite(fraction) or fraction<0.95 or fraction>1:
+        reasons.append("fewer than 95% of weekly block-resampled scenarios show positive net P/L")
     monthly_share=baseline.get("positive_month_share_active")
     if not isinstance(monthly_share,(float,int)) or monthly_share<0.60:
         reasons.append("fewer than 60% of active calendar months have positive net P/L")
