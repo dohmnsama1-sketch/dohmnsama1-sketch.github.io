@@ -19,6 +19,7 @@ def case(mode="regime",trades=150,holdout=40,net=1200,holdout_net=240,pf=1.6,dd=
             "gross_profit":max(0,net)+500,"gross_loss":max(0,-net)+500,
             "profit_factor":pf,
             "max_closed_equity_drawdown_fraction":dd,
+            "max_adverse_intrabar_equity_proxy_fraction":dd,
             "split_60_20_20":[{"name":"analysis","trades":80,"net_pnl":600},
                              {"name":"validation","trades":30,"net_pnl":360},
                              {"name":"holdout","trades":holdout,"net_pnl":holdout_net}]}
@@ -89,6 +90,16 @@ class ReadinessChecks(unittest.TestCase):
         decision=gate.judge_one(reference,case(slip=.5))
         self.assertEqual(decision["decision"],"INSUFFICIENT_EVIDENCE")
         self.assertIn("largest individual realized loss"," ".join(decision["reasons"]))
+
+    def test_intrabar_stress_cannot_be_hidden_by_small_closed_drawdown(self):
+        baseline=case(dd=0.01)
+        baseline["max_adverse_intrabar_equity_proxy_fraction"]=0.12
+        d=gate.judge_one(baseline,case(slip=.5))
+        self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
+        self.assertIn("intrabar adverse-equity", " ".join(d["reasons"]))
+        baseline.pop("max_adverse_intrabar_equity_proxy_fraction")
+        d=gate.judge_one(baseline,case(slip=.5))
+        self.assertEqual(d["decision"],"INSUFFICIENT_EVIDENCE")
 
     def test_holdout_must_be_large_and_profitable(self):
         d=gate.judge_one(case(holdout=5,holdout_net=-20),case(slip=.5))
