@@ -45,6 +45,7 @@ def audit_ticks(path:pathlib.Path, stop_distance:float=2.0,
         raise ValueError("brackets must be positive")
     counts=Counter()
     last_timestamp=None
+    first_timestamp=None
     current=None
     candles=0
     ticks=0
@@ -75,6 +76,7 @@ def audit_ticks(path:pathlib.Path, stop_distance:float=2.0,
             timestamp,ask,bid=parse_tick_row(raw)
             if last_timestamp is not None and timestamp<last_timestamp:
                 raise ValueError("nonmonotonic tick timestamp")
+            if first_timestamp is None: first_timestamp=timestamp
             last_timestamp=timestamp
             ticks+=1
             bucket=m5_bucket(timestamp)
@@ -99,7 +101,7 @@ def audit_ticks(path:pathlib.Path, stop_distance:float=2.0,
     if not ticks:raise ValueError("empty market quote sample")
     return {"status":"TICK_SEQUENCE_PATH_AUDIT_NOT_STRATEGY_RETURN",
             "dataset":"pinned third-party Dukascopy-derived XAUUSD quote source",
-            "first_quote_timestamp_utc":None,  # source caller records source manifest separately
+            "first_quote_timestamp_utc":first_timestamp,
             "last_quote_timestamp_utc":last_timestamp,
             "ticks":ticks,"m5_bars":candles,
             "hypothetical_sl_distance_price":stop_distance,
