@@ -8,7 +8,7 @@
     <description>New pins for the Large Print Puzzle Books board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Mon, 23 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 24 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/large-print-puzzle-books.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -40,6 +40,26 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-23-xmas-2.jpg" type="image/jpeg" length="212776"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-23-xmas-2.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Large Print Christmas Puzzle Book: Free Sample Pages to Print</media:title>
+    </item>
+    <item>
+      <title>Large Print Christmas Word Search for Seniors (Free 4-Page Sample)</title>
+      <description>Print a free 4-page sample first: one word search, one sudoku, one scramble and one maze, as printed in the book. The large-print Christmas paperback has 108 holiday puzzles on Amazon. Seasonal through mid-December. I'm the author. Tap to print the free sample.</description>
+      <link>https://dohmnsama1-sketch.github.io/books/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=kdp-christmas&amp;utm_content=y12-2026-11-24-xmas-1</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12-2026-11-24-xmas-1</guid>
+      <pubDate>Tue, 24 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-24-xmas-1.jpg" type="image/jpeg" length="211967"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-24-xmas-1.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Large Print Christmas Word Search for Seniors (Free 4-Page Sample)</media:title>
+    </item>
+    <item>
+      <title>Large Print Word Search Book for Adults and Seniors (Free Sample)</title>
+      <description>Print a free 3-page sample first: one full cozy mystery case (story, jumbo 30-point word search, detective notebook). The large-print paperback has 30 cases on Amazon (130 pages, 8.5×11 in) for adults and seniors. I'm the author. Tap to print the free sample.</description>
+      <link>https://dohmnsama1-sketch.github.io/books/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=kdp-cozy&amp;utm_content=y12-2026-11-24-cozy-2</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12-2026-11-24-cozy-2</guid>
+      <pubDate>Tue, 24 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-24-cozy-2.jpg" type="image/jpeg" length="225851"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-24-cozy-2.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Large Print Word Search Book for Adults and Seniors (Free Sample)</media:title>
     </item>
   </channel>
 </rss>

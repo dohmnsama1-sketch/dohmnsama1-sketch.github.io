@@ -8,7 +8,7 @@
     <description>New pins for the Freelance Business Systems &amp; Templates board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Mon, 23 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 24 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/freelance-business-systems-templates.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -50,6 +50,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-23-crm-1.jpg" type="image/jpeg" length="190045"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-23-crm-1.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Freelance Client Tracker: CRM and Onboarding Pack (Sheets + Docs)</media:title>
+    </item>
+    <item>
+      <title>Free Freelance Client Tracker: Time Tracking and Invoices in One App</title>
+      <description>A free freelance client tracker demo: pipeline, time tracking and invoices in one dashboard. Opens with sample data, no signup, works offline in your browser. This is the free demo, not the full paid app. I'm the maker. Tap to try it free.</description>
+      <link>https://dohmnsama1-sketch.github.io/p/demo/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=iqptry&amp;utm_content=y12-2026-11-24-demo-0</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12-2026-11-24-demo-0</guid>
+      <pubDate>Tue, 24 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-24-demo-0.jpg" type="image/jpeg" length="200966"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-24-demo-0.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Free Freelance Client Tracker: Time Tracking and Invoices in One App</media:title>
     </item>
   </channel>
 </rss>
