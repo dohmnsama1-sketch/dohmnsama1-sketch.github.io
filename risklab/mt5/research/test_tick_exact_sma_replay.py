@@ -3,7 +3,7 @@ import gzip
 import pathlib
 import tempfile
 import unittest
-from tick_exact_sma_replay import actual_tick_exit,crossover_from_closed_bars,replay_week,replay_files,next_wilder_atr
+from tick_exact_sma_replay import actual_tick_exit,crossover_from_closed_bars,replay_week,replay_files,next_wilder_atr,update_equity_drawdown
 from public_xauusd_ingest import HEADER
 
 class TickExactReplayTests(unittest.TestCase):
@@ -92,6 +92,21 @@ class TickExactReplayTests(unittest.TestCase):
                 replay_week(self.gz(root,rows))
             with self.assertRaises(ValueError):
                 replay_week(self.gz(root,["2026-01-02 10:00:00.000,99,100,1,1"]))
+
+    def test_realized_exit_slippage_is_included_in_peak_to_valley_drawdown(self):
+        # Mark improves before exit; the broker-like adverse stop fill is
+        # BELOW the quoted mark and must increase measured equity drawdown.
+        peak,dd=update_equity_drawdown(10000.0,0.0,10050.0)
+        self.assertEqual((peak,dd),(10050.0,0.0))
+        peak,dd=update_equity_drawdown(peak,dd,10000.0)
+        before=dd
+        peak,dd=update_equity_drawdown(peak,dd,9800.0)
+        self.assertGreater(dd,before)
+        self.assertAlmostEqual(dd,1-9800/10050,places=10)
+        with self.assertRaises(ValueError):
+            update_equity_drawdown(peak,dd,float("nan"))
+        with self.assertRaises(ValueError):
+            update_equity_drawdown(0.0,dd,100.0)
 
     def test_split_input_files_preserve_exact_portfolio_and_indicators(self):
         # A file boundary MUST NOT close a trade, reset equity/drawdown,
