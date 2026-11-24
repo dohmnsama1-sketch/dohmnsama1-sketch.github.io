@@ -235,6 +235,7 @@ def closed_bar_breakout_signal(bars,i,atr):
 def evaluate(bars,mode="baseline",slippage=0.15,initial_equity=10000,commission_per_lot_round_turn=ASSUMED_COMMISSION_USD_PER_LOT_ROUND_TURN,news_events=None):
     if mode not in ("baseline","regime","breakout"): raise ValueError("invalid strategy")
     if slippage<0 or initial_equity<=0 or commission_per_lot_round_turn<0: raise ValueError("invalid cost/capital")
+    if news_events is not None and not news_events: raise ValueError("news-aware replay requires a verified nonempty event feed")
     atr=atr_wilder(bars)
     adx,plus,minus=directional_wilder(bars) if mode=="regime" else (None,None,None)
     h1=h1_closed_ema(bars) if mode in ("regime","breakout") else None
