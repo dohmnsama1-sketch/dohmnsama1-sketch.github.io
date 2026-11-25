@@ -1,0 +1,40 @@
+name: Video engine installation probe
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/video-engine-install-probe.yml'
+permissions:
+  contents: read
+concurrency:
+  group: video-engine-install-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: [harry0703/MoneyPrinterTurbo, FujiwaraChoki/MoneyPrinterV2, SamurAIGPT/AI-Youtube-Shorts-Generator]
+    steps:
+      - name: Fetch source and record revision (no secrets)
+        env:
+          UPSTREAM: ${{ matrix.repo }}
+        run: |
+          git clone --depth 1 "https://github.com/$UPSTREAM.git" engine
+          git -C engine rev-parse HEAD
+          ls -la engine
+      - name: Check dependency manifests and syntax without executing upstream
+        run: |
+          python - <<'PY'
+          import pathlib, ast
+          root=pathlib.Path('engine')
+          for name in ('pyproject.toml','requirements.txt','uv.lock','LICENSE'):
+              p=root/name
+              print(name, p.exists())
+          files=list(root.rglob('*.py'))
+          for f in files:
+              ast.parse(f.read_text(encoding='utf-8-sig'), filename=str(f))
+          print('Parsed Python files:',len(files))
+          PY
