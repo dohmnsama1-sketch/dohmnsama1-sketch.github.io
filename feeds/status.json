@@ -1,5 +1,5 @@
 {
-  "today_riyadh": "2026-11-24",
+  "today_riyadh": "2026-11-25",
   "feed_limit": 25,
   "schedule": {
     "start": "2026-11-12",
@@ -67,7 +67,7 @@
       "board": "Etsy & Shopify Marketing Calendar",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 0,
+      "items_in_feed": 1,
       "url": "https://dohmnsama1-sketch.github.io/feeds/etsy-shopify-marketing-calendar.xml"
     },
     "job-search-tips-application-tracker": {
@@ -95,7 +95,7 @@
       "board": "Pricing Handmade Items & Etsy Tips",
       "exists": true,
       "create_first": false,
-      "items_in_feed": 3,
+      "items_in_feed": 4,
       "url": "https://dohmnsama1-sketch.github.io/feeds/pricing-handmade-items-etsy-tips.xml"
     },
     "home-organization-inventory": {
@@ -116,7 +116,7 @@
       "board": "Large Print Puzzle Books",
       "exists": false,
       "create_first": true,
-      "items_in_feed": 5,
+      "items_in_feed": 6,
       "url": "https://dohmnsama1-sketch.github.io/feeds/large-print-puzzle-books.xml"
     }
   }
