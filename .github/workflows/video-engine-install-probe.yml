@@ -1,4 +1,4 @@
-name: Video engine installation probe
+name: Video engine installation and render probe
 on:
   workflow_dispatch:
   push:
@@ -9,32 +9,140 @@ permissions:
 concurrency:
   group: video-engine-install-probe
   cancel-in-progress: false
+
 jobs:
-  probe:
+  audit-alternatives:
+    name: Static audit (${{ matrix.repo }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        repo: [harry0703/MoneyPrinterTurbo, FujiwaraChoki/MoneyPrinterV2, SamurAIGPT/AI-Youtube-Shorts-Generator]
+        repo:
+          - FujiwaraChoki/MoneyPrinterV2
+          - SamurAIGPT/AI-Youtube-Shorts-Generator
     steps:
-      - name: Fetch source and record revision (no secrets)
+      - name: Fetch source and record revision
         env:
           UPSTREAM: ${{ matrix.repo }}
         run: |
           git clone --depth 1 "https://github.com/$UPSTREAM.git" engine
-          git -C engine rev-parse HEAD
-          ls -la engine
-      - name: Check dependency manifests and syntax without executing upstream
+          git -C engine rev-parse HEAD | tee engine-revision.txt
+      - name: Parse manifests and Python without executing upstream
         run: |
           python - <<'PY'
-          import pathlib, ast
-          root=pathlib.Path('engine')
-          for name in ('pyproject.toml','requirements.txt','uv.lock','LICENSE'):
-              p=root/name
-              print(name, p.exists())
-          files=list(root.rglob('*.py'))
-          for f in files:
-              ast.parse(f.read_text(encoding='utf-8-sig'), filename=str(f))
-          print('Parsed Python files:',len(files))
+          import ast, pathlib
+          root = pathlib.Path("engine")
+          for name in ("pyproject.toml", "requirements.txt", "uv.lock", "LICENSE"):
+              print(name, (root / name).exists())
+          files = list(root.rglob("*.py"))
+          for path in files:
+              ast.parse(path.read_text(encoding="utf-8-sig"), filename=str(path))
+          print("Parsed Python files:", len(files))
           PY
+
+  mpt-install-render:
+    name: MoneyPrinterTurbo pinned install and Arabic render
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      MPT_COMMIT: 3482168e8958a73c48656634c750a5ce459224df
+      MPT_HOME: ${{ github.workspace }}/mpt-runtime
+    steps:
+      - name: Fetch pinned MIT source
+        run: |
+          git clone --filter=blob:none https://github.com/harry0703/MoneyPrinterTurbo.git engine
+          git -C engine checkout --detach "$MPT_COMMIT"
+          test "$(git -C engine rev-parse HEAD)" = "$MPT_COMMIT"
+          grep -q "MIT License" engine/LICENSE
+          git -C engine rev-parse HEAD | tee mpt-revision.txt
+      - name: Audit dependency manifest before installation
+        run: |
+          python - <<'PY'
+          import pathlib, tomllib
+          data = tomllib.loads(pathlib.Path("engine/pyproject.toml").read_text())
+          project = data["project"]
+          assert project["requires-python"] == ">=3.11"
+          assert project["license"]["text"] == "MIT"
+          print("package", project["name"], project["version"])
+          print("dependencies", len(project["dependencies"]))
+          for dep in project["dependencies"]:
+              print(dep)
+          PY
+      - name: Install isolated pinned engine
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install ./engine
+          .venv/bin/mpt cli --help > mpt-cli-help.txt
+          .venv/bin/python - <<'PY'
+          import importlib.metadata
+          print("installed mpt", importlib.metadata.version("mpt"))
+          PY
+      - name: Create local vertical test material
+        run: |
+          mkdir -p smoke "$MPT_HOME"
+          ffmpeg -hide_banner -loglevel error -y \
+            -f lavfi -i "testsrc2=size=1080x1920:rate=30:duration=18" \
+            -vf "format=yuv420p" -c:v libx264 -preset veryfast -crf 23 \
+            -an smoke/source.mp4
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate \
+            -show_entries format=duration,size -of json smoke/source.mp4 \
+            > smoke/source-probe.json
+      - name: Render Arabic narrated 9 by 16 smoke video
+        env:
+          ARABIC_SCRIPT: >-
+            هذا اختبار تقني لمحرك إنتاج الفيديو. يراجع وضوح الصوت العربي،
+            واتجاه الترجمة، وتزامن الصورة، قبل اعتماد أي ملف للنشر.
+        run: |
+          .venv/bin/mpt cli \
+            --video-script "$ARABIC_SCRIPT" \
+            --video-language ar-SA \
+            --video-source local \
+            --video-materials "$GITHUB_WORKSPACE/smoke/source.mp4" \
+            --voice-name ar-SA-ZariyahNeural-Female \
+            --bgm-type none \
+            --bgm-volume 0 \
+            --subtitle-enabled \
+            --subtitle-position bottom \
+            --video-aspect 9:16 \
+            --video-fit-mode cover \
+            --video-concat-mode sequential \
+            --video-transition-mode none \
+            --n-threads 2 \
+            --stop-at video | tee smoke/mpt-result.json
+      - name: Locate and technically verify rendered MP4
+        run: |
+          find "$MPT_HOME" -type f -name '*.mp4' -print | tee smoke/mp4-files.txt
+          OUTPUT="$(find "$MPT_HOME" -type f -name '*.mp4' -printf '%s %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
+          test -n "$OUTPUT"
+          cp "$OUTPUT" smoke/mpt-arabic-smoke.mp4
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,channels,sample_rate \
+            -show_entries format=duration,size -of json smoke/mpt-arabic-smoke.mp4 \
+            | tee smoke/final-probe.json
+          sha256sum smoke/mpt-arabic-smoke.mp4 | tee smoke/final-sha256.txt
+          python - <<'PY'
+          import json
+          data=json.load(open("smoke/final-probe.json"))
+          streams=data["streams"]
+          video=next(s for s in streams if s.get("width"))
+          audio=next(s for s in streams if s.get("channels"))
+          assert (video["width"], video["height"]) == (1080, 1920)
+          assert float(data["format"]["duration"]) > 3
+          assert int(data["format"]["size"]) > 100000
+          assert int(audio["channels"]) >= 1
+          print("technical smoke verification passed")
+          PY
+      - name: Upload non-publishable acceptance artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mpt-v1.3.11-arabic-render-smoke
+          path: |
+            smoke/mpt-arabic-smoke.mp4
+            smoke/final-probe.json
+            smoke/final-sha256.txt
+            smoke/mpt-result.json
+            mpt-revision.txt
+            mpt-cli-help.txt
+          if-no-files-found: error
+          retention-days: 7
