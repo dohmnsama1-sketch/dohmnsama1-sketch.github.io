@@ -82,13 +82,26 @@ jobs:
       - name: Create local vertical test material
         run: |
           mkdir -p smoke "$MPT_HOME"
-          ffmpeg -hide_banner -loglevel error -y \
+          FFMPEG="$(.venv/bin/python - <<'PY'
+          import imageio_ffmpeg
+          print(imageio_ffmpeg.get_ffmpeg_exe())
+          PY
+          )"
+          "$FFMPEG" -hide_banner -loglevel error -y \
             -f lavfi -i "testsrc2=size=1080x1920:rate=30:duration=18" \
             -vf "format=yuv420p" -c:v libx264 -preset veryfast -crf 23 \
             -an smoke/source.mp4
-          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate \
-            -show_entries format=duration,size -of json smoke/source.mp4 \
-            > smoke/source-probe.json
+          .venv/bin/python - <<'PY'
+          import av, json, os
+          with av.open("smoke/source.mp4") as container:
+              stream=container.streams.video[0]
+              data={"width":stream.width,"height":stream.height,
+                    "codec":stream.codec_context.name,
+                    "duration":float(container.duration/1_000_000),
+                    "size":os.path.getsize("smoke/source.mp4")}
+          json.dump(data,open("smoke/source-probe.json","w"),indent=2)
+          print(data)
+          PY
       - name: Render Arabic narrated 9 by 16 smoke video
         env:
           ARABIC_SCRIPT: >-
@@ -117,20 +130,26 @@ jobs:
           OUTPUT="$(find "$MPT_HOME" -type f -name '*.mp4' -printf '%s %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
           test -n "$OUTPUT"
           cp "$OUTPUT" smoke/mpt-arabic-smoke.mp4
-          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,channels,sample_rate \
-            -show_entries format=duration,size -of json smoke/mpt-arabic-smoke.mp4 \
-            | tee smoke/final-probe.json
           sha256sum smoke/mpt-arabic-smoke.mp4 | tee smoke/final-sha256.txt
-          python - <<'PY'
-          import json
-          data=json.load(open("smoke/final-probe.json"))
-          streams=data["streams"]
-          video=next(s for s in streams if s.get("width"))
-          audio=next(s for s in streams if s.get("channels"))
-          assert (video["width"], video["height"]) == (1080, 1920)
-          assert float(data["format"]["duration"]) > 3
-          assert int(data["format"]["size"]) > 100000
-          assert int(audio["channels"]) >= 1
+          .venv/bin/python - <<'PY'
+          import av, json, os
+          with av.open("smoke/mpt-arabic-smoke.mp4") as container:
+              video=container.streams.video[0]
+              audio=container.streams.audio[0]
+              data={"video_codec":video.codec_context.name,
+                    "width":video.width,"height":video.height,
+                    "fps":float(video.average_rate),
+                    "audio_codec":audio.codec_context.name,
+                    "channels":audio.codec_context.channels,
+                    "sample_rate":audio.codec_context.sample_rate,
+                    "duration":float(container.duration/1_000_000),
+                    "size":os.path.getsize("smoke/mpt-arabic-smoke.mp4")}
+          json.dump(data,open("smoke/final-probe.json","w"),ensure_ascii=False,indent=2)
+          print(data)
+          assert (data["width"], data["height"]) == (1080, 1920)
+          assert data["duration"] > 3
+          assert data["size"] > 100000
+          assert data["channels"] >= 1
           print("technical smoke verification passed")
           PY
       - name: Upload non-publishable acceptance artifact
