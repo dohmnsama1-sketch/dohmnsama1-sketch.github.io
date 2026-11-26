@@ -153,6 +153,175 @@ jobs:
           assert data["channels"] >= 1
           print("technical smoke verification passed")
           PY
+      - name: Create original HbA1c visual sequence
+        run: |
+          mkdir -p candidate/scenes
+          .venv/bin/python - <<'PY'
+          from PIL import Image, ImageDraw
+          import json, pathlib
+          W,H=1080,1920
+          bg=(9,24,43)
+          teal=(46,196,182)
+          red=(236,79,93)
+          gold=(249,193,79)
+          white=(242,247,250)
+          muted=(118,146,164)
+          def base():
+              im=Image.new("RGB",(W,H),bg)
+              d=ImageDraw.Draw(im)
+              d.rounded_rectangle((70,90,W-70,H-90),radius=54,outline=(32,67,90),width=5)
+              return im,d
+          # Scene 1: 90-day average
+          im,d=base()
+          d.ellipse((275,250,805,780),fill=(18,49,70),outline=teal,width=18)
+          d.arc((330,305,750,725),20,315,fill=gold,width=34)
+          d.line((540,515,540,350),fill=white,width=24)
+          d.line((540,515,690,580),fill=white,width=24)
+          d.text((330,900),"90 DAYS",fill=white,stroke_width=2,stroke_fill=bg)
+          for i in range(12):
+              x=170+(i%4)*190; y=1120+(i//4)*180
+              d.rounded_rectangle((x,y,x+120,y+110),radius=18,fill=(22,67,88),outline=teal,width=4)
+          im.save("candidate/scenes/01.png")
+          # Scene 2: red-cell lifespan
+          im,d=base()
+          for x,y,s in [(180,370,230),(560,300,260),(330,740,300),(650,900,220),(140,1120,250)]:
+              d.ellipse((x,y,x+s,y+s),fill=red,outline=(255,158,166),width=12)
+              d.ellipse((x+s*.26,y+s*.26,x+s*.74,y+s*.74),fill=(146,33,54))
+          d.line((170,1550,900,1550),fill=muted,width=16)
+          d.polygon([(900,1505),(990,1550),(900,1595)],fill=gold)
+          d.text((410,1650),"RBC",fill=white)
+          im.save("candidate/scenes/02.png")
+          # Scene 3: blood loss / hemolysis may lower
+          im,d=base()
+          d.ellipse((390,260,690,680),fill=red,outline=white,width=10)
+          d.polygon([(540,160),(365,430),(715,430)],fill=red)
+          d.line((540,760,540,1400),fill=muted,width=34)
+          d.polygon([(460,1320),(540,1470),(620,1320)],fill=teal)
+          d.rounded_rectangle((220,1510,860,1690),radius=45,outline=teal,width=12)
+          d.text((435,1560),"A1C",fill=white)
+          im.save("candidate/scenes/03.png")
+          # Scene 4: iron / assay factors
+          im,d=base()
+          d.rounded_rectangle((155,300,925,690),radius=80,fill=(20,55,75),outline=gold,width=14)
+          d.text((280,420),"IRON",fill=white)
+          d.rectangle((245,820,835,950),outline=white,width=12)
+          d.rectangle((265,840,475,930),fill=gold)
+          for x in (270,510,750):
+              d.ellipse((x,1120,x+150,1270),fill=(30,80,102),outline=teal,width=8)
+          d.line((345,1270,345,1510),fill=teal,width=12)
+          d.line((585,1270,585,1510),fill=teal,width=12)
+          d.line((825,1270,825,1510),fill=teal,width=12)
+          d.text((400,1600),"ASSAY",fill=white)
+          im.save("candidate/scenes/04.png")
+          # Scene 5: review with clinician
+          im,d=base()
+          d.ellipse((180,300,470,590),fill=(204,169,132),outline=white,width=8)
+          d.rounded_rectangle((145,560,505,1220),radius=120,fill=(25,89,112))
+          d.ellipse((650,300,940,590),fill=(177,134,103),outline=white,width=8)
+          d.rounded_rectangle((615,560,975,1220),radius=120,fill=(54,94,139))
+          d.rounded_rectangle((250,1280,830,1650),radius=35,fill=white)
+          d.line((330,1380,745,1380),fill=muted,width=12)
+          d.line((330,1460,650,1460),fill=muted,width=12)
+          d.line((330,1540,700,1540),fill=teal,width=18)
+          im.save("candidate/scenes/05.png")
+          manifest={
+            "content_id":"BANK-202611-HBA1C",
+            "visual_source":"self-authored geometric medical explainer scenes",
+            "visual_rights":"original work generated in this workflow; no third-party footage, music, logos, or patient data",
+            "medical_sources":[
+              "https://www.niddk.nih.gov/health-information/diagnostic-tests/a1c-test",
+              "https://ngsp.org/factors.asp",
+              "https://ngsp.org/interf.asp"
+            ],
+            "publishable":False,
+            "reason":"production candidate only; human listening and final audiovisual/editorial review remain required"
+          }
+          pathlib.Path("candidate/rights-sources.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding="utf-8")
+          PY
+          FFMPEG="$(.venv/bin/python - <<'PY'
+          import imageio_ffmpeg
+          print(imageio_ffmpeg.get_ffmpeg_exe())
+          PY
+          )"
+          : > candidate/concat.txt
+          for n in 01 02 03 04 05; do
+            "$FFMPEG" -hide_banner -loglevel error -y -loop 1 -i "candidate/scenes/$n.png" \
+              -vf "scale=1080:1920,zoompan=z='min(zoom+0.00035,1.045)':d=240:s=1080x1920:fps=30,format=yuv420p" \
+              -t 8 -an -c:v libx264 -preset veryfast -crf 20 "candidate/scene-$n.mp4"
+            printf "file 'scene-%s.mp4'\n" "$n" >> candidate/concat.txt
+          done
+          (cd candidate && "$FFMPEG" -hide_banner -loglevel error -y -f concat -safe 0 -i concat.txt -c copy hba1c-original-visuals.mp4)
+
+      - name: Render source-grounded HbA1c Arabic candidate
+        env:
+          HBA1C_SCRIPT: >-
+            قد لا يعني ارتفاع أو انخفاض السكر التراكمي أن متوسط السكر تغير فعلاً.
+            فالفحص يعكس ارتباط الجلوكوز بالهيموغلوبين خلال نحو شهرين إلى ثلاثة أشهر،
+            لكنه يعتمد أيضاً على عمر كريات الدم الحمراء. فقدان دم حديث أو انحلال الدم
+            قد يخفض النتيجة زيفاً، ونقص الحديد قد يرفعها. كما قد تؤثر بعض أنواع
+            الهيموغلوبين أو أمراض الكلى بحسب الحالة وطريقة التحليل. إذا لم تتوافق
+            النتيجة مع قياسات السكر، فلا تغير علاجك بنفسك. ناقش مع الطبيب إعادة
+            الفحص أو استخدام اختبار بديل مناسب.
+        run: |
+          .venv/bin/mpt cli \
+            --video-script "$HBA1C_SCRIPT" \
+            --video-language ar-SA \
+            --video-source local \
+            --video-materials "$GITHUB_WORKSPACE/candidate/hba1c-original-visuals.mp4" \
+            --voice-name ar-SA-ZariyahNeural-Female \
+            --bgm-type none \
+            --bgm-volume 0 \
+            --subtitle-enabled \
+            --subtitle-position bottom \
+            --video-aspect 9:16 \
+            --video-fit-mode cover \
+            --video-concat-mode sequential \
+            --video-transition-mode none \
+            --n-threads 2 \
+            --stop-at video | tee candidate/mpt-result.json
+
+      - name: Verify and quarantine HbA1c candidate
+        run: |
+          OUTPUT="$(find "$MPT_HOME/storage/tasks" -type f -name 'final-*.mp4' -printf '%T@ %p\n' | sort -nr | head -n1 | cut -d' ' -f2-)"
+          test -n "$OUTPUT"
+          cp "$OUTPUT" candidate/YHS-HBA1C-MPT-CANDIDATE-20261126.mp4
+          sha256sum candidate/YHS-HBA1C-MPT-CANDIDATE-20261126.mp4 | tee candidate/final-sha256.txt
+          .venv/bin/python - <<'PY'
+          import av, json, os
+          path="candidate/YHS-HBA1C-MPT-CANDIDATE-20261126.mp4"
+          with av.open(path) as container:
+              video=container.streams.video[0]
+              audio=container.streams.audio[0]
+              data={"video_codec":video.codec_context.name,
+                    "width":video.width,"height":video.height,
+                    "fps":float(video.average_rate),
+                    "audio_codec":audio.codec_context.name,
+                    "channels":audio.codec_context.channels,
+                    "sample_rate":audio.codec_context.sample_rate,
+                    "duration":float(container.duration/1_000_000),
+                    "size":os.path.getsize(path),
+                    "decode_frames":sum(1 for _ in container.decode())}
+          json.dump(data,open("candidate/final-probe.json","w"),ensure_ascii=False,indent=2)
+          print(data)
+          assert (data["width"],data["height"]) == (1080,1920)
+          assert 20 < data["duration"] < 60
+          assert data["size"] > 100000
+          assert data["decode_frames"] > 100
+          PY
+
+      - name: Upload quarantined HbA1c production candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: yhs-hba1c-mpt-candidate-20261126
+          path: |
+            candidate/YHS-HBA1C-MPT-CANDIDATE-20261126.mp4
+            candidate/final-probe.json
+            candidate/final-sha256.txt
+            candidate/mpt-result.json
+            candidate/rights-sources.json
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Upload non-publishable acceptance artifact
         uses: actions/upload-artifact@v4
         with:
