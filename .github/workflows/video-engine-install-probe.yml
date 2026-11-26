@@ -127,8 +127,9 @@ jobs:
       - name: Locate and technically verify rendered MP4
         run: |
           find "$MPT_HOME" -type f -name '*.mp4' -print | tee smoke/mp4-files.txt
-          OUTPUT="$(find "$MPT_HOME" -type f -name '*.mp4' -printf '%s %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
+          OUTPUT="$(find "$MPT_HOME/storage/tasks" -type f -name 'final-*.mp4' -print -quit)"
           test -n "$OUTPUT"
+          case "$OUTPUT" in */storage/tasks/*/final-*.mp4) ;; *) exit 41 ;; esac
           cp "$OUTPUT" smoke/mpt-arabic-smoke.mp4
           sha256sum smoke/mpt-arabic-smoke.mp4 | tee smoke/final-sha256.txt
           .venv/bin/python - <<'PY'
