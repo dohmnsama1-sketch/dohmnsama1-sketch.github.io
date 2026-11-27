@@ -8,7 +8,7 @@
     <description>New pins for the Habit Tracker Ideas board. Tools and books by Dodiabak Studio.</description>
     <language>en-us</language>
     <ttl>1440</ttl>
-    <lastBuildDate>Sat, 14 Nov 2026 14:05:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 14:05:00 +0000</lastBuildDate>
     <generator>dohmnsama1-pinterest-rss</generator>
     <atom:link href="https://dohmnsama1-sketch.github.io/feeds/habit-tracker-ideas.xml" rel="self" type="application/rss+xml"/>
     <item>
@@ -20,6 +20,16 @@
       <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/04-habit-4a-quote.jpg" type="image/jpeg" length="121893"/>
       <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/04-habit-4a-quote.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
       <media:title>Habit Tracker Spreadsheet: The Never Miss Twice Rule (Don't Quit After One Miss)</media:title>
+    </item>
+    <item>
+      <title>Habit Tracker Spreadsheet: The Never Miss Twice Rule</title>
+      <description>A 12-month habit tracker spreadsheet built on the never-miss-twice rule: miss one day, do the 2-minute version, and keep going. Excel (imports into Google Sheets) plus a printable recovery card. I'm the maker. Tap to see the preview, $9 instant download.</description>
+      <link>https://dohmnsama1-sketch.github.io/p/habit/?utm_source=pinterest&amp;utm_medium=rss&amp;utm_campaign=xgzula&amp;utm_content=y12-2026-11-27-habit-1</link>
+      <guid isPermaLink="false">https://dohmnsama1-sketch.github.io/feeds/item/y12-2026-11-27-habit-1</guid>
+      <pubDate>Fri, 27 Nov 2026 14:00:00 +0000</pubDate>
+      <enclosure url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-27-habit-1.jpg" type="image/jpeg" length="172356"/>
+      <media:content url="https://dohmnsama1-sketch.github.io/pins/pinterest/y12-2026-11-27-habit-1.jpg" type="image/jpeg" medium="image" width="1000" height="1500"/>
+      <media:title>Habit Tracker Spreadsheet: The Never Miss Twice Rule</media:title>
     </item>
   </channel>
 </rss>
