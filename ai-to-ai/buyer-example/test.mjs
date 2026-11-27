@@ -39,3 +39,4 @@ const paidTx='0x'+'d'.repeat(64);
 test('reads bounded JSON after settlement',async()=>assert.deepEqual(await readSettledJson(new Response(JSON.stringify({ok:true})),paidTx),{ok:true}));
 test('rejects malformed paid JSON after settlement with no-retry warning',async()=>await assert.rejects(readSettledJson(new Response('not-json'),paidTx),/Settlement already reported success.*not valid JSON.*do not retry automatically/));
 test('rejects oversized paid output after settlement with no-retry warning',async()=>await assert.rejects(readSettledJson(new Response('x'.repeat(33)),paidTx,32),/Settlement already reported success.*exceeds 32 bytes.*do not retry automatically/));
+test('rejects oversized payment-required header',()=>assert.throws(()=>quoteFromHeadersOrBody('x'.repeat(40001),good),/exceeds limits/));
