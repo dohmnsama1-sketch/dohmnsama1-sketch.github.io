@@ -29,26 +29,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - uses: actions/download-artifact@v4
+      - uses: actions/cache@v4
         with:
-          name: Nabra-TTS-Arabic-probe
-          run-id: ${{ github.event.workflow_run.id || inputs.source_run || '45864527595' }}
-          github-token: ${{ github.token }}
-          path: candidate_audio
+          path: asr_model
+          key: asr-small-536b066-484mb-v1
       - name: Install bounded CPU ASR
         run: |
           python -m venv "$RUNNER_TEMP/asr_build"
           "$RUNNER_TEMP/asr_build/bin/python" -m pip install 'faster-whisper==1.2.1' 'huggingface_hub==0.36.0'
           "$RUNNER_TEMP/asr_build/bin/python" -c "from huggingface_hub import snapshot_download; snapshot_download('Systran/faster-whisper-small',revision='536b0662742c02347bc0e980a01041f333bce120',local_dir='asr_model')"
-      - name: Analyze actual six existing WAV files
+      - name: Verify publisher's pinned model digest
         run: |
-          "$RUNNER_TEMP/asr_build/bin/python" tools/media_release/speech_qa.py --audio-dir candidate_audio --references tools/media_release/nabra_probe_references.json --model-dir asr_model --out speech-qa.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Arabic-speech-qa-evidence
-          path: speech-qa.json
-          if-no-files-found: error
-          retention-days: 7
+          echo '3e305921506d8872816023e4c273e75d2419fb89b24da97b4fe7bce14170d671  asr_model/model.bin' | sha256sum --check
       - name: Build offline runtime only on explicit workflow installation change
         if: github.event_name == 'push'
         shell: bash
@@ -70,15 +62,27 @@ jobs:
               raise SystemExit('HOLD: offline bundle exceeds bounded 800 MiB transfer budget')
           PY
           HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python tools/media_release/install_offline_asr.py offline_asr "${RUNNER_TEMP}/asr_verified"
-          HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 "${RUNNER_TEMP}/asr_verified/bin/python" tools/media_release/speech_qa.py --audio-dir candidate_audio --references tools/media_release/nabra_probe_references.json --model-dir offline_asr/model --out offline-speech-qa.json
       - name: Preserve bounded offline model and runtime bundle
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: ASR-offline-linux-x86_64-py313
-          path: |
-            offline_asr/
-            offline-speech-qa.json
+          path: offline_asr/
           retention-days: 3
           compression-level: 0
           if-no-files-found: error
+      - uses: actions/download-artifact@v4
+        with:
+          name: Nabra-TTS-Arabic-probe
+          run-id: ${{ github.event.workflow_run.id || inputs.source_run || '45864527595' }}
+          github-token: ${{ github.token }}
+          path: candidate_audio
+      - name: Analyze actual six existing WAV files
+        run: |
+          "$RUNNER_TEMP/asr_build/bin/python" tools/media_release/speech_qa.py --audio-dir candidate_audio --references tools/media_release/nabra_probe_references.json --model-dir asr_model --out speech-qa.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Arabic-speech-qa-evidence
+          path: speech-qa.json
+          if-no-files-found: error
+          retention-days: 7
