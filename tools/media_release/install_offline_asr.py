@@ -15,7 +15,7 @@ def main():
     for name,sha in manifest.items():
         p=(root/name).resolve()
         if not p.is_relative_to(root) or not p.is_file() or digest(p)!=sha: raise SystemExit("HOLD: invalid file "+name)
-    required={"model/model.bin","model/config.json","model/tokenizer.json","model/preprocessor_config.json","requirements.lock"}
+    required={"model/model.bin","model/config.json","model/tokenizer.json","model/vocabulary.txt","requirements.lock"}
     if not required.issubset(manifest): raise SystemExit("HOLD: incomplete model")
     if any(str(p.relative_to(root)) not in manifest for p in root.rglob("*") if p.is_file() and p.name!="SHA256SUMS.json"):
         raise SystemExit("HOLD: unmanifested files")
